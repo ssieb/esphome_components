@@ -26,7 +26,7 @@ class CWWW2LightOutput : public light::LightOutput {
   void write_state(light::LightState *state) override {
     float temperature = clamp(state->current_values.get_color_temperature(),
                               cold_white_temperature_, warm_white_temperature_);
-    float ratio = (temperature - cold_white_temperature_) / (warm_white_temperature_ - cold_white_temperature_);
+    float ratio = (temperature - warm_white_temperature_) / (cold_white_temperature_ - warm_white_temperature_);
     ESP_LOGD("cwww2", "color temperature %f", ratio);
     this->color_temperature_->set_level(ratio);
     float bright;

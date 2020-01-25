@@ -13,6 +13,8 @@ CONFIG_SCHEMA = light.RGB_LIGHT_SCHEMA.extend({
     cv.Required(CONF_BRIGHTNESS): cv.use_id(output.FloatOutput),
     cv.Required(CONF_COLD_WHITE_COLOR_TEMPERATURE): cv.color_temperature,
     cv.Required(CONF_WARM_WHITE_COLOR_TEMPERATURE): cv.color_temperature,
+    # the chip seems to handle the gamma correction itself
+    cv.Optional(CONF_GAMMA_CORRECT, default=1.0): cv.positive_float,
 })
 
 
