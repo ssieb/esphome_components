@@ -2,7 +2,7 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import light, output
 from esphome.const import CONF_OUTPUT_ID, CONF_COLOR_TEMPERATURE, CONF_BRIGHTNESS, \
-    CONF_COLD_WHITE_COLOR_TEMPERATURE, CONF_WARM_WHITE_COLOR_TEMPERATURE
+    CONF_COLD_WHITE_COLOR_TEMPERATURE, CONF_WARM_WHITE_COLOR_TEMPERATURE, CONF_GAMMA_CORRECT
 
 cwww2_ns = cg.esphome_ns.namespace('cwww2')
 CWWW2LightOutput = cwww2_ns.class_('CWWW2LightOutput', light.LightOutput)
