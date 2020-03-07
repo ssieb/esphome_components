@@ -23,12 +23,13 @@ void HT16K33LCDDisplay::setup() {
 
 float HT16K33LCDDisplay::get_setup_priority() const { return setup_priority::PROCESSOR; }
 
-void HOT HT16K33LCDDisplay::display() {
-  this->write_bytes_16(LCD_DISPLAY_COMMAND_SET_DDRAM_ADDR, this->buffer_, 4);
+void HT16K33LCDDisplay::display() {
+  this->write_bytes(LCD_DISPLAY_COMMAND_SET_DDRAM_ADDR, this->buffer_, 8);
 }
 
 void HT16K33LCDDisplay::update() {
-  for (uint8_t i = 0; i < 4; i++)
+  memset(this->buffer_, 0, 8);
+  for (uint8_t i = 0; i < 8; i++)
     this->buffer_[i] = 0;
 
   this->call_writer();
@@ -57,19 +58,24 @@ float HT16K33LCDDisplay::get_brightness() {
 void HT16K33LCDDisplay::print(const char *str) {
   uint8_t pos = 0;
   uint16_t fontc = 0;
-  for (; *str != '\0'; str++) {
-    if (pos >= 4) {
+  while (*str != '\0') {
+    if (pos >= 8) {
       ESP_LOGW(TAG, "writing off the screen!");
       break;
     }
 
-    uint8_t c = *reinterpret_cast<const uint8_t *>(str);
+    uint8_t c = *reinterpret_cast<const uint8_t *>(str++);
     if (c > 127)
       fontc = 0;
     else
       fontc = pgm_read_word(&alphafonttable[c]);
-    this->buffer_[pos] = fontc;
-    pos++;
+    c = *reinterpret_cast<const uint8_t *>(str);
+    if (c == '.') {
+      fontc |= 0x8000;
+      str++;
+    }
+    this->buffer_[pos++] = fontc >> 8;
+    this->buffer_[pos++] = fontc & 0xff;
   }
 }
 

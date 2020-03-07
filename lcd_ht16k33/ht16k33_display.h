@@ -39,7 +39,7 @@ class HT16K33LCDDisplay : public PollingComponent, public i2c::I2CDevice {
   void call_writer() { this->writer_(*this); }
 
   std::function<void(HT16K33LCDDisplay &)> writer_;
-  uint16_t buffer_[4] {0, 0, 0, 0};
+  uint8_t buffer_[8] {0, 0, 0, 0, 0, 0, 0, 0};
   uint8_t brightness_ = 16;
 };
 
