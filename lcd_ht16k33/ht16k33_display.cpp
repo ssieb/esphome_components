@@ -19,21 +19,43 @@ void HT16K33LCDDisplay::setup() {
   this->write_bytes(LCD_DISPLAY_COMMAND_SYSTEM_SETUP, nullptr, 0);
   this->write_bytes(LCD_DISPLAY_COMMAND_DISPLAY_ON, nullptr, 0);
   this->set_brightness(1);
+  memset(this->buffer_, 0, 64);
+}
+
+void HT16K33LCDDisplay::loop() {
+  unsigned long now = millis();
+  // check if the buffer has shrunk past the current position since last update
+  if (this->offset_ + 8 > this->buffer_fill_) {
+    this->offset_ = max(this->buffer_fill_ - 8, 0);
+    this->display_();
+  }
+  if (!this->scroll_ || (this->buffer_fill_ <= 8))
+    return;
+  if (this->offset_ + 8 >= this->buffer_fill_) {
+    if (now - this->last_scroll_ >= this->scroll_dwell_) {
+      this->offset_ = 0;
+      this->last_scroll_ = now;
+      this->display_();
+    }
+  } else
+  if (now - this->last_scroll_ >= this->scroll_speed_) {
+    this->offset_ += 2;
+    this->last_scroll_ = now;
+    this->display_();
+  }
 }
 
 float HT16K33LCDDisplay::get_setup_priority() const { return setup_priority::PROCESSOR; }
 
-void HT16K33LCDDisplay::display() {
-  this->write_bytes(LCD_DISPLAY_COMMAND_SET_DDRAM_ADDR, this->buffer_, 8);
+void HT16K33LCDDisplay::display_() {
+  this->write_bytes(LCD_DISPLAY_COMMAND_SET_DDRAM_ADDR, this->buffer_ + this->offset_, 8);
 }
 
 void HT16K33LCDDisplay::update() {
-  memset(this->buffer_, 0, 8);
-  for (uint8_t i = 0; i < 8; i++)
-    this->buffer_[i] = 0;
-
+  memset(this->buffer_, 0, 64);
+  this->buffer_fill_ = 0;
   this->call_writer();
-  this->display();
+  this->display_();
 }
 
 void HT16K33LCDDisplay::set_brightness(float level) {
@@ -56,11 +78,11 @@ float HT16K33LCDDisplay::get_brightness() {
 }
 
 void HT16K33LCDDisplay::print(const char *str) {
-  uint8_t pos = 0;
+  uint8_t pos = this->buffer_fill_;
   uint16_t fontc = 0;
   while (*str != '\0') {
-    if (pos >= 8) {
-      ESP_LOGW(TAG, "writing off the screen!");
+    if (pos >= 64) {
+      ESP_LOGW(TAG, "output buffer full!");
       break;
     }
 
@@ -77,6 +99,7 @@ void HT16K33LCDDisplay::print(const char *str) {
     this->buffer_[pos++] = fontc & 0xff;
     this->buffer_[pos++] = fontc >> 8;
   }
+  this->buffer_fill_ = pos;
 }
 
 void HT16K33LCDDisplay::print(const std::string &str) { this->print(str.c_str()); }
@@ -84,7 +107,7 @@ void HT16K33LCDDisplay::print(const std::string &str) { this->print(str.c_str())
 void HT16K33LCDDisplay::printf(const char *format, ...) {
   va_list arg;
   va_start(arg, format);
-  char buffer[9];
+  char buffer[64];
   int ret = vsnprintf(buffer, sizeof(buffer), format, arg);
   va_end(arg);
   if (ret > 0)
@@ -93,7 +116,7 @@ void HT16K33LCDDisplay::printf(const char *format, ...) {
 
 #ifdef USE_TIME
 void HT16K33LCDDisplay::strftime(const char *format, time::ESPTime time) {
-  char buffer[9];
+  char buffer[64];
   size_t ret = time.strftime(buffer, sizeof(buffer), format);
   if (ret > 0)
     this->print(buffer);

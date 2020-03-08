@@ -15,9 +15,12 @@ class HT16K33LCDDisplay : public PollingComponent, public i2c::I2CDevice {
  public:
   void set_writer(std::function<void(HT16K33LCDDisplay &)> &&writer) { this->writer_ = std::move(writer); }
   void setup() override;
+  void loop() override;
   float get_setup_priority() const override;
+  void set_scroll(bool scroll) { this->scroll_ = scroll; }
+  void set_scroll_speed(float scroll_speed) { this->scroll_speed_ = scroll_speed; }
+  void set_scroll_dwell(float scroll_dwell) { this->scroll_dwell_ = scroll_dwell; }
   void update() override;
-  void display();
   //// Clear LCD display
   void set_brightness(float level);
   float get_brightness();
@@ -37,9 +40,16 @@ class HT16K33LCDDisplay : public PollingComponent, public i2c::I2CDevice {
  protected:
   void command_(uint8_t value);
   void call_writer() { this->writer_(*this); }
+  void display_();
 
   std::function<void(HT16K33LCDDisplay &)> writer_;
-  uint8_t buffer_[8] {0, 0, 0, 0, 0, 0, 0, 0};
+  bool scroll_ {false};
+  unsigned long scroll_speed_ {250};
+  unsigned long scroll_dwell_ {2000};
+  unsigned long last_scroll_ {0};
+  uint8_t buffer_[64];
+  int buffer_fill_ {0};
+  int offset_ {0};
   uint8_t brightness_ = 16;
 };
 
