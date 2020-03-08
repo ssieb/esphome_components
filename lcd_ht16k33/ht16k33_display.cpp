@@ -71,11 +71,11 @@ void HT16K33LCDDisplay::print(const char *str) {
       fontc = pgm_read_word(&alphafonttable[c]);
     c = *reinterpret_cast<const uint8_t *>(str);
     if (c == '.') {
-      fontc |= 0x8000;
+      fontc |= 0x4000;
       str++;
     }
-    this->buffer_[pos++] = fontc >> 8;
     this->buffer_[pos++] = fontc & 0xff;
+    this->buffer_[pos++] = fontc >> 8;
   }
 }
 
@@ -84,7 +84,7 @@ void HT16K33LCDDisplay::print(const std::string &str) { this->print(str.c_str())
 void HT16K33LCDDisplay::printf(const char *format, ...) {
   va_list arg;
   va_start(arg, format);
-  char buffer[4];
+  char buffer[9];
   int ret = vsnprintf(buffer, sizeof(buffer), format, arg);
   va_end(arg);
   if (ret > 0)
@@ -93,7 +93,7 @@ void HT16K33LCDDisplay::printf(const char *format, ...) {
 
 #ifdef USE_TIME
 void HT16K33LCDDisplay::strftime(const char *format, time::ESPTime time) {
-  char buffer[4];
+  char buffer[9];
   size_t ret = time.strftime(buffer, sizeof(buffer), format);
   if (ret > 0)
     this->print(buffer);
