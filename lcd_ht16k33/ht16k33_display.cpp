@@ -31,6 +31,8 @@ void HT16K33LCDDisplay::loop() {
   }
   if (!this->scroll_ || (this->buffer_fill_ <= 8))
     return;
+  if ((this->offset_ == 0) && (now - this->last_scroll_ < this->scroll_delay_))
+    return;
   if (this->offset_ + 8 >= this->buffer_fill_) {
     if (now - this->last_scroll_ >= this->scroll_dwell_) {
       this->offset_ = 0;
@@ -53,8 +55,13 @@ void HT16K33LCDDisplay::display_() {
 
 void HT16K33LCDDisplay::update() {
   memset(this->buffer_, 0, 64);
+  int prev_fill = this->buffer_fill_;
   this->buffer_fill_ = 0;
   this->call_writer();
+  if (this->scroll_ && (prev_fill != this->buffer_fill_)) {
+    this->last_scroll_ = millis();
+    this->offset_ = 0;
+  }
   this->display_();
 }
 

@@ -18,13 +18,18 @@ display:
     scroll: true
     scroll_speed: 250ms
     scroll_dwell: 2s
+    scroll_delay: 3
     lambda: |-
       it.print("ABCD");
 ```
+
+# Optional parameters
 
 `scroll:` defaults to false
 
 `scroll_speed:` is the time between each movement, default 250ms
 
 `scroll_dwell:` is the time to wait at the end before going back to the start, default 2s
+
+`scroll_delay:` is the number (float, minimum 1) of `scroll_speed` cycles to wait at the beginning before starting to scroll, default 3
 
