@@ -41,10 +41,11 @@ void BangBangClimate::control(const climate::ClimateCall &call) {
 climate::ClimateTraits BangBangClimate::traits() {
   auto traits = climate::ClimateTraits();
   traits.set_supports_current_temperature(true);
-  traits.set_supports_auto_mode(true);
+  bool both = this->supports_cool_ && this->supports_heat_;
+  traits.set_supports_auto_mode(both);
   traits.set_supports_cool_mode(this->supports_cool_);
   traits.set_supports_heat_mode(this->supports_heat_);
-  traits.set_supports_two_point_target_temperature(true);
+  traits.set_supports_two_point_target_temperature(both);
   traits.set_supports_away(this->supports_away_);
   traits.set_supports_action(true);
   return traits;
