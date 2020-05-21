@@ -25,6 +25,7 @@ void BangBangClimate::setup() {
     this->change_away_(false);
   }
 }
+
 void BangBangClimate::control(const climate::ClimateCall &call) {
   if (call.get_mode().has_value())
     this->mode = *call.get_mode();
@@ -38,6 +39,7 @@ void BangBangClimate::control(const climate::ClimateCall &call) {
   this->compute_state_();
   this->publish_state();
 }
+
 climate::ClimateTraits BangBangClimate::traits() {
   auto traits = climate::ClimateTraits();
   traits.set_supports_current_temperature(true);
@@ -50,6 +52,7 @@ climate::ClimateTraits BangBangClimate::traits() {
   traits.set_supports_action(true);
   return traits;
 }
+
 void BangBangClimate::compute_state_() {
   if (this->mode != climate::CLIMATE_MODE_AUTO) {
     // in non-auto mode, switch directly to appropriate action
@@ -124,6 +127,7 @@ void BangBangClimate::switch_to_action_(climate::ClimateAction action) {
   this->prev_trigger_ = trig;
   this->publish_state();
 }
+
 void BangBangClimate::change_away_(bool away) {
   if (!away) {
     this->target_temperature_low = this->normal_config_.default_temperature_low;
@@ -136,13 +140,16 @@ void BangBangClimate::change_away_(bool away) {
   }
   this->away = away;
 }
+
 void BangBangClimate::set_normal_config(const BangBangClimateTargetTempConfig &normal_config) {
   this->normal_config_ = normal_config;
 }
+
 void BangBangClimate::set_away_config(const BangBangClimateTargetTempConfig &away_config) {
   this->supports_away_ = true;
   this->away_config_ = away_config;
 }
+
 BangBangClimate::BangBangClimate()
     : idle_trigger_(new Trigger<>()), cool_trigger_(new Trigger<>()), heat_trigger_(new Trigger<>()) {}
 void BangBangClimate::set_sensor(sensor::Sensor *sensor) { this->sensor_ = sensor; }
