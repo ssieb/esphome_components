@@ -9,11 +9,11 @@
 #endif
 
 namespace esphome {
-namespace lcd_ht16k33 {
+namespace ht16k33_alpha {
 
-class HT16K33LCDDisplay : public PollingComponent, public i2c::I2CDevice {
+class HT16K33AlphaDisplay : public PollingComponent, public i2c::I2CDevice {
  public:
-  void set_writer(std::function<void(HT16K33LCDDisplay &)> &&writer) { this->writer_ = std::move(writer); }
+  void set_writer(std::function<void(HT16K33AlphaDisplay &)> &&writer) { this->writer_ = std::move(writer); }
   void setup() override;
   void loop() override;
   float get_setup_priority() const override;
@@ -22,7 +22,7 @@ class HT16K33LCDDisplay : public PollingComponent, public i2c::I2CDevice {
   void set_scroll_dwell(unsigned long scroll_dwell) { this->scroll_dwell_ = scroll_dwell; }
   void set_scroll_delay(unsigned long scroll_delay) { this->scroll_delay_ = scroll_delay; }
   void update() override;
-  //// Clear LCD display
+  //// Clear display
   void set_brightness(float level);
   float get_brightness();
 
@@ -43,7 +43,7 @@ class HT16K33LCDDisplay : public PollingComponent, public i2c::I2CDevice {
   void call_writer() { this->writer_(*this); }
   void display_();
 
-  std::function<void(HT16K33LCDDisplay &)> writer_;
+  std::function<void(HT16K33AlphaDisplay &)> writer_;
   bool scroll_ {false};
   unsigned long scroll_speed_ {250};
   unsigned long scroll_dwell_ {2000};
@@ -55,5 +55,5 @@ class HT16K33LCDDisplay : public PollingComponent, public i2c::I2CDevice {
   uint8_t brightness_ = 16;
 };
 
-}  // namespace lcd_ht16k33
+}  // namespace ht16k33_alpha
 }  // namespace esphome
