@@ -1,3 +1,8 @@
+# DEPRECATED
+
+The bang_bang component in esphome has now been updated to be very complete including the temperature control change
+from here.  You should use that one instead.
+
 # alternate bang_bang climate component
 
 This climate controller works more like a normal thermostat.
