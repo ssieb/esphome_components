@@ -11,3 +11,5 @@ sensor:
     unit_of_measurement: "pH"
 ```
 
+You can set the temperature compensation value using `id(ph_ezo).set_tempcomp_value(temperature);` in a lambda.
+

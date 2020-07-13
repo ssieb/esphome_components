@@ -15,9 +15,13 @@ class EZOSensor : public sensor::Sensor, public PollingComponent, public i2c::I2
   void update() override;
   float get_setup_priority() const override { return setup_priority::DATA; };
 
+  void set_tempcomp_value(float temp);
+
  protected:
   unsigned long start_time_ = 0;
-  bool waiting_ = false;
+  unsigned long wait_time_ = 0;
+  uint16_t state_ = 0;
+  float tempcomp_;
 };
 
 }  // namespace ezo

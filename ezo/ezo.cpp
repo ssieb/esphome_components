@@ -6,6 +6,10 @@ namespace ezo {
 
 static const char *TAG = "ezo.sensor";
 
+static const uint16_t EZO_STATE_WAIT = 1;
+static const uint16_t EZO_STATE_SEND_TEMP = 2;
+static const uint16_t EZO_STATE_WAIT_TEMP = 4;
+
 void EZOSensor::dump_config() {
   LOG_SENSOR("", "EZO", this);
   LOG_I2C_DEVICE(this);
@@ -15,24 +19,35 @@ void EZOSensor::dump_config() {
 }
 
 void EZOSensor::update() {
-  if (this->waiting_) {
+  if (this->state_ & EZO_STATE_WAIT) {
     ESP_LOGE(TAG, "update overrun, still waiting for previous response");
     return;
   }
   uint8_t c = 'R';
   this->write_bytes_raw(&c, 1);
-  this->waiting_ = true;
+  this->state_ |= EZO_STATE_WAIT;
   this->start_time_ = millis();
+  this->wait_time_ = 900;
 }
 
 void EZOSensor::loop() {
-  if (!this->waiting_ || (millis() - this->start_time_ < 900))
+  uint8_t buf[20];
+  if (!(this->state_ & EZO_STATE_WAIT)) {
+    if (this->state_ & EZO_STATE_SEND_TEMP) {
+      int len = sprintf((char *)buf, "T,%0.3f", this->tempcomp_);
+      this->write_bytes_raw(buf, len);
+      this->state_ = EZO_STATE_WAIT | EZO_STATE_WAIT_TEMP;
+      this->start_time_ = millis();
+      this->wait_time_ = 300;
+      return;
+    }
+  }
+  if (millis() - this->start_time_ < this->wait_time_)
     return;
-  static uint8_t buf[20];
   buf[0] = 0;
   if (!this->read_bytes_raw(buf, 20)) {
     ESP_LOGE(TAG, "read error");
-    this->waiting_ = false;
+    this->state_ = 0;
     return;
   }
   switch(buf[0]) {
@@ -50,12 +65,21 @@ void EZOSensor::loop() {
     ESP_LOGE(TAG, "device returned an unknown response: %d", buf[0]);
     break;
   }
-  this->waiting_ = false;
+  if (this->state_ & EZO_STATE_WAIT_TEMP) {
+    this->state_ = 0;
+    return;
+  }
+  this->state_ &= ~EZO_STATE_WAIT;
   if (buf[0] != 1)
     return;
 
   float val = atof((char *)&buf[1]);
   this->publish_state(val);
+}
+
+void EZOSensor::set_tempcomp_value(float temp) {
+  this->tempcomp_ = temp;
+  this->state_ |= EZO_STATE_SEND_TEMP;
 }
 
 }  // namespace ezo
