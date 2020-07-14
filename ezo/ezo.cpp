@@ -39,8 +39,8 @@ void EZOSensor::loop() {
       this->state_ = EZO_STATE_WAIT | EZO_STATE_WAIT_TEMP;
       this->start_time_ = millis();
       this->wait_time_ = 300;
-      return;
     }
+    return;
   }
   if (millis() - this->start_time_ < this->wait_time_)
     return;
