@@ -75,6 +75,7 @@ void MCP342XComponent::loop() {
     return;
   int gain = 1 << (status & 3);
   int bits = 12 + ((status & 0xc) >> 1);
+  ESP_LOGD(TAG, "returned data: %02x %02x %02x %02x", data[0], data[1], data[2], data[3]);
   long raw = (data[0] << 16) | (data[1] << 8) | data[2];
   if (data[0] & 0x80)
     raw |= 0xff000000;
@@ -91,7 +92,8 @@ void MCP342XComponent::loop() {
       raw <<= 6;
       break;
   }
-  float value = 2.048 * (float(raw) / 0x01000000) / gain;
+  ESP_LOGD(TAG, "raw value: %08lx %lu", raw, raw);
+  float value = 2.048 * (float(raw) / (1 << 23)) / gain;
   sensor = this->queue_.back();
   this->queue_.pop_back();
   sensor->update_result(value);
