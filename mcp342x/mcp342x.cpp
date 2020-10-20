@@ -53,11 +53,17 @@ void MCP342XComponent::loop() {
       this->queue_.pop_back();
       sensor->update_result(NAN);
     }
+    this->busy_ = true;
     return;
   }
 
   if (!this->read_bytes_raw(data, 4)) {
     this->mark_failed();
+    this->status_set_warning();
+    sensor = this->queue_.back();
+    this->queue_.pop_back();
+    sensor->update_result(NAN);
+    this->busy_ = false;
     return;
   }
   uint8_t status = data[3];
@@ -89,6 +95,7 @@ void MCP342XComponent::loop() {
   sensor = this->queue_.back();
   this->queue_.pop_back();
   sensor->update_result(value);
+  this->busy_ = false;
 }
 
 void MCP342XSensor::update() {
