@@ -20,7 +20,7 @@ void Growatt::on_modbus_data(const std::vector<uint8_t> &data) {
     return (uint16_t(data[i * 2]) << 8) | uint16_t(data[i * 2 + 1]);
   };
   auto get_32bit = [&](int i) -> uint32_t {
-    return (uint32_t(get_16bit(i)) << 16) | uint32_t(get_16bit(i + 1));
+    return (uint32_t(get_16bit(i + 1)) << 16) | uint32_t(get_16bit(i));
   };
 
   uint32_t raw_32 = get_32bit(1);
