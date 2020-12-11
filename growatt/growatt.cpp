@@ -10,16 +10,17 @@ static const uint8_t CMD_READ_INPUT_REG = 0x03;
 static const uint8_t REGISTER_COUNT = 42;
 
 void Growatt::on_modbus_data(const std::vector<uint8_t> &data) {
-  if (data.size() < 84) {
+  if (data.size() < REGISTER_COUNT * 2) {
     ESP_LOGW(TAG, "Invalid data packet size");
     return;
   }
+  ESP_LOGD(TAG, "Data: %s", hexencode(data).c_str());
 
   auto get_16bit = [&](int i) -> uint16_t {
-    return (uint16_t(data[i]) << 8) | uint16_t(data[i + 1]);
+    return (uint16_t(data[i * 2]) << 8) | uint16_t(data[i * 2 + 1]);
   };
   auto get_32bit = [&](int i) -> uint32_t {
-    return (uint32_t(get_16bit(i + 2)) << 16) | uint32_t(get_16bit(i));
+    return (uint32_t(get_16bit(i)) << 16) | uint32_t(get_16bit(i + 1));
   };
 
   uint32_t raw_32 = get_32bit(1);
@@ -39,14 +40,15 @@ void Growatt::on_modbus_data(const std::vector<uint8_t> &data) {
   raw_32 = get_32bit(9);
   float pv2_power = raw_32 / 10.0f;
 
-  raw_32 = get_32bit(11);
+  raw_32 = get_32bit(35);
   float output_power = raw_32 / 10.0f;
 
-  raw_16 = get_16bit(13);
+  raw_16 = get_16bit(37);
   float grid_frequency = raw_16 / 100.0f;
 
-  raw_16 = get_16bit(32);
-  float temperature = raw_16 / 10.0f;
+  //raw_16 = get_16bit(32);
+  //float temperature = raw_16 / 10.0f;
+  float temperature = 0.0f;
 
   ESP_LOGD(TAG, "DATA: IP=%.1fW, V1=%.1fV, I1=%.3fA, P1=%.1fW, V2=%.1fV, I2=%.3fA, P2=%.1fW, OP=%.1fW, F=%.1f Hz, TEMP=%.2f",
            input_power, pv1_voltage, pv1_current, pv1_power, pv2_voltage, pv2_current, pv2_power, output_power,
