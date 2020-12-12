@@ -54,13 +54,23 @@ void Growatt::on_modbus_data(const std::vector<uint8_t> &data) {
   raw_16 = get_16bit(37);
   float grid_frequency = raw_16 / 100.0f;
 
+  raw_16 = get_16bit(38);
+  float ac_voltage = raw_16 / 10.0f;
+  raw_16 = get_16bit(39);
+  float ac_current = raw_16 / 10.0f;
+  raw_16 = get_16bit(40);
+  float ac_power_high = raw_16 / 10.0f;
+  raw_16 = get_16bit(41);
+  float ac_power_low = raw_16 / 10.0f;
+
   //raw_16 = get_16bit(32);
   //float temperature = raw_16 / 10.0f;
   float temperature = 0.0f;
 
-  ESP_LOGD(TAG, "DATA: IPH=%.1fW, IPL=%.1fW, V1=%.1fV, I1=%.3fA, P1H=%.1fW, P1L=%.1fW, V2=%.1fV, I2=%.3fA, P2H=%.1fW, P2L=%.1fW, OPH=%.1fW, OPL=%.1fW, F=%.1f Hz, TEMP=%.2f",
+  ESP_LOGD(TAG, "DATA: IPH=%.1fW, IPL=%.1fW, V1=%.1fV, I1=%.3fA, P1H=%.1fW, P1L=%.1fW, V2=%.1fV, I2=%.3fA, P2H=%.1fW, P2L=%.1fW, OPH=%.1fW, OPL=%.1fW, F=%.1f Hz, VAC=%.1fV, IAC=%.3fA, PACH=%.1fW, PACL=%.1fW, TEMP=%.2f",
            input_power_high, input_power_low, pv1_voltage, pv1_current, pv1_power_high, pv1_power_low,
-           pv2_voltage, pv2_current, pv2_power_high, pv2_power_low, output_power_high, output_power_low, grid_frequency, temperature);
+           pv2_voltage, pv2_current, pv2_power_high, pv2_power_low, output_power_high, output_power_low, grid_frequency,
+           ac_voltage, ac_current, ac_power_high, ac_power_low, temperature);
   if (this->input_power_high_sensor_ != nullptr)
     this->input_power_high_sensor_->publish_state(input_power_high);
   if (this->input_power_low_sensor_ != nullptr)
@@ -87,6 +97,14 @@ void Growatt::on_modbus_data(const std::vector<uint8_t> &data) {
     this->output_power_low_sensor_->publish_state(output_power_low);
   if (this->grid_frequency_sensor_ != nullptr)
     this->grid_frequency_sensor_->publish_state(grid_frequency);
+  if (this->ac_voltage_sensor_ != nullptr)
+    this->ac_voltage_sensor_->publish_state(ac_voltage);
+  if (this->ac_current_sensor_ != nullptr)
+    this->ac_current_sensor_->publish_state(ac_current);
+  if (this->ac_power_high_sensor_ != nullptr)
+    this->ac_power_high_sensor_->publish_state(ac_power_high);
+  if (this->ac_power_low_sensor_ != nullptr)
+    this->ac_power_low_sensor_->publish_state(ac_power_low);
   if (this->temperature_sensor_ != nullptr)
     this->temperature_sensor_->publish_state(temperature);
 }
@@ -106,9 +124,13 @@ void Growatt::dump_config() {
   LOG_SENSOR("", "PV2 Current", this->pv2_current_sensor_);
   LOG_SENSOR("", "PV2 Power High", this->pv2_power_high_sensor_);
   LOG_SENSOR("", "PV2 Power Low", this->pv2_power_low_sensor_);
-  LOG_SENSOR("", "Grid Frequency", this->grid_frequency_sensor_);
   LOG_SENSOR("", "Output Power High", this->output_power_high_sensor_);
   LOG_SENSOR("", "Output Power Low", this->output_power_low_sensor_);
+  LOG_SENSOR("", "Grid Frequency", this->grid_frequency_sensor_);
+  LOG_SENSOR("", "AC Voltage", this->ac_voltage_sensor_);
+  LOG_SENSOR("", "AC Current", this->ac_current_sensor_);
+  LOG_SENSOR("", "AC Power High", this->ac_power_high_sensor_);
+  LOG_SENSOR("", "AC Power Low", this->ac_power_low_sensor_);
   LOG_SENSOR("", "Temperature", this->temperature_sensor_);
 }
 

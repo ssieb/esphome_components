@@ -25,8 +25,12 @@ All sensors are optional.  The available sensors are:
 - `pv2_current`
 - `pv2_power_high`
 - `pv2_power_low`
-- `grid_frequency`
 - `output_power_high`
 - `output_power_low`
+- `grid_frequency`
+- `ac_voltage`
+- `ac_current`
+- `ac_power_high`
+- `ac_power_low`
 - `temperature`
 

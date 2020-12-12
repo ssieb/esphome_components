@@ -19,9 +19,13 @@ class Growatt : public PollingComponent, public modbus::ModbusDevice {
   void set_pv2_current_sensor(sensor::Sensor *pv2_current_sensor) { pv2_current_sensor_ = pv2_current_sensor; }
   void set_pv2_power_high_sensor(sensor::Sensor *pv2_power_high_sensor) { pv2_power_high_sensor_ = pv2_power_high_sensor; }
   void set_pv2_power_low_sensor(sensor::Sensor *pv2_power_low_sensor) { pv2_power_low_sensor_ = pv2_power_low_sensor; }
-  void set_grid_frequency_sensor(sensor::Sensor *grid_frequency_sensor) { grid_frequency_sensor_ = grid_frequency_sensor; }
   void set_output_power_high_sensor(sensor::Sensor *output_power_high_sensor) { output_power_high_sensor_ = output_power_high_sensor; }
   void set_output_power_low_sensor(sensor::Sensor *output_power_low_sensor) { output_power_low_sensor_ = output_power_low_sensor; }
+  void set_grid_frequency_sensor(sensor::Sensor *grid_frequency_sensor) { grid_frequency_sensor_ = grid_frequency_sensor; }
+  void set_ac_voltage_sensor(sensor::Sensor *ac_voltage_sensor) { ac_voltage_sensor_ = ac_voltage_sensor; }
+  void set_ac_current_sensor(sensor::Sensor *ac_current_sensor) { ac_current_sensor_ = ac_current_sensor; }
+  void set_ac_power_high_sensor(sensor::Sensor *ac_power_high_sensor) { ac_power_high_sensor_ = ac_power_high_sensor; }
+  void set_ac_power_low_sensor(sensor::Sensor *ac_power_low_sensor) { ac_power_low_sensor_ = ac_power_low_sensor; }
   void set_temperature_sensor(sensor::Sensor *temperature_sensor) { temperature_sensor_ = temperature_sensor; }
 
   void update() override;
@@ -41,9 +45,13 @@ class Growatt : public PollingComponent, public modbus::ModbusDevice {
   sensor::Sensor *pv2_current_sensor_;
   sensor::Sensor *pv2_power_high_sensor_;
   sensor::Sensor *pv2_power_low_sensor_;
-  sensor::Sensor *grid_frequency_sensor_;
   sensor::Sensor *output_power_high_sensor_;
   sensor::Sensor *output_power_low_sensor_;
+  sensor::Sensor *grid_frequency_sensor_;
+  sensor::Sensor *ac_voltage_sensor_;
+  sensor::Sensor *ac_current_sensor_;
+  sensor::Sensor *ac_power_high_sensor_;
+  sensor::Sensor *ac_power_low_sensor_;
   sensor::Sensor *temperature_sensor_;
 };
 

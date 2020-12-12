@@ -19,9 +19,13 @@ CONF_PV2_VOLTAGE = "pv2_voltage"
 CONF_PV2_CURRENT = "pv2_current"
 CONF_PV2_POWER_HIGH = "pv2_power_high"
 CONF_PV2_POWER_LOW = "pv2_power_low"
-CONF_GRID_FREQUENCY = "grid_frequency"
 CONF_OUTPUT_POWER_HIGH = "output_power_high"
 CONF_OUTPUT_POWER_LOW = "output_power_low"
+CONF_GRID_FREQUENCY = "grid_frequency"
+CONF_AC_VOLTAGE = "ac_voltage"
+CONF_AC_CURRENT = "ac_current"
+CONF_AC_POWER_HIGH = "ac_power_high"
+CONF_AC_POWER_LOW = "ac_power_low"
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(Growatt),
@@ -35,9 +39,13 @@ CONFIG_SCHEMA = cv.Schema({
     cv.Optional(CONF_PV2_CURRENT): sensor.sensor_schema(UNIT_AMPERE, ICON_CURRENT_AC, 3),
     cv.Optional(CONF_PV2_POWER_HIGH): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
     cv.Optional(CONF_PV2_POWER_LOW): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
-    cv.Optional(CONF_GRID_FREQUENCY): sensor.sensor_schema(UNIT_HERTZ, ICON_CURRENT_AC, 1),
     cv.Optional(CONF_OUTPUT_POWER_HIGH): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
     cv.Optional(CONF_OUTPUT_POWER_LOW): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
+    cv.Optional(CONF_GRID_FREQUENCY): sensor.sensor_schema(UNIT_HERTZ, ICON_CURRENT_AC, 1),
+    cv.Optional(CONF_AC_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 1),
+    cv.Optional(CONF_AC_CURRENT): sensor.sensor_schema(UNIT_AMPERE, ICON_CURRENT_AC, 3),
+    cv.Optional(CONF_AC_POWER_HIGH): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
+    cv.Optional(CONF_AC_POWER_LOW): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
     cv.Optional(CONF_TEMPERATURE): sensor.sensor_schema(UNIT_CELSIUS, ICON_THERMOMETER, 1),
 }).extend(cv.polling_component_schema('60s')).extend(modbus.modbus_device_schema(0x01))
 
@@ -87,10 +95,6 @@ def to_code(config):
         conf = config[CONF_PV2_POWER_LOW]
         sens = yield sensor.new_sensor(conf)
         cg.add(var.set_pv2_power_low_sensor(sens))
-    if CONF_GRID_FREQUENCY in config:
-        conf = config[CONF_GRID_FREQUENCY]
-        sens = yield sensor.new_sensor(conf)
-        cg.add(var.set_grid_frequency_sensor(sens))
     if CONF_OUTPUT_POWER_HIGH in config:
         conf = config[CONF_OUTPUT_POWER_HIGH]
         sens = yield sensor.new_sensor(conf)
@@ -99,6 +103,26 @@ def to_code(config):
         conf = config[CONF_OUTPUT_POWER_LOW]
         sens = yield sensor.new_sensor(conf)
         cg.add(var.set_output_power_low_sensor(sens))
+    if CONF_GRID_FREQUENCY in config:
+        conf = config[CONF_GRID_FREQUENCY]
+        sens = yield sensor.new_sensor(conf)
+        cg.add(var.set_grid_frequency_sensor(sens))
+    if CONF_AC_VOLTAGE in config:
+        conf = config[CONF_AC_VOLTAGE]
+        sens = yield sensor.new_sensor(conf)
+        cg.add(var.set_ac_voltage_sensor(sens))
+    if CONF_AC_CURRENT in config:
+        conf = config[CONF_AC_CURRENT]
+        sens = yield sensor.new_sensor(conf)
+        cg.add(var.set_ac_current_sensor(sens))
+    if CONF_AC_POWER_HIGH in config:
+        conf = config[CONF_AC_POWER_HIGH]
+        sens = yield sensor.new_sensor(conf)
+        cg.add(var.set_ac_power_high_sensor(sens))
+    if CONF_AC_POWER_LOW in config:
+        conf = config[CONF_AC_POWER_LOW]
+        sens = yield sensor.new_sensor(conf)
+        cg.add(var.set_ac_power_low_sensor(sens))
     if CONF_TEMPERATURE in config:
         conf = config[CONF_TEMPERATURE]
         sens = yield sensor.new_sensor(conf)
