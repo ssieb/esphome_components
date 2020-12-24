@@ -1,7 +1,7 @@
 # Growatt inverter modbus interface
 
 A configured uart component is required.
-A configured modbus component is usually optional.
+A configured modbus component is usually optional.  It will be automatically created.
 
 Example:
 ```yaml
@@ -15,22 +15,21 @@ sensor:
 ```
 
 All sensors are optional.  The available sensors are:
-- `input_power_high`
-- `input_power_low`
+- `input_power`
 - `pv1_voltage`
 - `pv1_current`
-- `pv1_power_high`
-- `pv1_power_low`
+- `pv1_power`
 - `pv2_voltage`
 - `pv2_current`
-- `pv2_power_high`
-- `pv2_power_low`
-- `output_power_high`
-- `output_power_low`
+- `pv2_power`
+- `output_power`
 - `grid_frequency`
 - `ac_voltage`
 - `ac_current`
-- `ac_power_high`
-- `ac_power_low`
+- `ac_power`
+- `today_gen`
+- `total_gen`
 - `temperature`
+- `today_grid`
+- `total_grid`
 

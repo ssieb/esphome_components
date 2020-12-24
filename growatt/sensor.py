@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import sensor, modbus
-from esphome.const import CONF_ID, UNIT_VOLT, ICON_FLASH, UNIT_AMPERE, UNIT_WATT, \
+from esphome.const import CONF_ID, UNIT_VOLT, ICON_FLASH, UNIT_AMPERE, UNIT_WATT, UNIT_WATT_HOURS, \
     ICON_POWER, ICON_CURRENT_AC, UNIT_HERTZ, CONF_TEMPERATURE, ICON_THERMOMETER, UNIT_CELSIUS
 
 AUTO_LOAD = ['modbus']
@@ -9,44 +9,42 @@ AUTO_LOAD = ['modbus']
 growatt_ns = cg.esphome_ns.namespace('growatt')
 Growatt = growatt_ns.class_('Growatt', cg.PollingComponent, modbus.ModbusDevice)
 
-CONF_INPUT_POWER_HIGH = "input_power_high"
-CONF_INPUT_POWER_LOW = "input_power_low"
+CONF_INPUT_POWER = "input_power"
 CONF_PV1_VOLTAGE = "pv1_voltage"
 CONF_PV1_CURRENT = "pv1_current"
-CONF_PV1_POWER_HIGH = "pv1_power_high"
-CONF_PV1_POWER_LOW = "pv1_power_low"
+CONF_PV1_POWER = "pv1_power"
 CONF_PV2_VOLTAGE = "pv2_voltage"
 CONF_PV2_CURRENT = "pv2_current"
-CONF_PV2_POWER_HIGH = "pv2_power_high"
-CONF_PV2_POWER_LOW = "pv2_power_low"
-CONF_OUTPUT_POWER_HIGH = "output_power_high"
-CONF_OUTPUT_POWER_LOW = "output_power_low"
+CONF_PV2_POWER = "pv2_power"
+CONF_OUTPUT_POWER = "output_power"
 CONF_GRID_FREQUENCY = "grid_frequency"
 CONF_AC_VOLTAGE = "ac_voltage"
 CONF_AC_CURRENT = "ac_current"
-CONF_AC_POWER_HIGH = "ac_power_high"
-CONF_AC_POWER_LOW = "ac_power_low"
+CONF_AC_POWER = "ac_power"
+CONF_TODAY_GEN = "today_gen"
+CONF_TOTAL_GEN = "total_gen"
+CONF_TODAY_GRID = "today_grid"
+CONF_TOTAL_GRID = "total_grid"
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(Growatt),
-    cv.Optional(CONF_INPUT_POWER_HIGH): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
-    cv.Optional(CONF_INPUT_POWER_LOW): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
+    cv.Optional(CONF_INPUT_POWER): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
     cv.Optional(CONF_PV1_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 1),
     cv.Optional(CONF_PV1_CURRENT): sensor.sensor_schema(UNIT_AMPERE, ICON_CURRENT_AC, 3),
-    cv.Optional(CONF_PV1_POWER_HIGH): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
-    cv.Optional(CONF_PV1_POWER_LOW): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
+    cv.Optional(CONF_PV1_POWER): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
     cv.Optional(CONF_PV2_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 1),
     cv.Optional(CONF_PV2_CURRENT): sensor.sensor_schema(UNIT_AMPERE, ICON_CURRENT_AC, 3),
-    cv.Optional(CONF_PV2_POWER_HIGH): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
-    cv.Optional(CONF_PV2_POWER_LOW): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
-    cv.Optional(CONF_OUTPUT_POWER_HIGH): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
-    cv.Optional(CONF_OUTPUT_POWER_LOW): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
+    cv.Optional(CONF_PV2_POWER): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
+    cv.Optional(CONF_OUTPUT_POWER): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
     cv.Optional(CONF_GRID_FREQUENCY): sensor.sensor_schema(UNIT_HERTZ, ICON_CURRENT_AC, 1),
     cv.Optional(CONF_AC_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 1),
     cv.Optional(CONF_AC_CURRENT): sensor.sensor_schema(UNIT_AMPERE, ICON_CURRENT_AC, 3),
-    cv.Optional(CONF_AC_POWER_HIGH): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
-    cv.Optional(CONF_AC_POWER_LOW): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
+    cv.Optional(CONF_AC_POWER): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
+    cv.Optional(CONF_TODAY_GEN): sensor.sensor_schema(UNIT_WATT_HOURS, ICON_POWER, 1),
+    cv.Optional(CONF_TOTAL_GEN): sensor.sensor_schema(UNIT_WATT_HOURS, ICON_POWER, 1),
     cv.Optional(CONF_TEMPERATURE): sensor.sensor_schema(UNIT_CELSIUS, ICON_THERMOMETER, 1),
+    cv.Optional(CONF_TODAY_GRID): sensor.sensor_schema(UNIT_WATT_HOURS, ICON_POWER, 1),
+    cv.Optional(CONF_TOTAL_GRID): sensor.sensor_schema(UNIT_WATT_HOURS, ICON_POWER, 1),
 }).extend(cv.polling_component_schema('60s')).extend(modbus.modbus_device_schema(0x01))
 
 
@@ -55,14 +53,10 @@ def to_code(config):
     yield cg.register_component(var, config)
     yield modbus.register_modbus_device(var, config)
 
-    if CONF_INPUT_POWER_HIGH in config:
-        conf = config[CONF_INPUT_POWER_HIGH]
+    if CONF_INPUT_POWER in config:
+        conf = config[CONF_INPUT_POWER]
         sens = yield sensor.new_sensor(conf)
-        cg.add(var.set_input_power_high_sensor(sens))
-    if CONF_INPUT_POWER_LOW in config:
-        conf = config[CONF_INPUT_POWER_LOW]
-        sens = yield sensor.new_sensor(conf)
-        cg.add(var.set_input_power_low_sensor(sens))
+        cg.add(var.set_input_power_sensor(sens))
     if CONF_PV1_VOLTAGE in config:
         conf = config[CONF_PV1_VOLTAGE]
         sens = yield sensor.new_sensor(conf)
@@ -71,14 +65,10 @@ def to_code(config):
         conf = config[CONF_PV1_CURRENT]
         sens = yield sensor.new_sensor(conf)
         cg.add(var.set_pv1_current_sensor(sens))
-    if CONF_PV1_POWER_HIGH in config:
-        conf = config[CONF_PV1_POWER_HIGH]
+    if CONF_PV1_POWER in config:
+        conf = config[CONF_PV1_POWER]
         sens = yield sensor.new_sensor(conf)
-        cg.add(var.set_pv1_power_high_sensor(sens))
-    if CONF_PV1_POWER_LOW in config:
-        conf = config[CONF_PV1_POWER_LOW]
-        sens = yield sensor.new_sensor(conf)
-        cg.add(var.set_pv1_power_low_sensor(sens))
+        cg.add(var.set_pv1_power_sensor(sens))
     if CONF_PV2_VOLTAGE in config:
         conf = config[CONF_PV2_VOLTAGE]
         sens = yield sensor.new_sensor(conf)
@@ -87,22 +77,14 @@ def to_code(config):
         conf = config[CONF_PV2_CURRENT]
         sens = yield sensor.new_sensor(conf)
         cg.add(var.set_pv2_current_sensor(sens))
-    if CONF_PV2_POWER_HIGH in config:
-        conf = config[CONF_PV2_POWER_HIGH]
+    if CONF_PV2_POWER in config:
+        conf = config[CONF_PV2_POWER]
         sens = yield sensor.new_sensor(conf)
-        cg.add(var.set_pv2_power_high_sensor(sens))
-    if CONF_PV2_POWER_LOW in config:
-        conf = config[CONF_PV2_POWER_LOW]
+        cg.add(var.set_pv2_power_sensor(sens))
+    if CONF_OUTPUT_POWER in config:
+        conf = config[CONF_OUTPUT_POWER]
         sens = yield sensor.new_sensor(conf)
-        cg.add(var.set_pv2_power_low_sensor(sens))
-    if CONF_OUTPUT_POWER_HIGH in config:
-        conf = config[CONF_OUTPUT_POWER_HIGH]
-        sens = yield sensor.new_sensor(conf)
-        cg.add(var.set_output_power_high_sensor(sens))
-    if CONF_OUTPUT_POWER_LOW in config:
-        conf = config[CONF_OUTPUT_POWER_LOW]
-        sens = yield sensor.new_sensor(conf)
-        cg.add(var.set_output_power_low_sensor(sens))
+        cg.add(var.set_output_power_sensor(sens))
     if CONF_GRID_FREQUENCY in config:
         conf = config[CONF_GRID_FREQUENCY]
         sens = yield sensor.new_sensor(conf)
@@ -115,15 +97,27 @@ def to_code(config):
         conf = config[CONF_AC_CURRENT]
         sens = yield sensor.new_sensor(conf)
         cg.add(var.set_ac_current_sensor(sens))
-    if CONF_AC_POWER_HIGH in config:
-        conf = config[CONF_AC_POWER_HIGH]
+    if CONF_AC_POWER in config:
+        conf = config[CONF_AC_POWER]
         sens = yield sensor.new_sensor(conf)
-        cg.add(var.set_ac_power_high_sensor(sens))
-    if CONF_AC_POWER_LOW in config:
-        conf = config[CONF_AC_POWER_LOW]
+        cg.add(var.set_ac_power_sensor(sens))
+    if CONF_TODAY_GEN in config:
+        conf = config[CONF_TODAY_GEN]
         sens = yield sensor.new_sensor(conf)
-        cg.add(var.set_ac_power_low_sensor(sens))
+        cg.add(var.set_today_gen_sensor(sens))
+    if CONF_TOTAL_GEN in config:
+        conf = config[CONF_TOTAL_GEN]
+        sens = yield sensor.new_sensor(conf)
+        cg.add(var.set_total_gen_sensor(sens))
     if CONF_TEMPERATURE in config:
         conf = config[CONF_TEMPERATURE]
         sens = yield sensor.new_sensor(conf)
         cg.add(var.set_temperature_sensor(sens))
+    if CONF_TODAY_GRID in config:
+        conf = config[CONF_TODAY_GRID]
+        sens = yield sensor.new_sensor(conf)
+        cg.add(var.set_today_grid_sensor(sens))
+    if CONF_TOTAL_GRID in config:
+        conf = config[CONF_TOTAL_GRID]
+        sens = yield sensor.new_sensor(conf)
+        cg.add(var.set_total_grid_sensor(sens))
