@@ -8,7 +8,7 @@ static const char *TAG = "growatt";
 
 static const uint8_t CMD_READ_INPUT_REG = 0x04;
 static const uint16_t REGISTER_START[] = {0, 93, 1048};
-static const uint16_t REGISTER_COUNT[] = {56, 1, 4};
+static const uint16_t REGISTER_COUNT[] = {57, 1, 4};
 
 void Growatt::on_modbus_data(const std::vector<uint8_t> &data) {
   uint32_t raw_32;
@@ -61,12 +61,12 @@ void Growatt::on_modbus_data(const std::vector<uint8_t> &data) {
     float ac_power = raw_32 / 10.0f;
 
     raw_32 = get_32bit(53);
-    float today_gen = raw_32 * 100.0f; // 0.1kWH -> WH
+    float today_gen = raw_32 / 10.0f;
     raw_32 = get_32bit(55);
-    float total_gen = raw_32 * 100.0f; // 0.1kWH -> WH
+    float total_gen = raw_32 / 10.0f;
 
     ESP_LOGD(TAG, "DATA: IP=%.1fW V1=%.1fV I1=%.3fA P1=%.1fW V2=%.1fV I2=%.3fA P2=%.1fW OP=%.1fW F=%.1fHz "
-             "VAC=%.1fV IAC=%.3fA PAC=%.1fW TDGE=%.2f TTGE=%.2f",
+             "VAC=%.1fV IAC=%.3fA PAC=%.1fW TDGE=%.1fkWh TTGE=%.1fkWh",
              input_power, pv1_voltage, pv1_current, pv1_power, pv2_voltage, pv2_current, pv2_power, output_power, grid_frequency,
              ac_voltage, ac_current, ac_power, today_gen, total_gen);
     if (this->input_power_sensor_ != nullptr)
@@ -111,10 +111,10 @@ void Growatt::on_modbus_data(const std::vector<uint8_t> &data) {
   if (this->state_ == 3) {
     this->state_ = 0;
     raw_32 = get_32bit(0); // register 1048
-    float today_grid = raw_32 * 100.0f; // 0.1kWH -> WH
+    float today_grid = raw_32 / 10.0f;
     raw_32 = get_32bit(2);
-    float total_grid = raw_32 * 100.0f; // 0.1kWH -> WH
-    ESP_LOGD(TAG, "DATA: TDGE=%.2f TTGE=%.2f", today_grid, total_grid);
+    float total_grid = raw_32 / 10.0f;
+    ESP_LOGD(TAG, "DATA: TDGE=%.1fkWh TTGE=%.1fkWh", today_grid, total_grid);
     if (this->today_grid_sensor_ != nullptr)
       this->today_grid_sensor_->publish_state(today_grid);
     if (this->total_grid_sensor_ != nullptr)

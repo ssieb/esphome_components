@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import sensor, modbus
-from esphome.const import CONF_ID, UNIT_VOLT, ICON_FLASH, UNIT_AMPERE, UNIT_WATT, UNIT_WATT_HOURS, \
+from esphome.const import CONF_ID, UNIT_VOLT, ICON_FLASH, UNIT_AMPERE, UNIT_WATT, \
     ICON_POWER, ICON_CURRENT_AC, UNIT_HERTZ, CONF_TEMPERATURE, ICON_THERMOMETER, UNIT_CELSIUS
 
 AUTO_LOAD = ['modbus']
@@ -25,6 +25,7 @@ CONF_TODAY_GEN = "today_gen"
 CONF_TOTAL_GEN = "total_gen"
 CONF_TODAY_GRID = "today_grid"
 CONF_TOTAL_GRID = "total_grid"
+UNIT_KILOWATT_HOURS = "kWh"
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(Growatt),
@@ -40,11 +41,11 @@ CONFIG_SCHEMA = cv.Schema({
     cv.Optional(CONF_AC_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 1),
     cv.Optional(CONF_AC_CURRENT): sensor.sensor_schema(UNIT_AMPERE, ICON_CURRENT_AC, 3),
     cv.Optional(CONF_AC_POWER): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
-    cv.Optional(CONF_TODAY_GEN): sensor.sensor_schema(UNIT_WATT_HOURS, ICON_POWER, 1),
-    cv.Optional(CONF_TOTAL_GEN): sensor.sensor_schema(UNIT_WATT_HOURS, ICON_POWER, 1),
+    cv.Optional(CONF_TODAY_GEN): sensor.sensor_schema(UNIT_KILOWATT_HOURS, ICON_POWER, 1),
+    cv.Optional(CONF_TOTAL_GEN): sensor.sensor_schema(UNIT_KILOWATT_HOURS, ICON_POWER, 1),
     cv.Optional(CONF_TEMPERATURE): sensor.sensor_schema(UNIT_CELSIUS, ICON_THERMOMETER, 1),
-    cv.Optional(CONF_TODAY_GRID): sensor.sensor_schema(UNIT_WATT_HOURS, ICON_POWER, 1),
-    cv.Optional(CONF_TOTAL_GRID): sensor.sensor_schema(UNIT_WATT_HOURS, ICON_POWER, 1),
+    cv.Optional(CONF_TODAY_GRID): sensor.sensor_schema(UNIT_KILOWATT_HOURS, ICON_POWER, 1),
+    cv.Optional(CONF_TOTAL_GRID): sensor.sensor_schema(UNIT_KILOWATT_HOURS, ICON_POWER, 1),
 }).extend(cv.polling_component_schema('60s')).extend(modbus.modbus_device_schema(0x01))
 
 
