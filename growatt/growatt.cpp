@@ -126,7 +126,7 @@ void Growatt::on_modbus_data(const std::vector<uint8_t> &data) {
 void Growatt::loop() {
   long now = millis();
   // timeout after 15 seconds
-  if (this->waiting_ && (now - this->last_send > 15000)) {
+  if (this->waiting_ && (now - this->last_send_ > 15000)) {
     ESP_LOGW(TAG, "timed out waiting for response");
     this->waiting_ = false;
   }
