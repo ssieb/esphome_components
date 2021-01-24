@@ -46,6 +46,6 @@ def to_code(config):
     if CONF_SECONDARY_DISPLAYS in config:
         for conf in config[CONF_SECONDARY_DISPLAYS]:
             disp = cg.new_Pvariable(conf[CONF_ID])
-            yield i2c.register_i2c_device(var, conf)
+            yield i2c.register_i2c_device(disp, conf)
             cg.add(var.add_secondary_display(disp))
 
