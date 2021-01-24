@@ -16,24 +16,27 @@ static const uint8_t DISPLAY_COMMAND_DISPLAY_ON = 0x81;
 static const uint8_t DISPLAY_COMMAND_DIMMING = 0xE0;
 
 void HT16K33AlphaDisplay::setup() {
-  this->write_bytes(DISPLAY_COMMAND_SYSTEM_SETUP, nullptr, 0);
-  this->write_bytes(DISPLAY_COMMAND_DISPLAY_ON, nullptr, 0);
+  for (auto *display : this->displays_) {
+    display->write_bytes(DISPLAY_COMMAND_SYSTEM_SETUP, nullptr, 0);
+    display->write_bytes(DISPLAY_COMMAND_DISPLAY_ON, nullptr, 0);
+  }
   this->set_brightness(1);
   memset(this->buffer_, 0, 64);
 }
 
 void HT16K33AlphaDisplay::loop() {
   unsigned long now = millis();
+  int numc = this->displays_.size() * 8;
   // check if the buffer has shrunk past the current position since last update
-  if (this->offset_ + 8 > this->buffer_fill_) {
-    this->offset_ = max(this->buffer_fill_ - 8, 0);
+  if (this->offset_ + numc > this->buffer_fill_) {
+    this->offset_ = max(this->buffer_fill_ - numc, 0);
     this->display_();
   }
-  if (!this->scroll_ || (this->buffer_fill_ <= 8))
+  if (!this->scroll_ || (this->buffer_fill_ <= numc))
     return;
   if ((this->offset_ == 0) && (now - this->last_scroll_ < this->scroll_delay_))
     return;
-  if (this->offset_ + 8 >= this->buffer_fill_) {
+  if (this->offset_ + numc >= this->buffer_fill_) {
     if (now - this->last_scroll_ >= this->scroll_dwell_) {
       this->offset_ = 0;
       this->last_scroll_ = now;
@@ -50,7 +53,11 @@ void HT16K33AlphaDisplay::loop() {
 float HT16K33AlphaDisplay::get_setup_priority() const { return setup_priority::PROCESSOR; }
 
 void HT16K33AlphaDisplay::display_() {
-  this->write_bytes(DISPLAY_COMMAND_SET_DDRAM_ADDR, this->buffer_ + this->offset_, 8);
+  int offset = this->offset_;
+  for (auto *display : this->displays_) {
+    display->write_bytes(DISPLAY_COMMAND_SET_DDRAM_ADDR, this->buffer_ + offset, 8);
+    offset += 8;
+  }
 }
 
 void HT16K33AlphaDisplay::update() {
@@ -72,11 +79,13 @@ void HT16K33AlphaDisplay::set_brightness(float level) {
   if (val > 16)
     val = 16;
   this->brightness_ = val;
-  if (val == 0) {
-    this->write_bytes(DISPLAY_COMMAND_DISPLAY_OFF, nullptr, 0);
-  } else {
-    this->write_bytes(DISPLAY_COMMAND_DIMMING + (val - 1), nullptr, 0);
-    this->write_bytes(DISPLAY_COMMAND_DISPLAY_ON, nullptr, 0);
+  for (auto *display : this->displays_) {
+    if (val == 0) {
+      display->write_bytes(DISPLAY_COMMAND_DISPLAY_OFF, nullptr, 0);
+    } else {
+      display->write_bytes(DISPLAY_COMMAND_DIMMING + (val - 1), nullptr, 0);
+      display->write_bytes(DISPLAY_COMMAND_DISPLAY_ON, nullptr, 0);
+    }
   }
 }
 
