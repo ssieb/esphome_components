@@ -8,7 +8,7 @@ from esphome.const import CONF_ID, UNIT_VOLT, ICON_FLASH, UNIT_AMPERE, UNIT_WATT
 DEPENDENCIES = ['uart']
 
 esmart3_ns = cg.esphome_ns.namespace('esmart3')
-ESmart3Component = esmart3_ns.class_('ESmart3Component', uart.UARTDevice, cg.Component)
+ESmart3Component = esmart3_ns.class_('ESmart3Component', uart.UARTDevice, cg.PollingComponent)
 
 CONF_CHARGE_MODE = "charge_mode"
 CONF_INPUT_VOLTAGE = "input_voltage"
@@ -22,7 +22,7 @@ CONF_BATTERY_TEMP = "battery_temp"
 CONF_INTERNAL_TEMP = "internal_temp"
 CONF_BATTERY_LEVEL = "battery_level"
 
-CONFIG_SCHEMA = cv.Schema({
+CONFIG_SCHEMA = uart.UART_DEVICE_SCHEMA.extend({
     cv.GenerateID(): cv.declare_id(ESmart3Component),
     cv.Optional(CONF_CHARGE_MODE): sensor.sensor_schema(UNIT_EMPTY, ICON_EMPTY, 0),
     cv.Optional(CONF_INPUT_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 1),
@@ -35,7 +35,7 @@ CONFIG_SCHEMA = cv.Schema({
     cv.Optional(CONF_BATTERY_TEMP): sensor.sensor_schema(UNIT_CELSIUS, ICON_THERMOMETER, 0),
     cv.Optional(CONF_INTERNAL_TEMP): sensor.sensor_schema(UNIT_CELSIUS, ICON_THERMOMETER, 0),
     cv.Optional(CONF_BATTERY_LEVEL): sensor.sensor_schema(UNIT_PERCENT, ICON_PERCENT, 0),
-}).extend(cv.COMPONENT_SCHEMA).extend(uart.UART_DEVICE_SCHEMA)
+}).extend(cv.polling_component_schema('60s'))
 
 def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])

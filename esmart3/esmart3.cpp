@@ -22,6 +22,15 @@ void ESmart3Component::dump_config() {
   this->check_uart_settings(9600);
 }
 
+void ESmart3Component::update() {
+  if (receiving_) {
+    ESP_LOGW(TAG, "update interval overrun");
+    return;
+  }
+  static uint8_t data[] = {0xaa, 1, 0, 1, 0, 3, 0, 0, 24, 0x39};
+  write_array(data, 10);
+}
+
 void ESmart3Component::loop() {
   const uint32_t now = millis();
   if (receiving_ && (now - last_transmission_ >= 500)) {
@@ -50,8 +59,6 @@ void ESmart3Component::loop() {
     if ((data_.size() > 6) and (data_.size() == data_count_ + 7)) {
       if (check_data_())
         parse_data_();
-      else
-        ESP_LOGW(TAG, "data check failed");
       data_.clear();
       receiving_ = false;
     }
@@ -59,10 +66,17 @@ void ESmart3Component::loop() {
 }
 
 bool ESmart3Component::check_data_() const {
+  if (data_[3] != 3) {
+    ESP_LOGW(TAG, "unexpected response code: %d", data_[3]);
+    return false;
+  }
   int sum = 0;
   for (uint8_t c: data_)
     sum += c;
-  return (sum & 0xff) == 0;
+  bool result = (sum & 0xff) == 0;
+  if (!result)
+    ESP_LOGW(TAG, "data checksum failed");
+  return result;
 }
 
 void ESmart3Component::parse_data_() {

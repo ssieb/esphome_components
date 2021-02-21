@@ -7,7 +7,7 @@
 namespace esphome {
 namespace esmart3 {
 
-class ESmart3Component : public Component, public uart::UARTDevice {
+class ESmart3Component : public PollingComponent, public uart::UARTDevice {
  public:
   void set_charge_mode_sensor(sensor::Sensor *charge_mode_sensor) { charge_mode_sensor_ = charge_mode_sensor; }
   void set_input_voltage_sensor(sensor::Sensor *input_voltage_sensor) { input_voltage_sensor_ = input_voltage_sensor; }
@@ -23,6 +23,7 @@ class ESmart3Component : public Component, public uart::UARTDevice {
 
   void dump_config() override;
   void loop() override;
+  void update() override;
 
   float get_setup_priority() const { return setup_priority::DATA; }
 
