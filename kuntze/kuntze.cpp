@@ -15,10 +15,11 @@ void Kuntze::on_modbus_data(const std::vector<uint8_t> &data) {
   };
 
   waiting_ = false;
-  if (data.size() != 4) {
-    ESP_LOGW(TAG, "Invalid data packet size (%d) for state %d", data.size(), state_);
-    return;
-  }
+  ESP_LOGD(TAG, "Packet size is %d", data.size());
+  //if (data.size() != 4) {
+  //  ESP_LOGW(TAG, "Invalid data packet size (%d) for state %d", data.size(), state_);
+  //  return;
+  //}
   ESP_LOGVV(TAG, "Data: %s", hexencode(data).c_str());
 
   float value = (float)get_16bit(1);
