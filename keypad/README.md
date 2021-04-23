@@ -38,6 +38,7 @@ binary_sensor:
 text_sensor:
   - platform: keypad
     id: reader
+    name: keypad_textsensor
     keypad_id: mykeypad
     max_length: 4
     end_keys: "#"
