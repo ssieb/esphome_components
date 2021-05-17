@@ -18,6 +18,7 @@ void ADCMPXSensor::dump_config() {
 
 void ADCMPXSensor::update() {
   pin_->pin_mode(OUTPUT);
+  pin_->digital_write(true);
   float value = source_->sample();
   pin_->pin_mode(INPUT);
   publish_state(value);
