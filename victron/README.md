@@ -34,11 +34,12 @@ The available numeric sensors are:
 - `day_number`
 - `charger_status`
 - `error_code`
+- `tracker_operation`
 
 The available text sensors are:
 - `charger_text`
 - `error_text`
-- `tracker_operation`
+- `tracker_text`
 - `fw_version`
 - `pid`
 ```
