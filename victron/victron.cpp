@@ -83,7 +83,7 @@ static const __FlashStringHelper* charger_status_text(int value) {
     case 245: return F("Starting-up");
     case 247: return F("Auto equalize / Recondition");
     case 252: return F("External control");
-    default: return F("Unknown");
+    default: return F("Unknown status");
   }
 }
 
@@ -109,7 +109,7 @@ static const __FlashStringHelper* error_code_text(int value) {
     case 116: return F("Factory calibration data lost");
     case 117: return F("Invalid/incompatible firmware");
     case 119: return F("User settings invalid");
-    default: return F("Unknown");
+    default: return F("Unknown error");
   }
 }
 
@@ -206,7 +206,7 @@ static const __FlashStringHelper* pid_text(int value) {
     case 0xA279: return F("Phoenix Inverter 12V 1200VA 120V");
     case 0xA27A: return F("Phoenix Inverter 24V 1200VA 120V");
     case 0xA27C: return F("Phoenix Inverter 48V 1200VA 120V");
-    default: return nullptr;
+    default: return F("Unknown PID");
   }
 }
 
@@ -275,17 +275,9 @@ void VictronComponent::handle_value_() {
     if ((fw_version_sensor_ != nullptr) && !fw_version_sensor_->has_state())
       fw_version_sensor_->publish_state(value_.insert(value_.size() - 2, "."));
   } else if (label_ == "PID") {
-    value = atoi(value_.c_str());
-    if ((pid_sensor_ != nullptr) && !pid_sensor_->has_state()) {
-      const __FlashStringHelper *flash = pid_text(value);
-      if (flash != nullptr) {
-        pid_sensor_->publish_state(flash_to_string(flash));
-      } else {
-        char s[30];
-        snprintf(s, 30, "Unknown device (%04x)", value);
-        pid_sensor_->publish_state(s);
-      }
-    }
+    value = strtol(value_.c_str(), NULL, 16);
+    if ((pid_sensor_ != nullptr) && !pid_sensor_->has_state())
+      pid_sensor_->publish_state(flash_to_string(pid_text(value)));
   }
 }
 
