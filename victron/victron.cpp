@@ -206,7 +206,7 @@ static const __FlashStringHelper* pid_text(int value) {
     case 0xA279: return F("Phoenix Inverter 12V 1200VA 120V");
     case 0xA27A: return F("Phoenix Inverter 24V 1200VA 120V");
     case 0xA27C: return F("Phoenix Inverter 48V 1200VA 120V");
-    default: return F("Unknown");
+    default: return nullptr;
   }
 }
 
@@ -276,8 +276,16 @@ void VictronComponent::handle_value_() {
       fw_version_sensor_->publish_state(value_.insert(value_.size() - 2, "."));
   } else if (label_ == "PID") {
     value = atoi(value_.c_str());
-    if ((pid_sensor_ != nullptr) && !pid_sensor_->has_state())
-      pid_sensor_->publish_state(flash_to_string(pid_text(value)));
+    if ((pid_sensor_ != nullptr) && !pid_sensor_->has_state()) {
+      const __FlashStringHelper *flash = pid_text(value);
+      if (flash != nullptr) {
+        pid_sensor_->publish_state(flash_to_string(flash));
+      } else {
+        char s[30];
+        snprintf(s, 30, "Unknown device (%04x)", value);
+        pid_sensor_->publish_state(s);
+      }
+    }
   }
 }
 
