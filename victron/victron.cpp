@@ -58,6 +58,10 @@ void VictronComponent::loop() {
       continue;
     }
     if (state_ == 2) {
+      if (label_ == "Checksum") {
+        state_ = 0;
+        continue;
+      }
       if ((c == '\r') || (c == '\n')) {
         handle_value_();
         state_ = 0;
