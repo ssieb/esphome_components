@@ -22,9 +22,10 @@ class VictronComponent : public uart::UARTDevice, public Component {
   void set_day_number_sensor(sensor::Sensor *day_number_sensor) { day_number_sensor_ = day_number_sensor; }
   void set_charger_status_sensor(sensor::Sensor *charger_status_sensor) { charger_status_sensor_ = charger_status_sensor; }
   void set_error_code_sensor(sensor::Sensor *error_code_sensor) { error_code_sensor_ = error_code_sensor; }
+  void set_tracker_operation_sensor(sensor::Sensor *tracker_operation_sensor) { tracker_operation_sensor_ = tracker_operation_sensor; }
   void set_charger_text_sensor(text_sensor::TextSensor *charger_text_sensor) { charger_text_sensor_ = charger_text_sensor; }
   void set_error_text_sensor(text_sensor::TextSensor *error_text_sensor) { error_text_sensor_ = error_text_sensor; }
-  void set_tracker_operation_sensor(text_sensor::TextSensor *tracker_operation_sensor) { tracker_operation_sensor_ = tracker_operation_sensor; }
+  void set_tracker_text_sensor(text_sensor::TextSensor *tracker_text_sensor) { tracker_text_sensor_ = tracker_text_sensor; }
   void set_fw_version_sensor(text_sensor::TextSensor *fw_version_sensor) { fw_version_sensor_ = fw_version_sensor; }
   void set_pid_sensor(text_sensor::TextSensor *pid_sensor) { pid_sensor_ = pid_sensor; }
 
@@ -48,10 +49,11 @@ class VictronComponent : public uart::UARTDevice, public Component {
   sensor::Sensor *day_number_sensor_{nullptr};
   sensor::Sensor *charger_status_sensor_{nullptr};
   sensor::Sensor *error_code_sensor_{nullptr};
+  sensor::Sensor *tracker_operation_sensor_{nullptr};
 
   text_sensor::TextSensor *charger_text_sensor_{nullptr};
   text_sensor::TextSensor *error_text_sensor_{nullptr};
-  text_sensor::TextSensor *tracker_operation_sensor_{nullptr};
+  text_sensor::TextSensor *tracker_text_sensor_{nullptr};
   text_sensor::TextSensor *fw_version_sensor_{nullptr};
   text_sensor::TextSensor *pid_sensor_{nullptr};
 

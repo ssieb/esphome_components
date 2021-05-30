@@ -19,11 +19,12 @@ CONF_BATTERY_CURRENT = "battery_current"
 CONF_DAY_NUMBER = "day_number"
 CONF_CHARGER_STATUS = "charger_status"
 CONF_ERROR_CODE = "error_code"
+CONF_TRACKER_OPERATION = "tracker_operation"
 
 # text sensors
 CONF_CHARGER_TEXT = "charger_text"
 CONF_ERROR_TEXT = "error_text"
-CONF_TRACKER_OPERATION = "tracker_operation"
+CONF_TRACKER_TEXT = "tracker_text"
 CONF_FW_VERSION = "fw_version"
 CONF_PID = "pid"
 
@@ -41,9 +42,10 @@ CONFIG_SCHEMA = cv.Schema({
     cv.Optional(CONF_DAY_NUMBER): sensor.sensor_schema(UNIT_EMPTY, ICON_EMPTY, 0, DEVICE_CLASS_EMPTY),
     cv.Optional(CONF_CHARGER_STATUS): sensor.sensor_schema(UNIT_EMPTY, ICON_EMPTY, 0, DEVICE_CLASS_EMPTY),
     cv.Optional(CONF_ERROR_CODE): sensor.sensor_schema(UNIT_EMPTY, ICON_EMPTY, 0, DEVICE_CLASS_EMPTY),
+    cv.Optional(CONF_TRACKER_OPERATION): sensor.sensor_schema(UNIT_EMPTY, ICON_EMPTY, 0, DEVICE_CLASS_EMPTY),
     cv.Optional(CONF_CHARGER_TEXT): text_sensor.TEXT_SENSOR_SCHEMA.extend({cv.GenerateID(): cv.declare_id(text_sensor.TextSensor)}),
     cv.Optional(CONF_ERROR_TEXT): text_sensor.TEXT_SENSOR_SCHEMA.extend({cv.GenerateID(): cv.declare_id(text_sensor.TextSensor)}),
-    cv.Optional(CONF_TRACKER_OPERATION): text_sensor.TEXT_SENSOR_SCHEMA.extend({cv.GenerateID(): cv.declare_id(text_sensor.TextSensor)}),
+    cv.Optional(CONF_TRACKER_TEXT): text_sensor.TEXT_SENSOR_SCHEMA.extend({cv.GenerateID(): cv.declare_id(text_sensor.TextSensor)}),
     cv.Optional(CONF_FW_VERSION): text_sensor.TEXT_SENSOR_SCHEMA.extend({cv.GenerateID(): cv.declare_id(text_sensor.TextSensor)}),
     cv.Optional(CONF_PID): text_sensor.TEXT_SENSOR_SCHEMA.extend({cv.GenerateID(): cv.declare_id(text_sensor.TextSensor)}),
 })
@@ -99,6 +101,10 @@ def to_code(config):
         sens = yield sensor.new_sensor(config[CONF_ERROR_CODE])
         cg.add(victron.set_error_code_sensor(sens))
 
+    if CONF_TRACKER_OPERATION in config:
+        sens = yield sensor.new_sensor(config[CONF_TRACKER_OPERATION])
+        cg.add(victron.set_tracker_operation_sensor(sens))
+
     if CONF_CHARGER_TEXT in config:
         conf = config[CONF_CHARGER_TEXT]
         sens = cg.new_Pvariable(conf[CONF_ID])
@@ -111,11 +117,11 @@ def to_code(config):
         yield text_sensor.register_text_sensor(sens, conf)
         cg.add(victron.set_error_text_sensor(sens))
 
-    if CONF_TRACKER_OPERATION in config:
-        conf = config[CONF_TRACKER_OPERATION]
+    if CONF_TRACKER_TEXT in config:
+        conf = config[CONF_TRACKER_TEXT]
         sens = cg.new_Pvariable(conf[CONF_ID])
         yield text_sensor.register_text_sensor(sens, conf)
-        cg.add(victron.set_tracker_operation_sensor(sens))
+        cg.add(victron.set_tracker_text_sensor(sens))
 
     if CONF_FW_VERSION in config:
         conf = config[CONF_FW_VERSION]

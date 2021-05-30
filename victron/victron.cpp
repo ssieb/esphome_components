@@ -113,6 +113,15 @@ static const __FlashStringHelper* error_code_text(int value) {
   }
 }
 
+static const std::string tracker_op_text(int value) {
+  switch (value) {
+    case 0: return "Off";
+    case 1: return "Limited";
+    case 2: return "Active";
+    default: return "Unknown";
+  }
+}
+
 static const __FlashStringHelper* pid_text(int value) {
   switch (value) {
     case 0x203: return F("BMV-700");
@@ -256,6 +265,12 @@ void VictronComponent::handle_value_() {
       error_code_sensor_->publish_state(value);
     if (error_text_sensor_ != nullptr)
       error_text_sensor_->publish_state(flash_to_string(error_code_text(value)));
+  } else if (label_ == "MPPT") {
+    value = atoi(value_.c_str());
+    if (tracker_operation_sensor_ != nullptr)
+      tracker_operation_sensor_->publish_state(value);
+    if (tracker_text_sensor_ != nullptr)
+      tracker_text_sensor_->publish_state(tracker_op_text(value));
   } else if (label_ == "FW") {
     if ((fw_version_sensor_ != nullptr) && !fw_version_sensor_->has_state())
       fw_version_sensor_->publish_state(value_.insert(value_.size() - 2, "."));
