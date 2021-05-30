@@ -19,7 +19,9 @@ sensor:
 
 The `uart_id` is optional.
 
-All sensors are optional.  The available sensors are:
+All sensors are optional.
+
+The available numeric sensors are:
 - `max_power_yesterday`
 - `max_power_today`
 - `yield_total`
@@ -30,5 +32,13 @@ All sensors are optional.  The available sensors are:
 - `battery_voltage`
 - `battery_current`
 - `day_number`
-```
+- `charger_status`
+- `error_code`
 
+The available text sensors are:
+- `charger_text`
+- `error_text`
+- `tracker_operation`
+- `fw_version`
+- `pid`
+```
