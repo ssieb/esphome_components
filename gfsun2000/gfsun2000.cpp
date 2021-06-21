@@ -30,11 +30,11 @@ void GFSun2000::on_modbus_data(const std::vector<uint8_t> &data) {
   };
 
   waiting_ = false;
-  if (data.size() < REGISTER_COUNT[state_ - 1] * 2) {
+  ESP_LOGD(TAG, "Data: %s", hexencode(data).c_str());
+  if (data.size() < REGISTER_COUNT[state_] * 2) {
     ESP_LOGW(TAG, "Invalid data packet size (%d) for state %d", data.size(), state_);
     return;
   }
-  ESP_LOGD(TAG, "Data: %s", hexencode(data).c_str());
 
   if (state_ == 1) {
     state_ = 2;
