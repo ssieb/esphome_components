@@ -71,8 +71,8 @@ void GFSun2000::on_modbus_data(const std::vector<uint8_t> &data) {
     raw_16 = get_u16bit(0); // register 86
     float output_power = raw_16 / 10.0f;
     ESP_LOGD(TAG, "DATA: Output Power=%0.1fW", output_power);
-    if (ac_voltage_sensor_ != nullptr)
-      ac_voltage_sensor_->publish_state(output_power);
+    if (output_power_sensor_ != nullptr)
+      output_power_sensor_->publish_state(output_power);
     return;
   }
   if (state_ == 5) {
