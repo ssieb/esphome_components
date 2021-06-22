@@ -12,6 +12,7 @@ CONF_ROWS = 'rows'
 CONF_COLUMNS = 'columns'
 CONF_KEYS = 'keys'
 CONF_DEBOUNCE_TIME = 'debounce_time'
+CONF_HAS_DIODES = 'has_diodes'
 
 def check_keys(obj):
     if CONF_KEYS in obj:
@@ -29,6 +30,7 @@ CONFIG_SCHEMA = cv.All(cv.COMPONENT_SCHEMA.extend({
     }), cv.Length(min=1)),
     cv.Optional(CONF_KEYS): cv.string,
     cv.Optional(CONF_DEBOUNCE_TIME, default=1): cv.int_range(min=1, max=100),
+    cv.Optional(CONF_HAS_DIODES): cv.boolean,
 }), check_keys)
 
 def to_code(config):
@@ -47,4 +49,6 @@ def to_code(config):
     if CONF_KEYS in config:
         cg.add(var.set_keys(config[CONF_KEYS]))
     cg.add(var.set_debounce_time(config[CONF_DEBOUNCE_TIME]))
+    if CONF_HAS_DIODES in config:
+        cg.add(var.set_has_diodes(config[CONF_HAS_DIODES]))
 

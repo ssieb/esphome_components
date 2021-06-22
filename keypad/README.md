@@ -4,6 +4,7 @@ This component matrix keypads.  Define a `keypad` component then add `binary_sen
 
 The `keys` parameter is optional for the `keypad`, but then you won't be able to check for it in the `binary_sensor`
 and the `text_sensor` won't work.
+The optional `has_diodes` parameter is for if the buttons have diodes and the row pins are output only. In that case, set it to true.
 
 For the `binary_sensor`, you need to provide either the `row` and `col` or the `key` parameter.
 
@@ -24,6 +25,7 @@ keypad:
     - pin: 4
     - pin: 15
   keys: "123A456B789C*0#D"
+  has_diodes: false
 
 binary_sensor:
   - platform: keypad

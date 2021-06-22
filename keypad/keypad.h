@@ -25,6 +25,7 @@ class Keypad : public Component {
   void set_rows(std::vector<GPIOPin *> pins) { rows_ = pins; };
   void set_keys(std::string keys) { keys_ = keys; };
   void set_debounce_time(int debounce_time) { debounce_time_ = debounce_time; };
+  void set_has_diodes(int has_diodes) { has_diodes_ = has_diodes; };
 
   void register_listener(KeypadListener *listener);
 
@@ -33,6 +34,7 @@ class Keypad : public Component {
   std::vector<GPIOPin *> columns_;
   std::string keys_;
   int debounce_time_ = 0;
+  bool has_diodes_{false};
   int pressed_key_ = -1;
 
   std::vector<KeypadListener *> listeners_{};

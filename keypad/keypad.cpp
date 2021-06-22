@@ -8,7 +8,10 @@ static const char *TAG = "keypad";
 
 void Keypad::setup() {
   for (auto *pin : this->rows_)
-    pin->pin_mode(INPUT);
+    if (!has_diodes_)
+      pin->pin_mode(INPUT);
+    else
+      pin->digital_write(true);
   for (auto *pin : this->columns_)
     pin->pin_mode(INPUT_PULLUP);
 }
@@ -21,7 +24,8 @@ void Keypad::loop() {
   bool error = false;
   int pos = 0, row, col;
   for (auto *row : this->rows_) {
-    row->pin_mode(OUTPUT);
+    if (!has_diodes_)
+      row->pin_mode(OUTPUT);
     row->digital_write(false);
     for (auto *col : this->columns_) {
       if (!col->digital_read()) {
@@ -33,7 +37,8 @@ void Keypad::loop() {
       pos++;
     }
     row->digital_write(true);
-    row->pin_mode(INPUT);
+    if (!has_diodes_)
+      row->pin_mode(INPUT);
   }
   if (error)
     return;
