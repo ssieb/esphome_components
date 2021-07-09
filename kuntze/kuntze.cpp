@@ -22,10 +22,10 @@ void Kuntze::on_modbus_data(const std::vector<uint8_t> &data) {
   //}
   ESP_LOGVV(TAG, "Data: %s", hexencode(data).c_str());
 
-  float value = (float)get_16bit(1);
-  for (int i = 0; i < data[5]; i++)
+  float value = (float)get_16bit(0);
+  for (int i = 0; i < data[3]; i++)
     value /= 10.0;
-  ESP_LOGD(TAG, "%d decimals", data[5]);
+  ESP_LOGD(TAG, "%d decimals", data[3]);
   switch (state_) {
   case 1:
     ESP_LOGD(TAG, "pH=%.1f", value);
