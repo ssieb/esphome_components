@@ -14,7 +14,7 @@ void Keypad::setup() {
     else
       pin->digital_write(true);
   for (auto *pin : this->columns_)
-    pin->pin_mode(gpio::FLAG_PULLUP);
+    pin->pin_mode(gpio::FLAG_INPUT | gpio::FLAG_PULLUP);
 }
 
 void Keypad::loop() {
