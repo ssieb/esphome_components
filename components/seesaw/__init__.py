@@ -16,6 +16,7 @@ from esphome.const import (
 from esphome.core import coroutine
 
 CODEOWNERS = ["@ssieb"]
+MULTI_CONF = True
 
 seesaw_ns = cg.esphome_ns.namespace("seesaw")
 Seesaw = seesaw_ns.class_("Seesaw", i2c.I2CDevice, cg.Component)
