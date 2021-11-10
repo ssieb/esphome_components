@@ -38,6 +38,20 @@ enum : uint8_t {
   SEESAW_ENCODER_DELTA = 0x40,
 };
 
+enum : uint8_t {
+  SEESAW_GPIO_DIRSET_BULK = 0x02,
+  SEESAW_GPIO_DIRCLR_BULK = 0x03,
+  SEESAW_GPIO_BULK = 0x04,
+  SEESAW_GPIO_BULK_SET = 0x05,
+  SEESAW_GPIO_BULK_CLR = 0x06,
+  SEESAW_GPIO_BULK_TOGGLE = 0x07,
+  SEESAW_GPIO_INTENSET = 0x08,
+  SEESAW_GPIO_INTENCLR = 0x09,
+  SEESAW_GPIO_INTFLAG = 0x0A,
+  SEESAW_GPIO_PULLENSET = 0x0B,
+  SEESAW_GPIO_PULLENCLR = 0x0C,
+};
+
 
 class Seesaw : public i2c::I2CDevice, public Component {
  public:
@@ -47,9 +61,13 @@ class Seesaw : public i2c::I2CDevice, public Component {
 
   void enable_encoder();
   int32_t get_encoder_position();
+  void set_pinmode(uint8_t pin, uint8_t mode);
+  bool digital_read(uint8_t pin);
+  void set_gpio_interrupt(uint32_t pin, bool enabled);
 
  protected:
   i2c::ErrorCode write8(SeesawModule mod, uint8_t reg, uint8_t value);
+  i2c::ErrorCode write32(SeesawModule mod, uint8_t reg, uint32_t value);
   i2c::ErrorCode readbuf(SeesawModule mod, uint8_t reg, uint8_t *buf, uint8_t len);
 };
 

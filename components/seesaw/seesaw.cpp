@@ -1,4 +1,5 @@
 #include "seesaw.h"
+#include "esphome/core/hal.h"
 #include "esphome/core/log.h"
 
 namespace esphome {
@@ -41,9 +42,54 @@ int32_t Seesaw::get_encoder_position() {
   return value;
 }
 
+void Seesaw::set_pinmode(uint8_t pin, uint8_t mode) {
+  uint32_t pins = 1 << pin;
+  switch (mode) {
+    case gpio::FLAG_OUTPUT:
+    this->write32(SEESAW_GPIO, SEESAW_GPIO_DIRSET_BULK, pins);
+    break;
+   case gpio::FLAG_INPUT:
+    this->write32(SEESAW_GPIO, SEESAW_GPIO_DIRCLR_BULK, pins);
+    break;
+   case gpio::FLAG_PULLUP:
+    this->write32(SEESAW_GPIO, SEESAW_GPIO_DIRCLR_BULK, pins);
+    this->write32(SEESAW_GPIO, SEESAW_GPIO_PULLENSET, pins);
+    this->write32(SEESAW_GPIO, SEESAW_GPIO_BULK_SET, pins);
+    break;
+   case gpio::FLAG_PULLDOWN:
+    this->write32(SEESAW_GPIO, SEESAW_GPIO_DIRCLR_BULK, pins);
+    this->write32(SEESAW_GPIO, SEESAW_GPIO_PULLENSET, pins);
+    this->write32(SEESAW_GPIO, SEESAW_GPIO_BULK_CLR, pins);
+    break;
+  }
+}
+
+void Seesaw::set_gpio_interrupt(uint32_t pin, bool enabled) {
+  uint32_t pins = 1 << pin;
+  if (enabled)
+    this->write32(SEESAW_GPIO, SEESAW_GPIO_INTENSET, pins);
+  else
+    this->write32(SEESAW_GPIO, SEESAW_GPIO_INTENCLR, pins);
+}
+
+bool Seesaw::digital_read(uint8_t pin) {
+  uint32_t pins = 1 << pin;
+  uint8_t buf[4];
+  this->readbuf(SEESAW_GPIO, SEESAW_GPIO_BULK, buf, 4);
+  uint32_t ret = (buf[0] << 24) + (buf[1] << 16) + (buf[2] << 8) + buf[3];
+  return ret & pins;
+}
+
+
 i2c::ErrorCode Seesaw::write8(SeesawModule mod, uint8_t reg, uint8_t value) {
   uint8_t buf[3] = {mod, reg, value};
   return this->write(buf, 3);
+}
+
+i2c::ErrorCode Seesaw::write32(SeesawModule mod, uint8_t reg, uint32_t value) {
+  uint8_t buf[6] = {mod, reg, (uint8_t)(value >> 24), (uint8_t)(value >> 16),
+                    (uint8_t)(value >> 8), (uint8_t)value};
+  return this->write(buf, 6);
 }
 
 i2c::ErrorCode Seesaw::readbuf(SeesawModule mod, uint8_t reg, uint8_t *buf, uint8_t len) {
