@@ -52,6 +52,15 @@ enum : uint8_t {
   SEESAW_GPIO_PULLENCLR = 0x0C,
 };
 
+enum : uint8_t {
+  SEESAW_NEOPIXEL_STATUS = 0x00,
+  SEESAW_NEOPIXEL_PIN = 0x01,
+  SEESAW_NEOPIXEL_SPEED = 0x02,
+  SEESAW_NEOPIXEL_BUF_LENGTH = 0x03,
+  SEESAW_NEOPIXEL_BUF = 0x04,
+  SEESAW_NEOPIXEL_SHOW = 0x05,
+};
+
 
 class Seesaw : public i2c::I2CDevice, public Component {
  public:
@@ -64,9 +73,12 @@ class Seesaw : public i2c::I2CDevice, public Component {
   void set_pinmode(uint8_t pin, uint8_t mode);
   bool digital_read(uint8_t pin);
   void set_gpio_interrupt(uint32_t pin, bool enabled);
+  void setup_neopixel();
+  void color_neopixel(uint8_t r, uint8_t g, uint8_t b);
 
  protected:
   i2c::ErrorCode write8(SeesawModule mod, uint8_t reg, uint8_t value);
+  i2c::ErrorCode write16(SeesawModule mod, uint8_t reg, uint16_t value);
   i2c::ErrorCode write32(SeesawModule mod, uint8_t reg, uint32_t value);
   i2c::ErrorCode readbuf(SeesawModule mod, uint8_t reg, uint8_t *buf, uint8_t len);
 };

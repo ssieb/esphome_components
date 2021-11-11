@@ -80,10 +80,25 @@ bool Seesaw::digital_read(uint8_t pin) {
   return ret & pins;
 }
 
+void Seesaw::setup_neopixel() {
+  this->write8(SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_SPEED, 1);
+  this->write16(SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_BUF_LENGTH, 3);
+  this->write8(SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_PIN, 6);
+}
+
+void Seesaw::color_neopixel(uint8_t r, uint8_t g, uint8_t b) {
+  uint8_t buf[7] = {SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_BUF, 0, 0, g, r, b};
+  this->write(buf, 7);
+}
 
 i2c::ErrorCode Seesaw::write8(SeesawModule mod, uint8_t reg, uint8_t value) {
   uint8_t buf[3] = {mod, reg, value};
   return this->write(buf, 3);
+}
+
+i2c::ErrorCode Seesaw::write16(SeesawModule mod, uint8_t reg, uint16_t value) {
+  uint8_t buf[4] = {mod, reg, (uint8_t)(value >> 8), (uint8_t)value};
+  return this->write(buf, 4);
 }
 
 i2c::ErrorCode Seesaw::write32(SeesawModule mod, uint8_t reg, uint32_t value) {
