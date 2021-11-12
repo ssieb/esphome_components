@@ -17,7 +17,8 @@ light::LightTraits SeesawNeopixel::get_traits() {
 }
 void SeesawNeopixel::write_state(light::LightState *state) {
   float red, green, blue;
-  state->current_values_as_rgb(&red, &green, &blue, false);
+  state->current_values_as_rgb(&red, &green, &blue);
+  ESP_LOGD(TAG, "write_state: %f %f %f", red, green, blue);
   this->parent_->color_neopixel(red * 255, green * 255, blue * 255);
 }
 

@@ -1,6 +1,7 @@
 #include "seesaw.h"
 #include "esphome/core/hal.h"
 #include "esphome/core/log.h"
+#include "esphome/core/helpers.h"
 
 namespace esphome {
 namespace seesaw {
@@ -88,6 +89,7 @@ void Seesaw::setup_neopixel() {
 
 void Seesaw::color_neopixel(uint8_t r, uint8_t g, uint8_t b) {
   uint8_t buf[7] = {SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_BUF, 0, 0, g, r, b};
+  ESP_LOGD(TAG, "sending color as %s", hexencode(buf, 7).c_str());
   this->write(buf, 7);
 }
 
