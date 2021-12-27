@@ -1,6 +1,7 @@
 #include "ht16k33_display.h"
 #include "font.h"
 #include "esphome/core/log.h"
+#include "esphome/core/hal.h"
 #include "esphome/core/helpers.h"
 
 namespace esphome {
@@ -29,7 +30,7 @@ void HT16K33AlphaDisplay::loop() {
   int numc = this->displays_.size() * 8;
   // check if the buffer has shrunk past the current position since last update
   if (this->offset_ + numc > this->buffer_fill_) {
-    this->offset_ = max(this->buffer_fill_ - numc, 0);
+    this->offset_ = std::max(this->buffer_fill_ - numc, 0);
     this->display_();
   }
   if (!this->scroll_ || (this->buffer_fill_ <= numc))
