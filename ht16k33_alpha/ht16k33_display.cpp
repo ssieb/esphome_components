@@ -1,8 +1,12 @@
-#include "ht16k33_display.h"
-#include "font.h"
 #include "esphome/core/log.h"
 #include "esphome/core/hal.h"
 #include "esphome/core/helpers.h"
+#include "ht16k33_display.h"
+#include "font.h"
+
+#ifndef USE_ESP8266
+  #define pgm_read_word(s) (*s)
+#endif
 
 namespace esphome {
 namespace ht16k33_alpha {
