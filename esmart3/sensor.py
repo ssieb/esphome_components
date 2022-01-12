@@ -37,51 +37,51 @@ CONFIG_SCHEMA = uart.UART_DEVICE_SCHEMA.extend({
     cv.Optional(CONF_BATTERY_LEVEL): sensor.sensor_schema(UNIT_PERCENT, ICON_PERCENT, 0),
 }).extend(cv.polling_component_schema('60s'))
 
-def to_code(config):
+async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    yield cg.register_component(var, config)
-    yield uart.register_uart_device(var, config)
+    await cg.register_component(var, config)
+    await uart.register_uart_device(var, config)
 
     if CONF_CHARGE_MODE in config:
-        sens = yield sensor.new_sensor(config[CONF_CHARGE_MODE])
+        sens = await sensor.new_sensor(config[CONF_CHARGE_MODE])
         cg.add(var.set_charge_mode_sensor(sens))
 
     if CONF_INPUT_VOLTAGE in config:
-        sens = yield sensor.new_sensor(config[CONF_INPUT_VOLTAGE])
+        sens = await sensor.new_sensor(config[CONF_INPUT_VOLTAGE])
         cg.add(var.set_input_voltage_sensor(sens))
 
     if CONF_BATTERY_VOLTAGE in config:
-        sens = yield sensor.new_sensor(config[CONF_BATTERY_VOLTAGE])
+        sens = await sensor.new_sensor(config[CONF_BATTERY_VOLTAGE])
         cg.add(var.set_battery_voltage_sensor(sens))
 
     if CONF_CHARGING_CURRENT in config:
-        sens = yield sensor.new_sensor(config[CONF_CHARGING_CURRENT])
+        sens = await sensor.new_sensor(config[CONF_CHARGING_CURRENT])
         cg.add(var.set_charging_current_sensor(sens))
 
     if CONF_LOAD_VOLTAGE in config:
-        sens = yield sensor.new_sensor(config[CONF_LOAD_VOLTAGE])
+        sens = await sensor.new_sensor(config[CONF_LOAD_VOLTAGE])
         cg.add(var.set_load_voltage_sensor(sens))
 
     if CONF_LOAD_CURRENT in config:
-        sens = yield sensor.new_sensor(config[CONF_LOAD_CURRENT])
+        sens = await sensor.new_sensor(config[CONF_LOAD_CURRENT])
         cg.add(var.set_load_current_sensor(sens))
 
     if CONF_CHARGING_POWER in config:
-        sens = yield sensor.new_sensor(config[CONF_CHARGING_POWER])
+        sens = await sensor.new_sensor(config[CONF_CHARGING_POWER])
         cg.add(var.set_charging_power_sensor(sens))
 
     if CONF_LOAD_POWER in config:
-        sens = yield sensor.new_sensor(config[CONF_LOAD_POWER])
+        sens = await sensor.new_sensor(config[CONF_LOAD_POWER])
         cg.add(var.set_load_power_sensor(sens))
 
     if CONF_BATTERY_TEMP in config:
-        sens = yield sensor.new_sensor(config[CONF_BATTERY_TEMP])
+        sens = await sensor.new_sensor(config[CONF_BATTERY_TEMP])
         cg.add(var.set_battery_temp_sensor(sens))
 
     if CONF_INTERNAL_TEMP in config:
-        sens = yield sensor.new_sensor(config[CONF_INTERNAL_TEMP])
+        sens = await sensor.new_sensor(config[CONF_INTERNAL_TEMP])
         cg.add(var.set_internal_temp_sensor(sens))
 
     if CONF_BATTERY_LEVEL in config:
-        sens = yield sensor.new_sensor(config[CONF_BATTERY_LEVEL])
+        sens = await sensor.new_sensor(config[CONF_BATTERY_LEVEL])
         cg.add(var.set_battery_level_sensor(sens))

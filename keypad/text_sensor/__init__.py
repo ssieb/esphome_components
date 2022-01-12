@@ -27,11 +27,11 @@ CONFIG_SCHEMA = cv.All(text_sensor.TEXT_SENSOR_SCHEMA.extend({
 }), cv.has_at_least_one_key(CONF_END_KEYS, CONF_MAX_LENGTH))
 
 
-def to_code(config):
+async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    yield cg.register_component(var, config)
-    yield text_sensor.register_text_sensor(var, config)
-    keypad = yield cg.get_variable(config[CONF_KEYPAD_ID])
+    await cg.register_component(var, config)
+    await text_sensor.register_text_sensor(var, config)
+    keypad = await cg.get_variable(config[CONF_KEYPAD_ID])
     cg.add(keypad.register_listener(var))
     if CONF_MAX_LENGTH in config:
         cg.add(var.set_max_length(config[CONF_MAX_LENGTH]))
@@ -42,7 +42,7 @@ def to_code(config):
     if CONF_ALLOWED_KEYS in config:
         cg.add(var.set_allowed_keys(config[CONF_ALLOWED_KEYS]))
     if CONF_ON_PROGRESS in config:
-        yield automation.build_automation(var.get_progress_trigger(), [(cg.std_string, 'x')],
+        await automation.build_automation(var.get_progress_trigger(), [(cg.std_string, 'x')],
                                           config[CONF_ON_PROGRESS])
 
 

@@ -18,12 +18,12 @@ CONFIG_SCHEMA = light.RGB_LIGHT_SCHEMA.extend({
 })
 
 
-def to_code(config):
+async def to_code(config):
     var = cg.new_Pvariable(config[CONF_OUTPUT_ID])
-    yield light.register_light(var, config)
-    ctemp = yield cg.get_variable(config[CONF_COLOR_TEMPERATURE])
+    await light.register_light(var, config)
+    ctemp = await cg.get_variable(config[CONF_COLOR_TEMPERATURE])
     cg.add(var.set_color_temperature_output(ctemp))
-    bright = yield cg.get_variable(config[CONF_BRIGHTNESS])
+    bright = await cg.get_variable(config[CONF_BRIGHTNESS])
     cg.add(var.set_brightness_output(bright))
     cg.add(var.set_cold_white_temperature(config[CONF_COLD_WHITE_COLOR_TEMPERATURE]))
     cg.add(var.set_warm_white_temperature(config[CONF_WARM_WHITE_COLOR_TEMPERATURE]))

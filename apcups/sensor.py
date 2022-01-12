@@ -35,33 +35,33 @@ CONFIG_SCHEMA = uart.UART_DEVICE_SCHEMA.extend({
 }).extend(cv.polling_component_schema('60s'))
 
 
-def to_code(config):
+async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    yield cg.register_component(var, config)
-    yield uart.register_uart_device(var, config)
+    await cg.register_component(var, config)
+    await uart.register_uart_device(var, config)
 
     if CONF_INTERNAL_TEMP in config:
-        sens = yield sensor.new_sensor(config[CONF_INTERNAL_TEMP])
+        sens = await sensor.new_sensor(config[CONF_INTERNAL_TEMP])
         cg.add(var.set_internal_temp_sensor(sens))
     if CONF_BATTERY_VOLT in config:
-        sens = yield sensor.new_sensor(config[CONF_BATTERY_VOLT])
+        sens = await sensor.new_sensor(config[CONF_BATTERY_VOLT])
         cg.add(var.set_battery_volt_sensor(sens))
     if CONF_BATTERY_LEVEL in config:
-        sens = yield sensor.new_sensor(config[CONF_BATTERY_LEVEL])
+        sens = await sensor.new_sensor(config[CONF_BATTERY_LEVEL])
         cg.add(var.set_battery_level_sensor(sens))
     if CONF_POWER_LOAD in config:
-        sens = yield sensor.new_sensor(config[CONF_POWER_LOAD])
+        sens = await sensor.new_sensor(config[CONF_POWER_LOAD])
         cg.add(var.set_power_load_sensor(sens))
     if CONF_INPUT_VOLT in config:
-        sens = yield sensor.new_sensor(config[CONF_INPUT_VOLT])
+        sens = await sensor.new_sensor(config[CONF_INPUT_VOLT])
         cg.add(var.set_input_volt_sensor(sens))
     if CONF_OUTPUT_VOLT in config:
-        sens = yield sensor.new_sensor(config[CONF_OUTPUT_VOLT])
+        sens = await sensor.new_sensor(config[CONF_OUTPUT_VOLT])
         cg.add(var.set_output_volt_sensor(sens))
     if CONF_LINE_FREQ in config:
-        sens = yield sensor.new_sensor(config[CONF_LINE_FREQ])
+        sens = await sensor.new_sensor(config[CONF_LINE_FREQ])
         cg.add(var.set_line_freq_sensor(sens))
     if CONF_EST_RUNTIME in config:
-        sens = yield sensor.new_sensor(config[CONF_EST_RUNTIME])
+        sens = await sensor.new_sensor(config[CONF_EST_RUNTIME])
         cg.add(var.set_est_runtime_sensor(sens))
 

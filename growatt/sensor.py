@@ -49,76 +49,76 @@ CONFIG_SCHEMA = cv.Schema({
 }).extend(cv.polling_component_schema('60s')).extend(modbus.modbus_device_schema(0x01))
 
 
-def to_code(config):
+async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    yield cg.register_component(var, config)
-    yield modbus.register_modbus_device(var, config)
+    await cg.register_component(var, config)
+    await modbus.register_modbus_device(var, config)
 
     if CONF_INPUT_POWER in config:
         conf = config[CONF_INPUT_POWER]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_input_power_sensor(sens))
     if CONF_PV1_VOLTAGE in config:
         conf = config[CONF_PV1_VOLTAGE]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_pv1_voltage_sensor(sens))
     if CONF_PV1_CURRENT in config:
         conf = config[CONF_PV1_CURRENT]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_pv1_current_sensor(sens))
     if CONF_PV1_POWER in config:
         conf = config[CONF_PV1_POWER]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_pv1_power_sensor(sens))
     if CONF_PV2_VOLTAGE in config:
         conf = config[CONF_PV2_VOLTAGE]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_pv2_voltage_sensor(sens))
     if CONF_PV2_CURRENT in config:
         conf = config[CONF_PV2_CURRENT]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_pv2_current_sensor(sens))
     if CONF_PV2_POWER in config:
         conf = config[CONF_PV2_POWER]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_pv2_power_sensor(sens))
     if CONF_OUTPUT_POWER in config:
         conf = config[CONF_OUTPUT_POWER]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_output_power_sensor(sens))
     if CONF_GRID_FREQUENCY in config:
         conf = config[CONF_GRID_FREQUENCY]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_grid_frequency_sensor(sens))
     if CONF_AC_VOLTAGE in config:
         conf = config[CONF_AC_VOLTAGE]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_ac_voltage_sensor(sens))
     if CONF_AC_CURRENT in config:
         conf = config[CONF_AC_CURRENT]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_ac_current_sensor(sens))
     if CONF_AC_POWER in config:
         conf = config[CONF_AC_POWER]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_ac_power_sensor(sens))
     if CONF_TODAY_GEN in config:
         conf = config[CONF_TODAY_GEN]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_today_gen_sensor(sens))
     if CONF_TOTAL_GEN in config:
         conf = config[CONF_TOTAL_GEN]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_total_gen_sensor(sens))
     if CONF_TEMPERATURE in config:
         conf = config[CONF_TEMPERATURE]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_temperature_sensor(sens))
     if CONF_TODAY_GRID in config:
         conf = config[CONF_TODAY_GRID]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_today_grid_sensor(sens))
     if CONF_TOTAL_GRID in config:
         conf = config[CONF_TOTAL_GRID]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_total_grid_sensor(sens))

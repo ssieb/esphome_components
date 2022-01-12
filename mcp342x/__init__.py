@@ -14,7 +14,7 @@ CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(MCP342XComponent),
 }).extend(cv.COMPONENT_SCHEMA).extend(i2c.i2c_device_schema(0x68))
 
-def to_code(config):
+async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    yield cg.register_component(var, config)
-    yield i2c.register_i2c_device(var, config)
+    await cg.register_component(var, config)
+    await i2c.register_i2c_device(var, config)

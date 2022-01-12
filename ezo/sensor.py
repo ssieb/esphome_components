@@ -14,9 +14,9 @@ CONFIG_SCHEMA = sensor.SENSOR_SCHEMA.extend({
 }).extend(cv.polling_component_schema('60s')).extend(i2c.i2c_device_schema(None))
 
 
-def to_code(config):
+async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    yield cg.register_component(var, config)
-    yield sensor.register_sensor(var, config)
-    yield i2c.register_i2c_device(var, config)
+    await cg.register_component(var, config)
+    await sensor.register_sensor(var, config)
+    await i2c.register_i2c_device(var, config)
 

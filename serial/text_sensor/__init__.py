@@ -17,9 +17,9 @@ CONFIG_SCHEMA = text_sensor.TEXT_SENSOR_SCHEMA.extend({
 }).extend(uart.UART_DEVICE_SCHEMA)
 
 
-def to_code(config):
+async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    yield cg.register_component(var, config)
-    yield text_sensor.register_text_sensor(var, config)
-    yield uart.register_uart_device(var, config)
+    await cg.register_component(var, config)
+    await text_sensor.register_text_sensor(var, config)
+    await uart.register_uart_device(var, config)
 

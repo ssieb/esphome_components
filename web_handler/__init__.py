@@ -32,13 +32,13 @@ CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(CONF_WEB_SERVER_BASE_ID): cv.use_id(WebServerBase),
 })
 
-def to_code(config):
-    paren = yield cg.get_variable(config[CONF_WEB_SERVER_BASE_ID])
+async def to_code(config):
+    paren = await cg.get_variable(config[CONF_WEB_SERVER_BASE_ID])
     var = cg.new_Pvariable(config[CONF_ID], paren)
     cg.add(var.set_path(config[CONF_PATH]))
     cg.add(var.set_mime_type(config[CONF_MIME_TYPE]))
-    yield cg.register_component(var, config)
+    await cg.register_component(var, config)
     conf = config[CONF_ON_REQUEST][0]
     trig = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
-    yield automation.build_automation(trig, [(AsyncWebServerRequestRef, 'request'), (AsyncResponseStreamRef, 'stream')], conf)
+    await automation.build_automation(trig, [(AsyncWebServerRequestRef, 'request'), (AsyncResponseStreamRef, 'stream')], conf)
 

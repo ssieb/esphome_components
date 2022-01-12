@@ -27,36 +27,36 @@ CONFIG_SCHEMA = cv.Schema({
 }).extend(cv.polling_component_schema('60s')).extend(modbus.modbus_device_schema(0x01))
 
 
-def to_code(config):
+async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    yield cg.register_component(var, config)
-    yield modbus.register_modbus_device(var, config)
+    await cg.register_component(var, config)
+    await modbus.register_modbus_device(var, config)
 
     if CONF_PH in config:
         conf = config[CONF_PH]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_ph_sensor(sens))
     if CONF_TEMPERATURE in config:
         conf = config[CONF_TEMPERATURE]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_temperature_sensor(sens))
     if CONF_DIS1 in config:
         conf = config[CONF_DIS1]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_dis1_sensor(sens))
     if CONF_DIS2 in config:
         conf = config[CONF_DIS2]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_dis2_sensor(sens))
     if CONF_REDOX in config:
         conf = config[CONF_REDOX]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_redox_sensor(sens))
     if CONF_EC in config:
         conf = config[CONF_EC]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_ec_sensor(sens))
     if CONF_OCI in config:
         conf = config[CONF_OCI]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_oci_sensor(sens))

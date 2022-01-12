@@ -27,14 +27,14 @@ CONFIG_SCHEMA = display.BASIC_DISPLAY_SCHEMA.extend({
     cv.Optional(CONF_SECONDARY_DISPLAYS): cv.ensure_list(CONFIG_SECONDARY),
 }).extend(cv.polling_component_schema('1s')).extend(i2c.i2c_device_schema(0x70))
 
-def to_code(config):
+async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    yield cg.register_component(var, config)
-    yield display.register_display(var, config)
-    yield i2c.register_i2c_device(var, config)
+    await cg.register_component(var, config)
+    await display.register_display(var, config)
+    await i2c.register_i2c_device(var, config)
 
     if CONF_LAMBDA in config:
-        lambda_ = yield cg.process_lambda(config[CONF_LAMBDA],
+        lambda_ = await cg.process_lambda(config[CONF_LAMBDA],
                                           [(HT16K33AlphaDisplay.operator('ref'), 'it')],
                                           return_type=cg.void)
         cg.add(var.set_writer(lambda_))
@@ -46,6 +46,6 @@ def to_code(config):
     if CONF_SECONDARY_DISPLAYS in config:
         for conf in config[CONF_SECONDARY_DISPLAYS]:
             disp = cg.new_Pvariable(conf[CONF_ID])
-            yield i2c.register_i2c_device(disp, conf)
+            await i2c.register_i2c_device(disp, conf)
             cg.add(var.add_secondary_display(disp))
 

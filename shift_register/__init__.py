@@ -19,17 +19,17 @@ CONFIG_SCHEMA = cv.Schema({
 }).extend(cv.COMPONENT_SCHEMA)
 
 
-def to_code(config):
+async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    yield cg.register_component(var, config)
+    await cg.register_component(var, config)
     if CONF_NUM_CHIPS in config:
         cg.add(var.set_count(config[CONF_NUM_CHIPS]))
-    pin = yield cg.gpio_pin_expression(config[CONF_DATA_PIN])
+    pin = await cg.gpio_pin_expression(config[CONF_DATA_PIN])
     cg.add(var.set_data_pin(pin))
-    pin = yield cg.gpio_pin_expression(config[CONF_CLOCK_PIN])
+    pin = await cg.gpio_pin_expression(config[CONF_CLOCK_PIN])
     cg.add(var.set_clock_pin(pin))
     if CONF_LATCH_PIN in config:
-        pin = yield cg.gpio_pin_expression(config[CONF_LATCH_PIN])
+        pin = await cg.gpio_pin_expression(config[CONF_LATCH_PIN])
         cg.add(var.set_latch_pin(pin))
 
 
@@ -44,7 +44,7 @@ SHIFT_REGISTER_OUTPUT_PIN_SCHEMA = cv.Schema({
 
 @pins.PIN_SCHEMA_REGISTRY.register(CONF_SHIFT_REGISTER,
                                    (SHIFT_REGISTER_OUTPUT_PIN_SCHEMA, None))
-def shift_register_pin_to_code(config):
-    parent = yield cg.get_variable(config[CONF_SHIFT_REGISTER])
-    yield ShiftRegisterGPIOPin.new(parent, config[CONF_NUMBER], config[CONF_INVERTED])
+async def shift_register_pin_to_code(config):
+    parent = await cg.get_variable(config[CONF_SHIFT_REGISTER])
+    await ShiftRegisterGPIOPin.new(parent, config[CONF_NUMBER], config[CONF_INVERTED])
 

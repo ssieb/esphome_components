@@ -33,11 +33,11 @@ CONFIG_SCHEMA = sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 3).extend({
 }).extend(cv.polling_component_schema('60s'))
 
 
-def to_code(config):
-    paren = yield cg.get_variable(config[CONF_MCP342X_ID])
+async def to_code(config):
+    paren = await cg.get_variable(config[CONF_MCP342X_ID])
     var = cg.new_Pvariable(config[CONF_ID], paren)
-    yield sensor.register_sensor(var, config)
-    yield cg.register_component(var, config)
+    await sensor.register_sensor(var, config)
+    await cg.register_component(var, config)
 
     cg.add(var.set_channel(config[CONF_CHANNEL]))
     cg.add(var.set_gain(config[CONF_GAIN]))

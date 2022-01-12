@@ -38,44 +38,44 @@ CONFIG_SCHEMA = cv.Schema({
 }).extend(cv.COMPONENT_SCHEMA).extend(uart.UART_DEVICE_SCHEMA)
 
 
-def to_code(config):
+async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    yield cg.register_component(var, config)
-    yield uart.register_uart_device(var, config)
+    await cg.register_component(var, config)
+    await uart.register_uart_device(var, config)
 
     if CONF_PM_1_0 in config:
-        sens = yield sensor.new_sensor(config[CONF_PM_1_0])
+        sens = await sensor.new_sensor(config[CONF_PM_1_0])
         cg.add(var.set_pm_1_0_sensor(sens))
 
     if CONF_PM_2_5 in config:
-        sens = yield sensor.new_sensor(config[CONF_PM_2_5])
+        sens = await sensor.new_sensor(config[CONF_PM_2_5])
         cg.add(var.set_pm_2_5_sensor(sens))
 
     if CONF_PM_10_0 in config:
-        sens = yield sensor.new_sensor(config[CONF_PM_10_0])
+        sens = await sensor.new_sensor(config[CONF_PM_10_0])
         cg.add(var.set_pm_10_0_sensor(sens))
 
     if CONF_PMC_0_3 in config:
-        sens = yield sensor.new_sensor(config[CONF_PMC_0_3])
+        sens = await sensor.new_sensor(config[CONF_PMC_0_3])
         cg.add(var.set_pmc_0_3_sensor(sens))
 
     if CONF_PMC_0_5 in config:
-        sens = yield sensor.new_sensor(config[CONF_PMC_0_5])
+        sens = await sensor.new_sensor(config[CONF_PMC_0_5])
         cg.add(var.set_pmc_0_5_sensor(sens))
 
     if CONF_PMC_1_0 in config:
-        sens = yield sensor.new_sensor(config[CONF_PMC_1_0])
+        sens = await sensor.new_sensor(config[CONF_PMC_1_0])
         cg.add(var.set_pmc_1_0_sensor(sens))
 
     if CONF_PMC_2_5 in config:
-        sens = yield sensor.new_sensor(config[CONF_PMC_2_5])
+        sens = await sensor.new_sensor(config[CONF_PMC_2_5])
         cg.add(var.set_pmc_2_5_sensor(sens))
 
     if CONF_PMC_5_0 in config:
-        sens = yield sensor.new_sensor(config[CONF_PMC_5_0])
+        sens = await sensor.new_sensor(config[CONF_PMC_5_0])
         cg.add(var.set_pmc_5_0_sensor(sens))
 
     if CONF_PMC_10_0 in config:
-        sens = yield sensor.new_sensor(config[CONF_PMC_10_0])
+        sens = await sensor.new_sensor(config[CONF_PMC_10_0])
         cg.add(var.set_pmc_10_0_sensor(sens))
 

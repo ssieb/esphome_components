@@ -27,33 +27,33 @@ CONFIG_SCHEMA = cv.Schema({
 }).extend(cv.polling_component_schema('60s')).extend(modbus.modbus_device_schema(0x01))
 
 
-def to_code(config):
+async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    yield cg.register_component(var, config)
-    yield modbus.register_modbus_device(var, config)
+    await cg.register_component(var, config)
+    await modbus.register_modbus_device(var, config)
 
     if CONF_DEVICE_ID in config:
         conf = config[CONF_DEVICE_ID]
         sens = cg.new_Pvariable(conf[CONF_ID])
-        yield text_sensor.register_text_sensor(sens, conf)
+        await text_sensor.register_text_sensor(sens, conf)
         cg.add(var.set_device_id_sensor(sens))
     if CONF_AC_VOLTAGE in config:
         conf = config[CONF_AC_VOLTAGE]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_ac_voltage_sensor(sens))
     if CONF_DC_VOLTAGE in config:
         conf = config[CONF_DC_VOLTAGE]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_dc_voltage_sensor(sens))
     if CONF_OUTPUT_POWER in config:
         conf = config[CONF_OUTPUT_POWER]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_output_power_sensor(sens))
     if CONF_CUSTOM_ENERGY in config:
         conf = config[CONF_CUSTOM_ENERGY]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_custom_energy_sensor(sens))
     if CONF_TOTAL_ENERGY in config:
         conf = config[CONF_TOTAL_ENERGY]
-        sens = yield sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(conf)
         cg.add(var.set_total_energy_sensor(sens))

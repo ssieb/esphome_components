@@ -11,8 +11,8 @@ CONFIG_SCHEMA = sensor.sensor_schema(UNIT_BYTE, ICON_GAUGE, 0).extend({
     cv.GenerateID(): cv.declare_id(HeapMonitor),
 }).extend(cv.polling_component_schema('60s'))
 
-def to_code(config):
+async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    yield cg.register_component(var, config)
-    yield sensor.register_sensor(var, config)
+    await cg.register_component(var, config)
+    await sensor.register_sensor(var, config)
 

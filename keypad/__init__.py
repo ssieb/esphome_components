@@ -33,17 +33,17 @@ CONFIG_SCHEMA = cv.All(cv.COMPONENT_SCHEMA.extend({
     cv.Optional(CONF_HAS_DIODES): cv.boolean,
 }), check_keys)
 
-def to_code(config):
+async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    yield cg.register_component(var, config)
+    await cg.register_component(var, config)
     pins = []
     for conf in config[CONF_ROWS]:
-        pin = yield cg.gpio_pin_expression(conf[CONF_PIN])
+        pin = await cg.gpio_pin_expression(conf[CONF_PIN])
         pins.append(pin)
     cg.add(var.set_rows(pins))
     pins = []
     for conf in config[CONF_COLUMNS]:
-        pin = yield cg.gpio_pin_expression(conf[CONF_PIN])
+        pin = await cg.gpio_pin_expression(conf[CONF_PIN])
         pins.append(pin)
     cg.add(var.set_columns(pins))
     if CONF_KEYS in config:

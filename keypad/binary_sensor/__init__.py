@@ -35,11 +35,11 @@ CONFIG_SCHEMA = cv.All(binary_sensor.BINARY_SENSOR_SCHEMA.extend({
 }), check_button)
 
 
-def to_code(config):
+async def to_code(config):
     if CONF_KEY in config:
       var = cg.new_Pvariable(config[CONF_ID], config[CONF_KEY][0])
     else:
       var = cg.new_Pvariable(config[CONF_ID], config[CONF_ROW], config[CONF_COL])
-    yield binary_sensor.register_binary_sensor(var, config)
-    keypad = yield cg.get_variable(config[CONF_KEYPAD_ID])
+    await binary_sensor.register_binary_sensor(var, config)
+    keypad = await cg.get_variable(config[CONF_KEYPAD_ID])
     cg.add(keypad.register_listener(var))
