@@ -45,31 +45,31 @@ async def to_code(config):
 
     if CONF_A in config:
         conf = config[CONF_A]
-        if CONF_ON_CLICK in config:
+        if CONF_ON_CLICK in conf:
             await automation.build_automation(
-                var.get_a_click_trigger(), [], config[CONF_ON_CLICK]
+                var.get_a_click_trigger(), [], conf[CONF_ON_CLICK]
             )
-        if CONF_ON_DOUBLE_CLICK in config:
+        if CONF_ON_DOUBLE_CLICK in conf:
             await automation.build_automation(
-                var.get_a_double_click_trigger(), [], config[CONF_ON_DOUBLE_CLICK]
+                var.get_a_double_click_trigger(), [], conf[CONF_ON_DOUBLE_CLICK]
             )
-        if CONF_ON_LONG_CLICK in config:
+        if CONF_ON_LONG_CLICK in conf:
             await automation.build_automation(
-                var.get_a_long_click_trigger(), [], config[CONF_ON_LONG_CLICK]
+                var.get_a_long_click_trigger(), [], conf[CONF_ON_LONG_CLICK]
             )
 
     if CONF_B in config:
         conf = config[CONF_B]
-        if CONF_ON_CLICK in config:
+        if CONF_ON_CLICK in conf:
             await automation.build_automation(
-                var.get_b_click_trigger(), [], config[CONF_ON_CLICK]
+                var.get_b_click_trigger(), [], conf[CONF_ON_CLICK]
             )
-        if CONF_ON_DOUBLE_CLICK in config:
+        if CONF_ON_DOUBLE_CLICK in conf:
             await automation.build_automation(
-                var.get_b_double_click_trigger(), [], config[CONF_ON_DOUBLE_CLICK]
+                var.get_b_double_click_trigger(), [], conf[CONF_ON_DOUBLE_CLICK]
             )
-        if CONF_ON_LONG_CLICK in config:
+        if CONF_ON_LONG_CLICK in conf:
             await automation.build_automation(
-                var.get_b_long_click_trigger(), [], config[CONF_ON_LONG_CLICK]
+                var.get_b_long_click_trigger(), [], conf[CONF_ON_LONG_CLICK]
             )
 
