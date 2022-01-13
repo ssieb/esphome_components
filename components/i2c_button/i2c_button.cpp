@@ -58,8 +58,8 @@ void I2C_Button::loop() {
     this->a_double_click_trigger_->trigger();
     break;
    case KEY_VALUE_HOLD:
-    ESP_LOGD(TAG, "Button A held");
-    this->a_hold_trigger_->trigger();
+    // ignore for now
+    // ESP_LOGD(TAG, "Button A held");
     break;
   }
   switch (b) {
@@ -76,8 +76,8 @@ void I2C_Button::loop() {
     this->b_double_click_trigger_->trigger();
     break;
    case KEY_VALUE_HOLD:
-    ESP_LOGD(TAG, "Button B held");
-    this->b_hold_trigger_->trigger();
+    // ignore for now
+    // ESP_LOGD(TAG, "Button B held");
     break;
   }
 }

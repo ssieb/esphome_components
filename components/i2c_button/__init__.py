@@ -17,7 +17,6 @@ I2C_Button = i2c_button_ns.class_("I2C_Button", i2c.I2CDevice, cg.Component)
 CONF_A = "a"
 CONF_B = "b"
 CONF_ON_LONG_CLICK = "on_long_click"
-CONF_ON_HOLD = "on_hold"
 
 CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
     {
@@ -27,7 +26,6 @@ CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
                 cv.Optional(CONF_ON_CLICK): automation.validate_automation(single=True),
                 cv.Optional(CONF_ON_DOUBLE_CLICK): automation.validate_automation(single=True),
                 cv.Optional(CONF_ON_LONG_CLICK): automation.validate_automation(single=True),
-                cv.Optional(CONF_ON_HOLD): automation.validate_automation(single=True),
             }
         ),
         cv.Optional(CONF_B): cv.Schema(
@@ -35,7 +33,6 @@ CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
                 cv.Optional(CONF_ON_CLICK): automation.validate_automation(single=True),
                 cv.Optional(CONF_ON_DOUBLE_CLICK): automation.validate_automation(single=True),
                 cv.Optional(CONF_ON_LONG_CLICK): automation.validate_automation(single=True),
-                cv.Optional(CONF_ON_HOLD): automation.validate_automation(single=True),
             }
         ),
     }
@@ -60,10 +57,6 @@ async def to_code(config):
             await automation.build_automation(
                 var.get_a_long_click_trigger(), [], config[CONF_ON_LONG_CLICK]
             )
-        if CONF_ON_HOLD in config:
-            await automation.build_automation(
-                var.get_a_hold_trigger(), [], config[CONF_ON_HOLD]
-            )
 
     if CONF_B in config:
         conf = config[CONF_B]
@@ -78,9 +71,5 @@ async def to_code(config):
         if CONF_ON_LONG_CLICK in config:
             await automation.build_automation(
                 var.get_b_long_click_trigger(), [], config[CONF_ON_LONG_CLICK]
-            )
-        if CONF_ON_HOLD in config:
-            await automation.build_automation(
-                var.get_b_hold_trigger(), [], config[CONF_ON_HOLD]
             )
 

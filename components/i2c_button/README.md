@@ -14,8 +14,6 @@ i2c_button:
       - lambda: ESP_LOGD("BUTTON", "Button A long clicked");
     on_double_click:
       - lambda: ESP_LOGD("BUTTON", "Button A double clicked");
-    on_hold:
-      - lambda: ESP_LOGD("BUTTON", "Button A held");
   b:
     on_click:
       - lambda: ESP_LOGD("BUTTON", "Button B clicked");
@@ -23,6 +21,4 @@ i2c_button:
       - lambda: ESP_LOGD("BUTTON", "Button B long clicked");
     on_double_click:
       - lambda: ESP_LOGD("BUTTON", "Button B double clicked");
-    on_hold:
-      - lambda: ESP_LOGD("BUTTON", "Button B held");
 ```
