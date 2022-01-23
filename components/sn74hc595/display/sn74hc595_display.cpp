@@ -16,7 +16,7 @@ void SN74HC595Display::setup() {
 
 void SN74HC595Display::loop() {
   static int pos = 0;
-  this->parent_->set_output_bits(pos + (buffer_[pos] << 8));
+  this->parent_->set_output_bits((1 << pos) + (buffer_[pos] << 8));
   if (++pos > 3)
     pos = 0;
 }
