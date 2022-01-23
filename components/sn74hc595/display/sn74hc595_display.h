@@ -52,6 +52,7 @@ class SN74HC595Display : public PollingComponent {
   SN74HC595Component *parent_;
   optional<sn74hc595_writer_t> writer_{};
   uint8_t buffer_[4] = {0};
+  HighFrequencyLoopRequester high_freq_;
 };
 
 }  // namespace sn74hc595

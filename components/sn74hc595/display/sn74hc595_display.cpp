@@ -12,11 +12,12 @@ uint8_t digits[] = { 0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xF8, 0x80, 0x90 
 
 void SN74HC595Display::setup() {
   ESP_LOGCONFIG(TAG, "Setting up SN74HC595 display...");
+  this->high_freq_.start();
 }
 
 void SN74HC595Display::loop() {
   static int pos = 0;
-  this->parent_->set_output_bits((1 << pos) + (buffer_[pos] << 8));
+  this->parent_->set_output_bits((1 << (3 - pos)) + (buffer_[pos] << 8));
   if (++pos > 3)
     pos = 0;
 }
