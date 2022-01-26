@@ -61,6 +61,10 @@ enum : uint8_t {
   SEESAW_NEOPIXEL_SHOW = 0x05,
 };
 
+enum : uint8_t {
+  SEESAW_TOUCH_CHANNEL_OFFSET = 0x10,
+};
+
 
 class Seesaw : public i2c::I2CDevice, public Component {
  public:
@@ -68,8 +72,10 @@ class Seesaw : public i2c::I2CDevice, public Component {
 
   float get_setup_priority() const override;
 
-  void enable_encoder();
-  int32_t get_encoder_position();
+  void enable_encoder(uint8_t number);
+  int32_t get_encoder_position(uint8_t number);
+  int16_t get_touch_value(uint8_t pin);
+  float get_temperature();
   void set_pinmode(uint8_t pin, uint8_t mode);
   bool digital_read(uint8_t pin);
   void set_gpio_interrupt(uint32_t pin, bool enabled);

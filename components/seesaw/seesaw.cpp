@@ -31,16 +31,31 @@ void Seesaw::setup() {
   ESP_LOGCONFIG(TAG, "Hardware type is %s", cpu.c_str());
 }
 
-void Seesaw::enable_encoder() {
-  this->write8(SEESAW_ENCODER, SEESAW_ENCODER_INTENSET, 0x01);
+void Seesaw::enable_encoder(uint8_t number) {
+  this->write8(SEESAW_ENCODER, SEESAW_ENCODER_INTENSET + number, 0x01);
 }
 
-int32_t Seesaw::get_encoder_position() {
+int32_t Seesaw::get_encoder_position(uint8_t number) {
   uint8_t buf[4];
-  if (this->readbuf(SEESAW_ENCODER, SEESAW_ENCODER_POSITION, buf, 4) != i2c::ERROR_OK)
+  if (this->readbuf(SEESAW_ENCODER, SEESAW_ENCODER_POSITION + number, buf, 4) != i2c::ERROR_OK)
     return 0;
   int32_t value = (buf[0] << 24) + (buf[1] << 16) + (buf[2] << 8) + buf[3];
-  return value;
+  return -value;  // make clockwise positive
+}
+
+int16_t Seesaw::get_touch_value(uint8_t pin) {
+  uint8_t buf[2];
+  if (this->readbuf(SEESAW_TOUCH, SEESAW_TOUCH_CHANNEL_OFFSET + pin, buf, 2) != i2c::ERROR_OK)
+    return -1;
+  return (buf[0] << 8) | buf[1];
+}
+
+float Seesaw::get_temperature() {
+  uint8_t buf[4];
+  if (this->readbuf(SEESAW_STATUS, SEESAW_STATUS_TEMP, buf, 4) != i2c::ERROR_OK)
+    return 0;
+  int32_t value = (buf[0] << 24) + (buf[1] << 16) + (buf[2] << 8) + buf[3];
+  return float(value) / 0x10000;
 }
 
 void Seesaw::set_pinmode(uint8_t pin, uint8_t mode) {

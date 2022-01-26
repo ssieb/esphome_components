@@ -4,16 +4,16 @@
 namespace esphome {
 namespace seesaw {
 
-static const char *const TAG = "seesaw_encoder";
+static const char *const TAG = "seesaw.encoder";
 
 void SeesawRotaryEncoder::setup() {
   ESP_LOGCONFIG(TAG, "Setting up Seesaw rotary encoder...");
-  this->parent_->enable_encoder();
+  this->parent_->enable_encoder(this->number_);
   this->publish_state(0);
 }
 
 void SeesawRotaryEncoder::loop() {
-  int32_t new_value = -this->parent_->get_encoder_position();
+  int32_t new_value = this->parent_->get_encoder_position(this->number_);
   if (new_value < this->min_value_)
     new_value = this->min_value_;
   if (new_value > this->max_value_)
