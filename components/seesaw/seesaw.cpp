@@ -43,9 +43,9 @@ int32_t Seesaw::get_encoder_position(uint8_t number) {
   return -value;  // make clockwise positive
 }
 
-int16_t Seesaw::get_touch_value(uint8_t pin) {
+int16_t Seesaw::get_touch_value(uint8_t channel) {
   uint8_t buf[2];
-  if (this->readbuf(SEESAW_TOUCH, SEESAW_TOUCH_CHANNEL_OFFSET + pin, buf, 2) != i2c::ERROR_OK)
+  if (this->readbuf(SEESAW_TOUCH, SEESAW_TOUCH_CHANNEL_OFFSET + channel, buf, 2) != i2c::ERROR_OK)
     return -1;
   return (buf[0] << 8) | buf[1];
 }

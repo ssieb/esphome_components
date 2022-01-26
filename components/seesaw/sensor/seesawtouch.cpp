@@ -11,8 +11,11 @@ void SeesawTouch::setup() {
 }
 
 void SeesawTouch::update() {
-  uint16_t value = this->parent_->get_touch_value(this->pin_);
-  this->publish_state(value);
+  uint16_t value = this->parent_->get_touch_value(this->channel_);
+  if (value == -1)
+    ESP_LOGW(TAG, "touch reading failed for channel %d", this->channel_);
+  else
+    this->publish_state(value);
 }
 
 }  // namespace seesaw

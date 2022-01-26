@@ -74,7 +74,7 @@ class Seesaw : public i2c::I2CDevice, public Component {
 
   void enable_encoder(uint8_t number);
   int32_t get_encoder_position(uint8_t number);
-  int16_t get_touch_value(uint8_t pin);
+  int16_t get_touch_value(uint8_t channel);
   float get_temperature();
   void set_pinmode(uint8_t pin, uint8_t mode);
   bool digital_read(uint8_t pin);

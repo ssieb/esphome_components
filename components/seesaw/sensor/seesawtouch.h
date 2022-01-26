@@ -13,11 +13,11 @@ class SeesawTouch : public sensor::Sensor, public PollingComponent {
   void update() override;
 
   void set_parent(Seesaw *parent) { parent_ = parent; }
-  void set_pin(uint8_t pin) { pin_ = pin; }
+  void set_channel(uint8_t channel) { channel_ = channel; }
 
  protected:
   Seesaw *parent_;
-  uint8_t pin_{0};
+  uint8_t channel_{0};
 };
 
 }  // namespace seesaw
