@@ -41,8 +41,10 @@ text_sensor:
   - platform: keypad
     id: reader
     keypad_id: mykeypad
+    min_length: 4
     max_length: 4
     end_keys: "#"
+    end_key_required: true   # default is false
     back_keys: "*"
     allowed_keys: "0123456789"
     on_progress:

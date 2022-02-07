@@ -2,10 +2,11 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
 from esphome.components import text_sensor
-from esphome.const import CONF_ID, CONF_MAX_LENGTH
+from esphome.const import CONF_ID, CONF_MAX_LENGTH, CONF_MIN_LENGTH
 from .. import Keypad, keypad_ns, CONF_KEYPAD_ID
 
 CONF_END_KEYS = 'end_keys'
+CONF_END_KEY_REQUIRED = 'end_key_required'
 CONF_BACK_KEYS = 'back_keys'
 CONF_ALLOWED_KEYS = 'allowed_keys'
 CONF_ON_PROGRESS= 'on_progress'
@@ -19,8 +20,10 @@ KeypadProgressTrigger = keypad_ns.class_('KeypadProgressTrigger',
 CONFIG_SCHEMA = cv.All(text_sensor.TEXT_SENSOR_SCHEMA.extend({
     cv.GenerateID(): cv.declare_id(KeypadTextSensor),
     cv.GenerateID(CONF_KEYPAD_ID): cv.use_id(Keypad),
+    cv.Optional(CONF_MIN_LENGTH): cv.int_,
     cv.Optional(CONF_MAX_LENGTH): cv.int_,
     cv.Optional(CONF_END_KEYS): cv.string,
+    cv.Optional(CONF_END_KEY_REQUIRED): cv.boolean,
     cv.Optional(CONF_BACK_KEYS): cv.string,
     cv.Optional(CONF_ALLOWED_KEYS): cv.string,
     cv.Optional(CONF_ON_PROGRESS): automation.validate_automation(single=True),
@@ -33,10 +36,14 @@ async def to_code(config):
     await text_sensor.register_text_sensor(var, config)
     keypad = await cg.get_variable(config[CONF_KEYPAD_ID])
     cg.add(keypad.register_listener(var))
+    if CONF_MIN_LENGTH in config:
+        cg.add(var.set_min_length(config[CONF_MIN_LENGTH]))
     if CONF_MAX_LENGTH in config:
         cg.add(var.set_max_length(config[CONF_MAX_LENGTH]))
     if CONF_END_KEYS in config:
         cg.add(var.set_end_keys(config[CONF_END_KEYS]))
+    if CONF_END_KEY_REQUIRED in config:
+        cg.add(var.set_end_key_required(config[CONF_END_KEY_REQUIRED]))
     if CONF_BACK_KEYS in config:
         cg.add(var.set_back_keys(config[CONF_BACK_KEYS]))
     if CONF_ALLOWED_KEYS in config:

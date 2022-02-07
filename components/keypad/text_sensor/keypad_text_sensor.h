@@ -11,8 +11,10 @@ class KeypadTextSensor : public KeypadListener, public text_sensor::TextSensor, 
  public:
   KeypadTextSensor();
   void dump_config() override;
+  void set_min_length(int min_length) { this->min_length_ = min_length; };
   void set_max_length(int max_length) { this->max_length_ = max_length; };
   void set_end_keys(std::string end_keys) { this->end_keys_ = end_keys; };
+  void set_end_key_required(bool end_key_required) { this->end_key_required_ = end_key_required; };
   void set_back_keys(std::string back_keys) { this->back_keys_ = back_keys; };
   void set_allowed_keys(std::string allowed_keys) { this->allowed_keys_ = allowed_keys; };
   Trigger<std::string> *get_progress_trigger() const;
@@ -20,8 +22,10 @@ class KeypadTextSensor : public KeypadListener, public text_sensor::TextSensor, 
   void key_pressed(unsigned char key) override;
 
  protected:
+  int min_length_ = 0;
   int max_length_ = 0;
   std::string end_keys_;
+  bool end_key_required_{false};
   std::string back_keys_;
   std::string allowed_keys_;
   std::string result_;
