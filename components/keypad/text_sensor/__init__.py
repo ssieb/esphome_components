@@ -2,12 +2,13 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
 from esphome.components import text_sensor
-from esphome.const import CONF_ID, CONF_MAX_LENGTH, CONF_MIN_LENGTH
+from esphome.const import CONF_ID, CONF_MAX_LENGTH, CONF_MIN_LENGTH, CONF_TIMEOUT
 from .. import Keypad, keypad_ns, CONF_KEYPAD_ID
 
 CONF_END_KEYS = 'end_keys'
 CONF_END_KEY_REQUIRED = 'end_key_required'
 CONF_BACK_KEYS = 'back_keys'
+CONF_CLEAR_KEYS = 'clear_keys'
 CONF_ALLOWED_KEYS = 'allowed_keys'
 CONF_ON_PROGRESS= 'on_progress'
 
@@ -25,8 +26,10 @@ CONFIG_SCHEMA = cv.All(text_sensor.TEXT_SENSOR_SCHEMA.extend({
     cv.Optional(CONF_END_KEYS): cv.string,
     cv.Optional(CONF_END_KEY_REQUIRED): cv.boolean,
     cv.Optional(CONF_BACK_KEYS): cv.string,
+    cv.Optional(CONF_CLEAR_KEYS): cv.string,
     cv.Optional(CONF_ALLOWED_KEYS): cv.string,
     cv.Optional(CONF_ON_PROGRESS): automation.validate_automation(single=True),
+    cv.Optional(CONF_TIMEOUT): cv.positive_time_period_milliseconds,
 }), cv.has_at_least_one_key(CONF_END_KEYS, CONF_MAX_LENGTH))
 
 
@@ -46,10 +49,14 @@ async def to_code(config):
         cg.add(var.set_end_key_required(config[CONF_END_KEY_REQUIRED]))
     if CONF_BACK_KEYS in config:
         cg.add(var.set_back_keys(config[CONF_BACK_KEYS]))
+    if CONF_CLEAR_KEYS in config:
+        cg.add(var.set_back_keys(config[CONF_BACK_KEYS]))
     if CONF_ALLOWED_KEYS in config:
         cg.add(var.set_allowed_keys(config[CONF_ALLOWED_KEYS]))
     if CONF_ON_PROGRESS in config:
         await automation.build_automation(var.get_progress_trigger(), [(cg.std_string, 'x')],
                                           config[CONF_ON_PROGRESS])
+    if CONF_TIMEOUT in config:
+        cg.add(var.set_timeout(config[CONF_TIMEOUT]))
 
 

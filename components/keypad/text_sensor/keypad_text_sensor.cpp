@@ -8,6 +8,13 @@ static const char *TAG = "keypad_text_sensor";
 
 KeypadTextSensor::KeypadTextSensor() : progress_trigger_(new Trigger<std::string>()) {}
 
+void KeypadTextSensor::loop() {
+  if ((this->timeout_ == 0) || (millis() - this->last_key_time_ < this->timeout_))
+    return;
+  this->result_.clear();
+  this->progress_trigger_->trigger(this->result_);
+}
+
 void KeypadTextSensor::dump_config() {
   ESP_LOGCONFIG(TAG, "Keypad text sensor");
   if (this->min_length_ > 0)
@@ -16,18 +23,30 @@ void KeypadTextSensor::dump_config() {
     ESP_LOGCONFIG(TAG, "  max length: %d", this->max_length_);
   if (!this->back_keys_.empty())
     ESP_LOGCONFIG(TAG, "  erase keys '%s'", this->back_keys_.c_str());
+  if (!this->clear_keys_.empty())
+    ESP_LOGCONFIG(TAG, "  clear keys '%s'", this->clear_keys_.c_str());
   if (!this->end_keys_.empty()) {
     ESP_LOGCONFIG(TAG, "  end keys '%s'", this->end_keys_.c_str());
     ESP_LOGCONFIG(TAG, "  end key is required: %s", ONOFF(this->end_key_required_));
   }
   if (!this->allowed_keys_.empty())
     ESP_LOGCONFIG(TAG, "  allowed keys '%s'", this->allowed_keys_.c_str());
+  if (this->timeout_ > 0)
+    ESP_LOGCONFIG(TAG, "  entry timeout: %0.1f", this->timeout_ / 1000.0);
 }
 
 void KeypadTextSensor::key_pressed(unsigned char key) {
+  this->last_key_time_ = millis();
   if (this->back_keys_.find(key) != std::string::npos) {
     if (!this->result_.empty()) {
       this->result_.pop_back();
+      this->progress_trigger_->trigger(this->result_);
+    }
+    return;
+  }
+  if (this->clear_keys_.find(key) != std::string::npos) {
+    if (!this->result_.empty()) {
+      this->result_.clear();
       this->progress_trigger_->trigger(this->result_);
     }
     return;

@@ -46,6 +46,8 @@ text_sensor:
     end_keys: "#"
     end_key_required: true   # default is false
     back_keys: "*"
+    clear_keys: "C"
+    timeout: 5s
     allowed_keys: "0123456789"
     on_progress:
       - logger.log: 
