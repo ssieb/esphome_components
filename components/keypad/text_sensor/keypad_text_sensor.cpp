@@ -9,7 +9,7 @@ static const char *TAG = "keypad_text_sensor";
 KeypadTextSensor::KeypadTextSensor() : progress_trigger_(new Trigger<std::string>()) {}
 
 void KeypadTextSensor::loop() {
-  if ((this->timeout_ == 0) || (millis() - this->last_key_time_ < this->timeout_))
+  if ((this->timeout_ == 0) || (this->result_.size() == 0) || (millis() - this->last_key_time_ < this->timeout_))
     return;
   this->result_.clear();
   this->progress_trigger_->trigger(this->result_);
