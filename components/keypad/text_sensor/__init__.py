@@ -50,7 +50,7 @@ async def to_code(config):
     if CONF_BACK_KEYS in config:
         cg.add(var.set_back_keys(config[CONF_BACK_KEYS]))
     if CONF_CLEAR_KEYS in config:
-        cg.add(var.set_back_keys(config[CONF_BACK_KEYS]))
+        cg.add(var.set_clear_keys(config[CONF_CLEAR_KEYS]))
     if CONF_ALLOWED_KEYS in config:
         cg.add(var.set_allowed_keys(config[CONF_ALLOWED_KEYS]))
     if CONF_ON_PROGRESS in config:
@@ -58,5 +58,4 @@ async def to_code(config):
                                           config[CONF_ON_PROGRESS])
     if CONF_TIMEOUT in config:
         cg.add(var.set_timeout(config[CONF_TIMEOUT]))
-
 
