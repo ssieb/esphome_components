@@ -51,7 +51,7 @@ void ESmart3Component::loop() {
       if (c != 0xaa)
         continue;
       receiving_ = true;
-      continue;
+      // continue;  ==> This "continue" hast to be deleted, 0xaa must be on byte 0 of datastring for checksum and counting on line 69
     }
     data_.push_back(c);
     if (data_.size() == 6)
@@ -122,7 +122,8 @@ void ESmart3Component::parse_data_() {
 }
 
 uint16_t ESmart3Component::get_16_bit_uint_(uint8_t start_index) const {
-  return (uint16_t(this->data_[start_index]) << 8) | uint16_t(this->data_[start_index + 1]);
+  //return (uint16_t(this->data_[start_index]) << 8) | uint16_t(this->data_[start_index + 1]);
+  return (uint16_t(this->data_[start_index + 1]) << 8) | uint16_t(this->data_[start_index]); //Hight and Lowbyte are swapped, "index" points to the lowbyte, followed by the highbyte (index+1)
 }
 
 }  // namespace esmart3
