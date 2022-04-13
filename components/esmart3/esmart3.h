@@ -28,7 +28,7 @@ class ESmart3Component : public PollingComponent, public uart::UARTDevice {
   float get_setup_priority() const { return setup_priority::DATA; }
 
  protected:
-  boolean check_data_() const;
+  bool check_data_() const;
   void parse_data_();
   uint16_t get_16_bit_uint_(uint8_t start_index) const;
 
