@@ -51,7 +51,6 @@ void ESmart3Component::loop() {
       if (c != 0xaa)
         continue;
       receiving_ = true;
-      continue;
     }
     data_.push_back(c);
     if (data_.size() == 6)
@@ -70,10 +69,10 @@ bool ESmart3Component::check_data_() const {
     ESP_LOGW(TAG, "unexpected response code: %d", data_[3]);
     return false;
   }
-  int sum = 0;
+  uint8_t sum = 0;
   for (uint8_t c: data_)
     sum += c;
-  bool result = (sum & 0xff) == 0;
+  bool result = sum == 0;
   if (!result)
     ESP_LOGW(TAG, "data checksum failed");
   return result;
@@ -122,7 +121,7 @@ void ESmart3Component::parse_data_() {
 }
 
 uint16_t ESmart3Component::get_16_bit_uint_(uint8_t start_index) const {
-  return (uint16_t(this->data_[start_index]) << 8) | uint16_t(this->data_[start_index + 1]);
+  return (uint16_t(this->data_[start_index + 1]) << 8) | uint16_t(this->data_[start_index]);
 }
 
 }  // namespace esmart3
