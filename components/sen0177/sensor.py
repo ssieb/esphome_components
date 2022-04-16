@@ -16,25 +16,51 @@ CONF_PMC_5_0 = 'pmc_5_0'
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(SEN0177Component),
-
-    cv.Optional(CONF_PM_1_0): sensor.sensor_schema(UNIT_MICROGRAMS_PER_CUBIC_METER,
-                                                   ICON_CHEMICAL_WEAPON, 2),
-    cv.Optional(CONF_PM_2_5): sensor.sensor_schema(UNIT_MICROGRAMS_PER_CUBIC_METER,
-                                                   ICON_CHEMICAL_WEAPON, 2),
-    cv.Optional(CONF_PM_10_0): sensor.sensor_schema(UNIT_MICROGRAMS_PER_CUBIC_METER,
-                                                    ICON_CHEMICAL_WEAPON, 2),
-    cv.Optional(CONF_PMC_0_3): sensor.sensor_schema(UNIT_COUNTS_PER_CUBIC_METER,
-                                                    ICON_COUNTER, 2),
-    cv.Optional(CONF_PMC_0_5): sensor.sensor_schema(UNIT_COUNTS_PER_CUBIC_METER,
-                                                    ICON_COUNTER, 2),
-    cv.Optional(CONF_PMC_1_0): sensor.sensor_schema(UNIT_COUNTS_PER_CUBIC_METER,
-                                                    ICON_COUNTER, 2),
-    cv.Optional(CONF_PMC_2_5): sensor.sensor_schema(UNIT_COUNTS_PER_CUBIC_METER,
-                                                    ICON_COUNTER, 2),
-    cv.Optional(CONF_PMC_5_0): sensor.sensor_schema(UNIT_COUNTS_PER_CUBIC_METER,
-                                                    ICON_COUNTER, 2),
-    cv.Optional(CONF_PMC_10_0): sensor.sensor_schema(UNIT_COUNTS_PER_CUBIC_METER,
-                                                     ICON_COUNTER, 2),
+    cv.Optional(CONF_PM_1_0): sensor.sensor_schema(
+        unit_of_measurement=UNIT_MICROGRAMS_PER_CUBIC_METER,
+        icon=ICON_CHEMICAL_WEAPON,
+        accuracy_decimals=2
+    ),
+    cv.Optional(CONF_PM_2_5): sensor.sensor_schema(
+        unit_of_measurement=UNIT_MICROGRAMS_PER_CUBIC_METER,
+        icon=ICON_CHEMICAL_WEAPON,
+        accuracy_decimals=2
+    ),
+    cv.Optional(CONF_PM_10_0): sensor.sensor_schema(
+        unit_of_measurement=UNIT_MICROGRAMS_PER_CUBIC_METER,
+        icon=ICON_CHEMICAL_WEAPON,
+        accuracy_decimals=2
+    ),
+    cv.Optional(CONF_PMC_0_3): sensor.sensor_schema(
+        unit_of_measurement=UNIT_COUNTS_PER_CUBIC_METER,
+        icon=ICON_COUNTER,
+        accuracy_decimals=2
+    ),
+    cv.Optional(CONF_PMC_0_5): sensor.sensor_schema(
+        unit_of_measurement=UNIT_COUNTS_PER_CUBIC_METER,
+        icon=ICON_COUNTER,
+        accuracy_decimals=2
+    ),
+    cv.Optional(CONF_PMC_1_0): sensor.sensor_schema(
+        unit_of_measurement=UNIT_COUNTS_PER_CUBIC_METER,
+        icon=ICON_COUNTER,
+        accuracy_decimals=2
+    ),
+    cv.Optional(CONF_PMC_2_5): sensor.sensor_schema(
+        unit_of_measurement=UNIT_COUNTS_PER_CUBIC_METER,
+        icon=ICON_COUNTER,
+        accuracy_decimals=2
+    ),
+    cv.Optional(CONF_PMC_5_0): sensor.sensor_schema(
+        unit_of_measurement=UNIT_COUNTS_PER_CUBIC_METER,
+        icon=ICON_COUNTER,
+        accuracy_decimals=2
+    ),
+    cv.Optional(CONF_PMC_10_0): sensor.sensor_schema(
+        unit_of_measurement=UNIT_COUNTS_PER_CUBIC_METER,
+        icon=ICON_COUNTER,
+        accuracy_decimals=2
+    ),
 }).extend(cv.COMPONENT_SCHEMA).extend(uart.UART_DEVICE_SCHEMA)
 
 

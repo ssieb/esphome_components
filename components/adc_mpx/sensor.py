@@ -17,15 +17,18 @@ ADCMPXSensor = adc_mpx_ns.class_(
 )
 
 CONFIG_SCHEMA = (
-    sensor.sensor_schema(UNIT_VOLT, ICON_EMPTY, 2, DEVICE_CLASS_VOLTAGE)
-    .extend(
+    sensor.sensor_schema(
+        ADCMPXSensor,
+        unit_of_measurement=UNIT_VOLT,
+        icon=ICON_EMPTY,
+        accuracy_decimals=2,
+        device_class=DEVICE_CLASS_VOLTAGE
+    ).extend(
         {
-            cv.GenerateID(): cv.declare_id(ADCMPXSensor),
             cv.Required(CONF_SENSOR): cv.use_id(voltage_sampler.VoltageSampler),
             cv.Required(CONF_PIN): pins.gpio_output_pin_schema
         }
-    )
-    .extend(cv.polling_component_schema("60s"))
+    ).extend(cv.polling_component_schema("60s"))
 )
 
 

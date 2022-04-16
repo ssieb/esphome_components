@@ -8,7 +8,7 @@ namespace adc_mpx {
 static const char *TAG = "adc_mpx";
 
 void ADCMPXSensor::setup() {
-  pin_->pin_mode(INPUT);
+  pin_->pin_mode(gpio::FLAG_INPUT);
 }
 
 void ADCMPXSensor::dump_config() {
@@ -17,10 +17,10 @@ void ADCMPXSensor::dump_config() {
 }
 
 void ADCMPXSensor::update() {
-  pin_->pin_mode(OUTPUT);
+  pin_->pin_mode(gpio::FLAG_OUTPUT);
   pin_->digital_write(true);
   float value = source_->sample();
-  pin_->pin_mode(INPUT);
+  pin_->pin_mode(gpio::FLAG_INPUT);
   publish_state(value);
 }
 

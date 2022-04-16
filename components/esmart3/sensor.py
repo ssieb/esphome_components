@@ -24,17 +24,61 @@ CONF_BATTERY_LEVEL = "battery_level"
 
 CONFIG_SCHEMA = uart.UART_DEVICE_SCHEMA.extend({
     cv.GenerateID(): cv.declare_id(ESmart3Component),
-    cv.Optional(CONF_CHARGE_MODE): sensor.sensor_schema(UNIT_EMPTY, ICON_EMPTY, 0),
-    cv.Optional(CONF_INPUT_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 1),
-    cv.Optional(CONF_BATTERY_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 1),
-    cv.Optional(CONF_CHARGING_CURRENT): sensor.sensor_schema(UNIT_AMPERE, ICON_CURRENT_AC, 1),
-    cv.Optional(CONF_LOAD_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 1),
-    cv.Optional(CONF_LOAD_CURRENT): sensor.sensor_schema(UNIT_AMPERE, ICON_CURRENT_AC, 1),
-    cv.Optional(CONF_CHARGING_POWER): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 0),
-    cv.Optional(CONF_LOAD_POWER): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 0),
-    cv.Optional(CONF_BATTERY_TEMP): sensor.sensor_schema(UNIT_CELSIUS, ICON_THERMOMETER, 0),
-    cv.Optional(CONF_INTERNAL_TEMP): sensor.sensor_schema(UNIT_CELSIUS, ICON_THERMOMETER, 0),
-    cv.Optional(CONF_BATTERY_LEVEL): sensor.sensor_schema(UNIT_PERCENT, ICON_PERCENT, 0),
+    cv.Optional(CONF_CHARGE_MODE): sensor.sensor_schema(
+        unit_of_measurement=UNIT_EMPTY,
+        icon=ICON_EMPTY,
+        accuracy_decimals=0
+    ),
+    cv.Optional(CONF_INPUT_VOLTAGE): sensor.sensor_schema(
+        unit_of_measurement=UNIT_VOLT,
+        icon=ICON_FLASH,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_BATTERY_VOLTAGE): sensor.sensor_schema(
+        unit_of_measurement=UNIT_VOLT,
+        icon=ICON_FLASH,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_CHARGING_CURRENT): sensor.sensor_schema(
+        unit_of_measurement=UNIT_AMPERE,
+        icon=ICON_CURRENT_AC,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_LOAD_VOLTAGE): sensor.sensor_schema(
+        unit_of_measurement=UNIT_VOLT,
+        icon=ICON_FLASH,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_LOAD_CURRENT): sensor.sensor_schema(
+        unit_of_measurement=UNIT_AMPERE,
+        icon=ICON_CURRENT_AC,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_CHARGING_POWER): sensor.sensor_schema(
+        unit_of_measurement=UNIT_WATT,
+        icon=ICON_POWER,
+        accuracy_decimals=0
+    ),
+    cv.Optional(CONF_LOAD_POWER): sensor.sensor_schema(
+        unit_of_measurement=UNIT_WATT,
+        icon=ICON_POWER,
+        accuracy_decimals=0
+    ),
+    cv.Optional(CONF_BATTERY_TEMP): sensor.sensor_schema(
+        unit_of_measurement=UNIT_CELSIUS,
+        icon=ICON_THERMOMETER,
+        accuracy_decimals=0
+    ),
+    cv.Optional(CONF_INTERNAL_TEMP): sensor.sensor_schema(
+        unit_of_measurement=UNIT_CELSIUS,
+        icon=ICON_THERMOMETER,
+        accuracy_decimals=0
+    ),
+    cv.Optional(CONF_BATTERY_LEVEL): sensor.sensor_schema(
+        unit_of_measurement=UNIT_PERCENT,
+        icon=ICON_PERCENT,
+        accuracy_decimals=0
+    ),
 }).extend(cv.polling_component_schema('60s'))
 
 async def to_code(config):

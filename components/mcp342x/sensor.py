@@ -24,8 +24,12 @@ MCP342XSensor = mcp342x_ns.class_('MCP342XSensor', sensor.Sensor, cg.PollingComp
                                   voltage_sampler.VoltageSampler)
 
 CONF_MCP342X_ID = 'mcp342x_id'
-CONFIG_SCHEMA = sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 3).extend({
-    cv.GenerateID(): cv.declare_id(MCP342XSensor),
+CONFIG_SCHEMA = sensor.sensor_schema(
+    MCP342XSensor,
+    unit_of_measurement=UNIT_VOLT,
+    icon=ICON_FLASH,
+    accuracy_decimals=3
+).extend({
     cv.GenerateID(CONF_MCP342X_ID): cv.use_id(MCP342XComponent),
     cv.Required(CONF_CHANNEL): cv.int_range(0, 3),
     cv.Required(CONF_NBITS): validate_resolution,

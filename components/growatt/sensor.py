@@ -29,23 +29,91 @@ UNIT_KILOWATT_HOURS = "kWh"
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(Growatt),
-    cv.Optional(CONF_INPUT_POWER): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
-    cv.Optional(CONF_PV1_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 1),
-    cv.Optional(CONF_PV1_CURRENT): sensor.sensor_schema(UNIT_AMPERE, ICON_CURRENT_AC, 3),
-    cv.Optional(CONF_PV1_POWER): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
-    cv.Optional(CONF_PV2_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 1),
-    cv.Optional(CONF_PV2_CURRENT): sensor.sensor_schema(UNIT_AMPERE, ICON_CURRENT_AC, 3),
-    cv.Optional(CONF_PV2_POWER): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
-    cv.Optional(CONF_OUTPUT_POWER): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
-    cv.Optional(CONF_GRID_FREQUENCY): sensor.sensor_schema(UNIT_HERTZ, ICON_CURRENT_AC, 1),
-    cv.Optional(CONF_AC_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 1),
-    cv.Optional(CONF_AC_CURRENT): sensor.sensor_schema(UNIT_AMPERE, ICON_CURRENT_AC, 3),
-    cv.Optional(CONF_AC_POWER): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1),
-    cv.Optional(CONF_TODAY_GEN): sensor.sensor_schema(UNIT_KILOWATT_HOURS, ICON_POWER, 1),
-    cv.Optional(CONF_TOTAL_GEN): sensor.sensor_schema(UNIT_KILOWATT_HOURS, ICON_POWER, 1),
-    cv.Optional(CONF_TEMPERATURE): sensor.sensor_schema(UNIT_CELSIUS, ICON_THERMOMETER, 1),
-    cv.Optional(CONF_TODAY_GRID): sensor.sensor_schema(UNIT_KILOWATT_HOURS, ICON_POWER, 1),
-    cv.Optional(CONF_TOTAL_GRID): sensor.sensor_schema(UNIT_KILOWATT_HOURS, ICON_POWER, 1),
+    cv.Optional(CONF_INPUT_POWER): sensor.sensor_schema(
+        unit_of_measurement=UNIT_WATT,
+        icon=ICON_POWER,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_PV1_VOLTAGE): sensor.sensor_schema(
+        unit_of_measurement=UNIT_VOLT,
+        icon=ICON_FLASH,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_PV1_CURRENT): sensor.sensor_schema(
+        unit_of_measurement=UNIT_AMPERE,
+        icon=ICON_CURRENT_AC,
+        accuracy_decimals=3
+    ),
+    cv.Optional(CONF_PV1_POWER): sensor.sensor_schema(
+        unit_of_measurement=UNIT_WATT,
+        icon=ICON_POWER,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_PV2_VOLTAGE): sensor.sensor_schema(
+        unit_of_measurement=UNIT_VOLT,
+        icon=ICON_FLASH,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_PV2_CURRENT): sensor.sensor_schema(
+        unit_of_measurement=UNIT_AMPERE,
+        icon=ICON_CURRENT_AC,
+        accuracy_decimals=3
+    ),
+    cv.Optional(CONF_PV2_POWER): sensor.sensor_schema(
+        unit_of_measurement=UNIT_WATT,
+        icon=ICON_POWER,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_OUTPUT_POWER): sensor.sensor_schema(
+        unit_of_measurement=UNIT_WATT,
+        icon=ICON_POWER,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_GRID_FREQUENCY): sensor.sensor_schema(
+        unit_of_measurement=UNIT_HERTZ,
+        icon=ICON_CURRENT_AC,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_AC_VOLTAGE): sensor.sensor_schema(
+        unit_of_measurement=UNIT_VOLT,
+        icon=ICON_FLASH,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_AC_CURRENT): sensor.sensor_schema(
+        unit_of_measurement=UNIT_AMPERE,
+        icon=ICON_CURRENT_AC,
+        accuracy_decimals=3
+    ),
+    cv.Optional(CONF_AC_POWER): sensor.sensor_schema(
+        unit_of_measurement=UNIT_WATT,
+        icon=ICON_POWER,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_TODAY_GEN): sensor.sensor_schema(
+        unit_of_measurement=UNIT_KILOWATT_HOURS,
+        icon=ICON_POWER,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_TOTAL_GEN): sensor.sensor_schema(
+        unit_of_measurement=UNIT_KILOWATT_HOURS,
+        icon=ICON_POWER,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_TEMPERATURE): sensor.sensor_schema(
+        unit_of_measurement=UNIT_CELSIUS,
+        icon=ICON_THERMOMETER,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_TODAY_GRID): sensor.sensor_schema(
+        unit_of_measurement=UNIT_KILOWATT_HOURS,
+        icon=ICON_POWER,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_TOTAL_GRID): sensor.sensor_schema(
+        unit_of_measurement=UNIT_KILOWATT_HOURS,
+        icon=ICON_POWER,
+        accuracy_decimals=1
+    ),
 }).extend(cv.polling_component_schema('60s')).extend(modbus.modbus_device_schema(0x01))
 
 

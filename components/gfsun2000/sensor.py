@@ -19,11 +19,36 @@ CONF_TOTAL_ENERGY = "total_energy"
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(GFSun2000),
     cv.Optional(CONF_DEVICE_ID): text_sensor.TEXT_SENSOR_SCHEMA.extend({cv.GenerateID(): cv.declare_id(text_sensor.TextSensor)}),
-    cv.Optional(CONF_AC_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 1, DEVICE_CLASS_VOLTAGE),
-    cv.Optional(CONF_DC_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 1, DEVICE_CLASS_VOLTAGE),
-    cv.Optional(CONF_OUTPUT_POWER): sensor.sensor_schema(UNIT_WATT, ICON_POWER, 1, DEVICE_CLASS_POWER),
-    cv.Optional(CONF_CUSTOM_ENERGY): sensor.sensor_schema(UNIT_WATT_HOURS, ICON_POWER, 0, DEVICE_CLASS_ENERGY),
-    cv.Optional(CONF_TOTAL_ENERGY): sensor.sensor_schema(UNIT_WATT_HOURS, ICON_POWER, 0, DEVICE_CLASS_ENERGY),
+    cv.Optional(CONF_AC_VOLTAGE): sensor.sensor_schema(
+        unit_of_measurement=UNIT_VOLT,
+        icon=ICON_FLASH,
+        accuracy_decimals=1,
+        device_class=DEVICE_CLASS_VOLTAGE
+    ),
+    cv.Optional(CONF_DC_VOLTAGE): sensor.sensor_schema(
+        unit_of_measurement=UNIT_VOLT,
+        icon=ICON_FLASH,
+        accuracy_decimals=1,
+        device_class=DEVICE_CLASS_VOLTAGE
+    ),
+    cv.Optional(CONF_OUTPUT_POWER): sensor.sensor_schema(
+        unit_of_measurement=UNIT_WATT,
+        icon=ICON_POWER,
+        accuracy_decimals=1,
+        device_class=DEVICE_CLASS_POWER
+    ),
+    cv.Optional(CONF_CUSTOM_ENERGY): sensor.sensor_schema(
+        unit_of_measurement=UNIT_WATT_HOURS,
+        icon=ICON_POWER,
+        accuracy_decimals=0,
+        device_class=DEVICE_CLASS_ENERGY
+    ),
+    cv.Optional(CONF_TOTAL_ENERGY): sensor.sensor_schema(
+        unit_of_measurement=UNIT_WATT_HOURS,
+        icon=ICON_POWER,
+        accuracy_decimals=0,
+        device_class=DEVICE_CLASS_ENERGY
+    ),
 }).extend(cv.polling_component_schema('60s')).extend(modbus.modbus_device_schema(0x01))
 
 

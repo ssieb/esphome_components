@@ -17,13 +17,48 @@ CONF_OCI = "oci"
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(Kuntze),
-    cv.Optional(CONF_PH): sensor.sensor_schema(UNIT_EMPTY, ICON_EMPTY, 1, DEVICE_CLASS_EMPTY),
-    cv.Optional(CONF_TEMPERATURE): sensor.sensor_schema(UNIT_CELSIUS, ICON_THERMOMETER, 1, DEVICE_CLASS_TEMPERATURE),
-    cv.Optional(CONF_DIS1): sensor.sensor_schema(UNIT_EMPTY, ICON_EMPTY, 1, DEVICE_CLASS_EMPTY),
-    cv.Optional(CONF_DIS2): sensor.sensor_schema(UNIT_EMPTY, ICON_EMPTY, 1, DEVICE_CLASS_EMPTY),
-    cv.Optional(CONF_REDOX): sensor.sensor_schema(UNIT_EMPTY, ICON_EMPTY, 1, DEVICE_CLASS_EMPTY),
-    cv.Optional(CONF_EC): sensor.sensor_schema(UNIT_EMPTY, ICON_EMPTY, 1, DEVICE_CLASS_EMPTY),
-    cv.Optional(CONF_OCI): sensor.sensor_schema(UNIT_EMPTY, ICON_EMPTY, 1, DEVICE_CLASS_EMPTY),
+    cv.Optional(CONF_PH): sensor.sensor_schema(
+        unit_of_measurement=UNIT_EMPTY,
+        icon=ICON_EMPTY,
+        accuracy_decimals=1,
+        device_class=DEVICE_CLASS_EMPTY
+    ),
+    cv.Optional(CONF_TEMPERATURE): sensor.sensor_schema(
+        unit_of_measurement=UNIT_CELSIUS,
+        icon=ICON_THERMOMETER,
+        accuracy_decimals=1,
+        device_class=DEVICE_CLASS_TEMPERATURE
+    ),
+    cv.Optional(CONF_DIS1): sensor.sensor_schema(
+        unit_of_measurement=UNIT_EMPTY,
+        icon=ICON_EMPTY,
+        accuracy_decimals=1,
+        device_class=DEVICE_CLASS_EMPTY
+    ),
+    cv.Optional(CONF_DIS2): sensor.sensor_schema(
+        unit_of_measurement=UNIT_EMPTY,
+        icon=ICON_EMPTY,
+        accuracy_decimals=1,
+        device_class=DEVICE_CLASS_EMPTY
+    ),
+    cv.Optional(CONF_REDOX): sensor.sensor_schema(
+        unit_of_measurement=UNIT_EMPTY,
+        icon=ICON_EMPTY,
+        accuracy_decimals=1,
+        device_class=DEVICE_CLASS_EMPTY
+    ),
+    cv.Optional(CONF_EC): sensor.sensor_schema(
+        unit_of_measurement=UNIT_EMPTY,
+        icon=ICON_EMPTY,
+        accuracy_decimals=1,
+        device_class=DEVICE_CLASS_EMPTY
+    ),
+    cv.Optional(CONF_OCI): sensor.sensor_schema(
+        unit_of_measurement=UNIT_EMPTY,
+        icon=ICON_EMPTY,
+        accuracy_decimals=1,
+        device_class=DEVICE_CLASS_EMPTY
+    ),
 }).extend(cv.polling_component_schema('60s')).extend(modbus.modbus_device_schema(0x01))
 
 

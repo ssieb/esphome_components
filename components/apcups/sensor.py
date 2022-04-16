@@ -24,14 +24,46 @@ CONF_EST_RUNTIME = "estimated_runtime"
 
 CONFIG_SCHEMA = uart.UART_DEVICE_SCHEMA.extend({
     cv.GenerateID(): cv.declare_id(ApcSmartUpsSerial),
-    cv.Optional(CONF_INTERNAL_TEMP): sensor.sensor_schema(UNIT_CELSIUS, ICON_THERMOMETER, 1),
-    cv.Optional(CONF_BATTERY_VOLT): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 2),
-    cv.Optional(CONF_BATTERY_LEVEL): sensor.sensor_schema(UNIT_PERCENT, ICON_PERCENT, 1),
-    cv.Optional(CONF_POWER_LOAD): sensor.sensor_schema(UNIT_PERCENT, ICON_PERCENT, 1),
-    cv.Optional(CONF_INPUT_VOLT): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 1),
-    cv.Optional(CONF_OUTPUT_VOLT): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 1),
-    cv.Optional(CONF_LINE_FREQ): sensor.sensor_schema(UNIT_HERTZ, ICON_CURRENT_AC, 2),
-    cv.Optional(CONF_EST_RUNTIME): sensor.sensor_schema(UNIT_MINUTE, ICON_COUNTER, 0),
+    cv.Optional(CONF_INTERNAL_TEMP): sensor.sensor_schema(
+        unit_of_measurement=UNIT_CELSIUS,
+        icon=ICON_THERMOMETER,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_BATTERY_VOLT): sensor.sensor_schema(
+        unit_of_measurement=UNIT_VOLT,
+        icon=ICON_FLASH,
+        accuracy_decimals=2
+    ),
+    cv.Optional(CONF_BATTERY_LEVEL): sensor.sensor_schema(
+        unit_of_measurement=UNIT_PERCENT,
+        icon=ICON_PERCENT,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_POWER_LOAD): sensor.sensor_schema(
+        unit_of_measurement=UNIT_PERCENT,
+        icon=ICON_PERCENT,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_INPUT_VOLT): sensor.sensor_schema(
+        unit_of_measurement=UNIT_VOLT,
+        icon=ICON_FLASH,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_OUTPUT_VOLT): sensor.sensor_schema(
+        unit_of_measurement=UNIT_VOLT,
+        icon=ICON_FLASH,
+        accuracy_decimals=1
+    ),
+    cv.Optional(CONF_LINE_FREQ): sensor.sensor_schema(
+        unit_of_measurement=UNIT_HERTZ,
+        icon=ICON_CURRENT_AC,
+        accuracy_decimals=2
+    ),
+    cv.Optional(CONF_EST_RUNTIME): sensor.sensor_schema(
+        unit_of_measurement=UNIT_MINUTE,
+        icon=ICON_COUNTER,
+        accuracy_decimals=0
+    ),
 }).extend(cv.polling_component_schema('60s'))
 
 

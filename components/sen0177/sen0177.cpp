@@ -49,7 +49,7 @@ void SEN0177Component::loop() {
   }
 }
 
-boolean SEN0177Component::check_data_() const {
+bool SEN0177Component::check_data_() const {
   const uint8_t *data = this->data_;
   if (data[1] != 0x4d) // check second start byte
     return false;
