@@ -13,7 +13,7 @@ sensor:
     capacity:
       name: Capacity
     battery_voltage:
-      - number: 1   # 1-based
+      - string: 1   # 1-based
         name: String 1 voltage
     temperature:
       - number: 0   # 0-based

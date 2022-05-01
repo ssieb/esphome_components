@@ -41,7 +41,9 @@ class Overkill : public PollingComponent, public uart::UARTDevice {
   sensor::Sensor *rate_capacity_sensor_{nullptr};
   sensor::Sensor *capacity_sensor_{nullptr};
 
+  bool update_{false};
   std::vector<uint8_t> data_;
+  std::string version_;
   int string_count_{0};
   int ntc_count_{0};
 };

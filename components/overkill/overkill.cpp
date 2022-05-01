@@ -11,19 +11,19 @@ static const uint8_t OVERKILL_CMD_VERSION = 5;
 
 void Overkill::dump_config() {
   ESP_LOGCONFIG(TAG, "Overkill BMS:");
-  if (this->version.size() > 0)
-    ESP_LOGCONFIG(TAG, "  Version: %s", this->version.c_str());
+  if (this->version_.size() > 0)
+    ESP_LOGCONFIG(TAG, "  Version: %s", this->version_.c_str());
   if (this->string_count_ > 0)
     ESP_LOGCONFIG(TAG, "  %d battery strings", this->string_count_);
   for (auto nsensor: this->battery_voltage_sensors_) {
-    std::string s = str_sprintf("String %d Voltage", nsensor->num + 1);
-    LOG_SENSOR("  ", s.c_str(), nsensor->sensor);
+    std::string s = str_sprintf("String %d Voltage", nsensor.num + 1);
+    LOG_SENSOR("  ", "String Voltage", nsensor.sensor);
   }
   if (this->ntc_count_ > 0)
     ESP_LOGCONFIG(TAG, "  %d NTC sensors", this->ntc_count_);
   for (auto nsensor: this->temperature_sensors_) {
-    std::string s = str_sprintf("NTC %d", nsensor->num);
-    LOG_SENSOR("  ", s.c_str(), nsensor->sensor);
+    std::string s = str_sprintf("NTC %d", nsensor.num);
+    LOG_SENSOR("  ", "NTC", nsensor.sensor);
   }
   LOG_SENSOR("  ", "Voltage", this->voltage_sensor_);
   LOG_SENSOR("  ", "Current", this->current_sensor_);
@@ -83,14 +83,14 @@ void Overkill::loop() {
    case 2: cmd = OVERKILL_CMD_VOLTAGE; break;
    case 3: cmd = OVERKILL_CMD_VERSION; break;
   }
-  uint8_t buf[7] = {0xdd, 0xa5, cmd, 0, 0xff, -cmd, 0x77};
-  this->write(buf, 7);
+  uint8_t buf[7] = {0xdd, 0xa5, cmd, 0, 0xff, (uint8_t)-cmd, 0x77};
+  this->write_array(buf, 7);
   receiving = true;
   this->read_data_(true);
   last_data = now;
 }
 
-bool Overkill::read_data_(bool first=false) {
+bool Overkill::read_data_(bool first) {
   static int state;
   static uint16_t csum;
   static uint16_t dcsum;
@@ -118,7 +118,7 @@ bool Overkill::read_data_(bool first=false) {
      case 3:
       length = c;
       if (length == 0)
-        dstate++;
+        state++;
       this->data_.clear();
       csum -= c;
       break;
@@ -132,7 +132,7 @@ bool Overkill::read_data_(bool first=false) {
       dcsum = c << 8;
       break;
      case 6:
-      dscum += c;
+      dcsum += c;
       break;
      case 7:
       if (c != 0x77) {
@@ -163,42 +163,41 @@ bool Overkill::read_data_(bool first=false) {
 void Overkill::parse_data_(uint8_t cmd) {
   if (cmd == 3) {
     if (this->voltage_sensor_ != nullptr)
-      this->voltage_sensor_.publish_state(get_16_bit_uint_(0) / 100.0f);
+      this->voltage_sensor_->publish_state(get_16_bit_uint_(0) / 100.0f);
     if (this->current_sensor_ != nullptr)
-      this->current_sensor_.publish_state(get_16_bit_uint_(2) / 100.0f);
+      this->current_sensor_->publish_state(get_16_bit_uint_(2) / 100.0f);
     if (this->balance_capacity_sensor_ != nullptr)
-      this->balance_capacity_sensor_.publish_state(get_16_bit_uint_(4) / 100.0f);
+      this->balance_capacity_sensor_->publish_state(get_16_bit_uint_(4) / 100.0f);
     if (this->rate_capacity_sensor_ != nullptr)
-      this->rate_capacity_sensor_.publish_state(get_16_bit_uint_(6) / 100.0f);
+      this->rate_capacity_sensor_->publish_state(get_16_bit_uint_(6) / 100.0f);
     if (this->capacity_sensor_ != nullptr)
-      this->capacity_sensor_.publish_state(this->data[19] << 8);
+      this->capacity_sensor_->publish_state(this->data_[19] << 8);
     if (this->string_count_ == 0) {
-      this->string_count_ = this->data[21];
+      this->string_count_ = this->data_[21];
       ESP_LOGD(TAG, "%d battery strings", this->string_count_);
     }
-    int count = this->data[22];
+    int count = this->data_[22];
     if (this->ntc_count_ == 0) {
       this->ntc_count_ = count;
       ESP_LOGD(TAG, "%d NTC sensors", this->ntc_count_);
     }
     for (auto nsensor: this->temperature_sensors_) {
-      if (nsensor->num < count) {
-        int offset = nsensor->num * 2 + 23;
-        nsensor->sensor.publish_state((get_16_bit_uint_(offset) - 2731) / 10.0f);
+      if (nsensor.num < count) {
+        int offset = nsensor.num * 2 + 23;
+        nsensor.sensor->publish_state((get_16_bit_uint_(offset) - 2731) / 10.0f);
       }
     }
   } else if (cmd == 4) {
     int count = this->data_.size() / 2;
     for (auto nsensor: this->battery_voltage_sensors_) {
-      if (nsensor->num < count) {
-        int offset = nsensor->num * 2;
-        nsensor->sensor.publish_state(get_16_bit_uint_(offset) / 1000.0f);
+      if (nsensor.num < count) {
+        int offset = nsensor.num * 2;
+        nsensor.sensor->publish_state(get_16_bit_uint_(offset) / 1000.0f);
       }
     }
   } else if (cmd == 5) {
-    this->data_.push_back(0);
-    this->version_ = this->data_.data;
-    ESP_LOGD(TAG, "version: %s", this->data_.data);
+    this->version_.assign((char *)this->data_.data(), this->data_.size());
+    ESP_LOGD(TAG, "version: %s", this->version_.c_str());
   } else {
     ESP_LOGW(TAG, "unknown command %02x", cmd);
   }
