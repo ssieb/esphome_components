@@ -1,16 +1,16 @@
-#include "overkill.h"
+#include "jdb_bms.h"
 #include "esphome/core/log.h"
 
 namespace esphome {
-namespace overkill {
+namespace jdb_bms {
 
-static const char *TAG = "overkill";
-static const uint8_t OVERKILL_CMD_BASIC = 3;
-static const uint8_t OVERKILL_CMD_VOLTAGE = 4;
-static const uint8_t OVERKILL_CMD_VERSION = 5;
+static const char *TAG = "jdb_bms";
+static const uint8_t JDB_BMS_CMD_BASIC = 3;
+static const uint8_t JDB_BMS_CMD_VOLTAGE = 4;
+static const uint8_t JDB_BMS_CMD_VERSION = 5;
 
-void Overkill::dump_config() {
-  ESP_LOGCONFIG(TAG, "Overkill BMS:");
+void JDB_BMS::dump_config() {
+  ESP_LOGCONFIG(TAG, "JDB BMS:");
   if (this->version_.size() > 0)
     ESP_LOGCONFIG(TAG, "  Version: %s", this->version_.c_str());
   if (this->string_count_ > 0)
@@ -33,7 +33,7 @@ void Overkill::dump_config() {
   this->check_uart_settings(9600);
 }
 
-void Overkill::update() {
+void JDB_BMS::update() {
   if (this->update_) {
     ESP_LOGW(TAG, "update interval overrun");
     return;
@@ -41,7 +41,7 @@ void Overkill::update() {
   this->update_ = true;
 }
 
-void Overkill::loop() {
+void JDB_BMS::loop() {
   static bool receiving = false;
   static int state = 0;
   static uint32_t last_data = 0;
@@ -79,9 +79,9 @@ void Overkill::loop() {
 
   uint8_t cmd = 0;
   switch(state) {
-   case 1: cmd = OVERKILL_CMD_BASIC; break;
-   case 2: cmd = OVERKILL_CMD_VOLTAGE; break;
-   case 3: cmd = OVERKILL_CMD_VERSION; break;
+   case 1: cmd = JDB_BMS_CMD_BASIC; break;
+   case 2: cmd = JDB_BMS_CMD_VOLTAGE; break;
+   case 3: cmd = JDB_BMS_CMD_VERSION; break;
   }
   uint8_t buf[7] = {0xdd, 0xa5, cmd, 0, 0xff, (uint8_t)-cmd, 0x77};
   this->write_array(buf, 7);
@@ -90,7 +90,7 @@ void Overkill::loop() {
   last_data = now;
 }
 
-bool Overkill::read_data_(bool first) {
+bool JDB_BMS::read_data_(bool first) {
   static int state;
   static uint16_t csum;
   static uint16_t dcsum;
@@ -160,7 +160,7 @@ bool Overkill::read_data_(bool first) {
   return true;
 }
 
-void Overkill::parse_data_(uint8_t cmd) {
+void JDB_BMS::parse_data_(uint8_t cmd) {
   if (cmd == 3) {
     if (this->voltage_sensor_ != nullptr)
       this->voltage_sensor_->publish_state(get_16_bit_uint_(0) / 100.0f);
@@ -203,9 +203,9 @@ void Overkill::parse_data_(uint8_t cmd) {
   }
 }
 
-uint16_t Overkill::get_16_bit_uint_(uint8_t start_index) {
+uint16_t JDB_BMS::get_16_bit_uint_(uint8_t start_index) {
   return (uint16_t(this->data_[start_index]) << 8) | uint16_t(this->data_[start_index + 1]);
 }
 
-}  // namespace overkill
+}  // namespace jdb_bms
 }  // namespace esphome

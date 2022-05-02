@@ -22,8 +22,8 @@ from esphome.const import (
 
 DEPENDENCIES = ['uart']
 
-overkill_ns = cg.esphome_ns.namespace('overkill')
-Overkill = overkill_ns.class_('Overkill', uart.UARTDevice, cg.PollingComponent)
+jdb_bms_ns = cg.esphome_ns.namespace('jdb_bms')
+JDB_BMS = jdb_bms_ns.class_('JDB_BMS', uart.UARTDevice, cg.PollingComponent)
 
 CONF_STRING = "string"
 CONF_BALANCE_CAPACITY = "balance_capacity"
@@ -31,7 +31,7 @@ CONF_RATE_CAPACITY = "rate_capacity"
 UNIT_AMPHOUR = "Ah"
 
 CONFIG_SCHEMA = uart.UART_DEVICE_SCHEMA.extend({
-    cv.GenerateID(): cv.declare_id(Overkill),
+    cv.GenerateID(): cv.declare_id(JDB_BMS),
     cv.Optional(CONF_BATTERY_VOLTAGE): cv.ensure_list(
         sensor.sensor_schema(
             unit_of_measurement=UNIT_VOLT,

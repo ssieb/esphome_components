@@ -5,14 +5,14 @@
 #include "esphome/components/uart/uart.h"
 
 namespace esphome {
-namespace overkill {
+namespace jdb_bms {
 
 struct numbered_sensor {
   int num;
   sensor::Sensor *sensor;
 };
 
-class Overkill : public PollingComponent, public uart::UARTDevice {
+class JDB_BMS : public PollingComponent, public uart::UARTDevice {
  public:
   void add_battery_voltage_sensor(int snum, sensor::Sensor *sensor) { battery_voltage_sensors_.push_back({snum - 1, sensor}); }
   void add_temperature_sensor(int snum, sensor::Sensor *sensor) { temperature_sensors_.push_back({snum, sensor}); }
@@ -48,5 +48,5 @@ class Overkill : public PollingComponent, public uart::UARTDevice {
   int ntc_count_{0};
 };
 
-}  // namespace overkill
+}  // namespace jdb_bms
 }  // namespace esphome

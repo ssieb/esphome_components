@@ -1,11 +1,11 @@
-# Overkill BMS component
+# JDB BMS component
 
 A configured uart component is required.
 
 Example:
 ```yaml
 sensor:
-  - platform: overkill
+  - platform: jdb_bms
     voltage:
       name: Voltage
     current:
