@@ -1,11 +1,12 @@
 # JDB BMS component
 
 A configured uart component is required.
+All sensors are optional.
 
 Example:
 ```yaml
-sensor:
-  - platform: jdb_bms
+jdb_bms:
+  - id: bms
     voltage:
       name: Voltage
     current:
@@ -22,5 +23,35 @@ sensor:
       name: Balance Capacity
     rate_capacity:
       name: Rate Capacity
+    charge_fet:
+      name: Charge FET
+    discharge_fet:
+      name: Discharge FET
+    covp_prot:
+      name: COVP
+    cuvp_prot:
+      name: CUVP
+    povp_prot:
+      name: POVP
+    puvp_prot:
+      name: PUVP
+    chgot_prot:
+      name: CHGOT
+    chgut_prot:
+      name: CHGUT
+    dsgot_prot:
+      name: DSGOT
+    dsgut_prot:
+      name: DSGUT
+    chgoc_prot:
+      name: CHGOC
+    dsgoc_prot:
+      name: DSGOC
+    short_prot:
+      name: Short
+    afe_prot:
+      name: AFE
+    swlock:
+      name: SW Lock
 ```
 

@@ -30,6 +30,20 @@ void JDB_BMS::dump_config() {
   LOG_SENSOR("  ", "Balance Capacity", this->balance_capacity_sensor_);
   LOG_SENSOR("  ", "Rate Capacity", this->rate_capacity_sensor_);
   LOG_SENSOR("  ", "Capacity", this->capacity_sensor_);
+  LOG_BINARY_SENSOR("  ", "Charge FET", this->charge_sensor_);
+  LOG_BINARY_SENSOR("  ", "Discharge FET", this->discharge_sensor_);
+  LOG_BINARY_SENSOR("  ", "COVP", this->prot_covp_sensor_);
+  LOG_BINARY_SENSOR("  ", "CUVP", this->prot_cuvp_sensor_);
+  LOG_BINARY_SENSOR("  ", "POVP", this->prot_povp_sensor_);
+  LOG_BINARY_SENSOR("  ", "PUVP", this->prot_puvp_sensor_);
+  LOG_BINARY_SENSOR("  ", "CHGOT", this->prot_chgot_sensor_);
+  LOG_BINARY_SENSOR("  ", "CHGUT", this->prot_chgut_sensor_);
+  LOG_BINARY_SENSOR("  ", "DSGOT", this->prot_dsgot_sensor_);
+  LOG_BINARY_SENSOR("  ", "DSGUT", this->prot_dsgut_sensor_);
+  LOG_BINARY_SENSOR("  ", "CHGOC", this->prot_chgoc_sensor_);
+  LOG_BINARY_SENSOR("  ", "DSGOC", this->prot_dsgoc_sensor_);
+  LOG_BINARY_SENSOR("  ", "AFE", this->prot_afe_sensor_);
+  LOG_BINARY_SENSOR("  ", "SWLOCK", this->swlock_sensor_);
   this->check_uart_settings(9600);
 }
 
@@ -170,8 +184,38 @@ void JDB_BMS::parse_data_(uint8_t cmd) {
       this->balance_capacity_sensor_->publish_state(get_16_bit_uint_(4) / 100.0f);
     if (this->rate_capacity_sensor_ != nullptr)
       this->rate_capacity_sensor_->publish_state(get_16_bit_uint_(6) / 100.0f);
+    if (this->prot_covp_sensor_ != nullptr)
+      this->prot_covp_sensor_->publish_state(this->data_[17] & 1);
+    if (this->prot_cuvp_sensor_ != nullptr)
+      this->prot_cuvp_sensor_->publish_state(this->data_[17] & 2);
+    if (this->prot_povp_sensor_ != nullptr)
+      this->prot_povp_sensor_->publish_state(this->data_[17] & 4);
+    if (this->prot_puvp_sensor_ != nullptr)
+      this->prot_puvp_sensor_->publish_state(this->data_[17] & 8);
+    if (this->prot_chgot_sensor_ != nullptr)
+      this->prot_chgot_sensor_->publish_state(this->data_[17] & 0x10);
+    if (this->prot_chgut_sensor_ != nullptr)
+      this->prot_chgut_sensor_->publish_state(this->data_[17] & 0x20);
+    if (this->prot_dsgot_sensor_ != nullptr)
+      this->prot_dsgot_sensor_->publish_state(this->data_[17] & 0x40);
+    if (this->prot_dsgut_sensor_ != nullptr)
+      this->prot_dsgut_sensor_->publish_state(this->data_[17] & 0x80);
+    if (this->prot_chgoc_sensor_ != nullptr)
+      this->prot_chgoc_sensor_->publish_state(this->data_[16] & 1);
+    if (this->prot_dsgoc_sensor_ != nullptr)
+      this->prot_dsgoc_sensor_->publish_state(this->data_[16] & 2);
+    if (this->prot_short_sensor_ != nullptr)
+      this->prot_short_sensor_->publish_state(this->data_[16] & 4);
+    if (this->prot_afe_sensor_ != nullptr)
+      this->prot_afe_sensor_->publish_state(this->data_[16] & 8);
+    if (this->swlock_sensor_ != nullptr)
+      this->swlock_sensor_->publish_state(this->data_[16] & 0x10);
     if (this->capacity_sensor_ != nullptr)
-      this->capacity_sensor_->publish_state(this->data_[19] << 8);
+      this->capacity_sensor_->publish_state(this->data_[19]);
+    if (this->charge_sensor_ != nullptr)
+      this->charge_sensor_->publish_state(this->data_[20] & 1);
+    if (this->discharge_sensor_ != nullptr)
+      this->discharge_sensor_->publish_state(this->data_[20] & 2);
     if (this->string_count_ == 0) {
       this->string_count_ = this->data_[21];
       ESP_LOGD(TAG, "%d battery strings", this->string_count_);
