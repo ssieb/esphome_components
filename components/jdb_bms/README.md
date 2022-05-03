@@ -53,5 +53,8 @@ jdb_bms:
       name: AFE
     swlock:
       name: SW Lock
+    balance_state:
+      - string: 1   # 1-based
+        name: String 1 balancing
 ```
 

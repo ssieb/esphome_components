@@ -179,11 +179,14 @@ void JDB_BMS::parse_data_(uint8_t cmd) {
     if (this->voltage_sensor_ != nullptr)
       this->voltage_sensor_->publish_state(get_16_bit_uint_(0) / 100.0f);
     if (this->current_sensor_ != nullptr)
-      this->current_sensor_->publish_state(get_16_bit_uint_(2) / 100.0f);
+      this->current_sensor_->publish_state(((int16_t)get_16_bit_uint_(2)) / 100.0f);
     if (this->balance_capacity_sensor_ != nullptr)
       this->balance_capacity_sensor_->publish_state(get_16_bit_uint_(4) / 100.0f);
     if (this->rate_capacity_sensor_ != nullptr)
       this->rate_capacity_sensor_->publish_state(get_16_bit_uint_(6) / 100.0f);
+    uint32_t bits = (get_16_bit_uint_(14) << 16) + get_16_bit_uint_(12);
+    for (auto nsensor: this->balance_state_sensors_)
+      nsensor.sensor->publish_state(bits & (1 << nsensor.num));
     if (this->prot_covp_sensor_ != nullptr)
       this->prot_covp_sensor_->publish_state(this->data_[17] & 1);
     if (this->prot_cuvp_sensor_ != nullptr)

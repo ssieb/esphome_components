@@ -45,6 +45,7 @@ CONF_PROT_DSGOC = "dsgoc_prot"
 CONF_PROT_SHORT = "short_prot"
 CONF_PROT_AFE = "afe_prot"
 CONF_SWLOCK = "swlock"
+CONF_BALANCE_STATE = "balance_state"
 UNIT_AMPHOUR = "Ah"
 
 CONFIG_SCHEMA = uart.UART_DEVICE_SCHEMA.extend({
@@ -107,6 +108,11 @@ CONFIG_SCHEMA = uart.UART_DEVICE_SCHEMA.extend({
     cv.Optional(CONF_PROT_SHORT): binary_sensor.binary_sensor_schema(),
     cv.Optional(CONF_PROT_AFE): binary_sensor.binary_sensor_schema(),
     cv.Optional(CONF_SWLOCK): binary_sensor.binary_sensor_schema(),
+    cv.Optional(CONF_BALANCE_STATE): cv.ensure_list(
+        binary_sensor.binary_sensor_schema().extend({
+            cv.Required(CONF_STRING): cv.positive_int
+        })
+    ),
 }).extend(cv.polling_component_schema('60s'))
 
 async def to_code(config):
@@ -205,3 +211,9 @@ async def to_code(config):
     if CONF_SWLOCK in config:
         sens = await binary_sensor.new_binary_sensor(config[CONF_SWLOCK])
         cg.add(var.set_swlock_sensor(sens))
+
+    if CONF_BALANCE_STATE in config:
+        for conf in config[CONF_BALANCE_STATE]:
+          sens = await binary_sensor.new_binary_sensor(conf)
+          snum = conf[CONF_STRING]
+          cg.add(var.add_balance_state_sensor(snum, sens))

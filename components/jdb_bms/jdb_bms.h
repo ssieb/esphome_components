@@ -13,6 +13,11 @@ struct numbered_sensor {
   sensor::Sensor *sensor;
 };
 
+struct numbered_bsensor {
+  int num;
+  binary_sensor::BinarySensor *sensor;
+};
+
 class JDB_BMS : public PollingComponent, public uart::UARTDevice {
  public:
   void add_battery_voltage_sensor(int snum, sensor::Sensor *sensor) { battery_voltage_sensors_.push_back({snum - 1, sensor}); }
@@ -37,6 +42,7 @@ class JDB_BMS : public PollingComponent, public uart::UARTDevice {
   void set_prot_short_sensor(binary_sensor::BinarySensor *sensor) { prot_short_sensor_ = sensor; }
   void set_prot_afe_sensor(binary_sensor::BinarySensor *sensor) { prot_afe_sensor_ = sensor; }
   void set_swlock_sensor(binary_sensor::BinarySensor *sensor) { swlock_sensor_ = sensor; }
+  void add_balance_state_sensor(int snum, binary_sensor::BinarySensor *sensor) { balance_state_sensors_.push_back({snum - 1, sensor}); }
 
   void dump_config() override;
   void loop() override;
@@ -71,6 +77,7 @@ class JDB_BMS : public PollingComponent, public uart::UARTDevice {
   binary_sensor::BinarySensor *prot_short_sensor_{nullptr};
   binary_sensor::BinarySensor *prot_afe_sensor_{nullptr};
   binary_sensor::BinarySensor *swlock_sensor_{nullptr};
+  std::vector<struct numbered_bsensor> balance_state_sensors_;
 
   bool update_{false};
   std::vector<uint8_t> data_;
