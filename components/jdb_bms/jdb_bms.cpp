@@ -64,14 +64,14 @@ void JDB_BMS::loop() {
   if (state == 0) {
     while (available())
       this->read();
-    if (this->update_)
-      state = 1;
-    else
+    if (!this->update_)
       return;
+    state = 1;
+    this->update_ = false;
   }
 
   if (receiving) {
-    if (now - last_data >= 100) {
+    if (now - last_data >= 250) {
       ESP_LOGW(TAG, "receive timeout");
       receiving = false;
     }
@@ -87,7 +87,6 @@ void JDB_BMS::loop() {
   if (state > 2) {
     if ((state > 3) || (this->version_.size() > 0)) {
       state = 0;
-      this->update_ = false;
       return;
     }
   }

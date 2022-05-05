@@ -7,6 +7,7 @@ Example:
 ```yaml
 jdb_bms:
   - id: bms
+    update_interval: 60s  # optional, default value
     voltage:
       name: Voltage
     current:
