@@ -87,6 +87,7 @@ void JDB_BMS::loop() {
   if (state > 2) {
     if ((state > 3) || (this->version_.size() > 0)) {
       state = 0;
+      this->update_ = false;
       return;
     }
   }
