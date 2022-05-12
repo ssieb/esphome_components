@@ -24,8 +24,8 @@ MULTI_CONF = True
 DEPENDENCIES = ['uart']
 AUTO_LOAD = ['sensor', 'binary_sensor']
 
-jdb_bms_ns = cg.esphome_ns.namespace('jdb_bms')
-JDB_BMS = jdb_bms_ns.class_('JDB_BMS', uart.UARTDevice, cg.PollingComponent)
+jbd_bms_ns = cg.esphome_ns.namespace('jbd_bms')
+JBD_BMS = jbd_bms_ns.class_('JBD_BMS', uart.UARTDevice, cg.PollingComponent)
 
 CONF_STRING = "string"
 CONF_BALANCE_CAPACITY = "balance_capacity"
@@ -49,7 +49,7 @@ CONF_BALANCE_STATE = "balance_state"
 UNIT_AMPHOUR = "Ah"
 
 CONFIG_SCHEMA = uart.UART_DEVICE_SCHEMA.extend({
-    cv.GenerateID(): cv.declare_id(JDB_BMS),
+    cv.GenerateID(): cv.declare_id(JBD_BMS),
     cv.Optional(CONF_BATTERY_VOLTAGE): cv.ensure_list(
         sensor.sensor_schema(
             unit_of_measurement=UNIT_VOLT,

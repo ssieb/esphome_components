@@ -1,11 +1,11 @@
-# JDB BMS component
+# JBD BMS component
 
 A configured uart component is required.
 All sensors are optional.
 
 Example:
 ```yaml
-jdb_bms:
+jbd_bms:
   - id: bms
     update_interval: 60s  # optional, default value
     voltage:

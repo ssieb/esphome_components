@@ -6,7 +6,7 @@
 #include "esphome/components/uart/uart.h"
 
 namespace esphome {
-namespace jdb_bms {
+namespace jbd_bms {
 
 struct numbered_sensor {
   int num;
@@ -18,7 +18,7 @@ struct numbered_bsensor {
   binary_sensor::BinarySensor *sensor;
 };
 
-class JDB_BMS : public PollingComponent, public uart::UARTDevice {
+class JBD_BMS : public PollingComponent, public uart::UARTDevice {
  public:
   void add_battery_voltage_sensor(int snum, sensor::Sensor *sensor) { battery_voltage_sensors_.push_back({snum - 1, sensor}); }
   void add_temperature_sensor(int snum, sensor::Sensor *sensor) { temperature_sensors_.push_back({snum, sensor}); }
@@ -86,5 +86,5 @@ class JDB_BMS : public PollingComponent, public uart::UARTDevice {
   int ntc_count_{0};
 };
 
-}  // namespace jdb_bms
+}  // namespace jbd_bms
 }  // namespace esphome

@@ -1,16 +1,16 @@
-#include "jdb_bms.h"
+#include "jbd_bms.h"
 #include "esphome/core/log.h"
 
 namespace esphome {
-namespace jdb_bms {
+namespace jbd_bms {
 
-static const char *TAG = "jdb_bms";
-static const uint8_t JDB_BMS_CMD_BASIC = 3;
-static const uint8_t JDB_BMS_CMD_VOLTAGE = 4;
-static const uint8_t JDB_BMS_CMD_VERSION = 5;
+static const char *TAG = "jbd_bms";
+static const uint8_t JBD_BMS_CMD_BASIC = 3;
+static const uint8_t JBD_BMS_CMD_VOLTAGE = 4;
+static const uint8_t JBD_BMS_CMD_VERSION = 5;
 
-void JDB_BMS::dump_config() {
-  ESP_LOGCONFIG(TAG, "JDB BMS:");
+void JBD_BMS::dump_config() {
+  ESP_LOGCONFIG(TAG, "JBD BMS:");
   if (this->version_.size() > 0)
     ESP_LOGCONFIG(TAG, "  Version: %s", this->version_.c_str());
   if (this->string_count_ > 0)
@@ -47,7 +47,7 @@ void JDB_BMS::dump_config() {
   this->check_uart_settings(9600);
 }
 
-void JDB_BMS::update() {
+void JBD_BMS::update() {
   if (this->update_) {
     ESP_LOGW(TAG, "update interval overrun");
     return;
@@ -55,7 +55,7 @@ void JDB_BMS::update() {
   this->update_ = true;
 }
 
-void JDB_BMS::loop() {
+void JBD_BMS::loop() {
   static bool receiving = false;
   static int state = 0;
   static uint32_t last_data = 0;
@@ -93,9 +93,9 @@ void JDB_BMS::loop() {
 
   uint8_t cmd = 0;
   switch(state) {
-   case 1: cmd = JDB_BMS_CMD_BASIC; break;
-   case 2: cmd = JDB_BMS_CMD_VOLTAGE; break;
-   case 3: cmd = JDB_BMS_CMD_VERSION; break;
+   case 1: cmd = JBD_BMS_CMD_BASIC; break;
+   case 2: cmd = JBD_BMS_CMD_VOLTAGE; break;
+   case 3: cmd = JBD_BMS_CMD_VERSION; break;
   }
   uint8_t buf[7] = {0xdd, 0xa5, cmd, 0, 0xff, (uint8_t)-cmd, 0x77};
   this->write_array(buf, 7);
@@ -104,7 +104,7 @@ void JDB_BMS::loop() {
   last_data = now;
 }
 
-bool JDB_BMS::read_data_(bool first) {
+bool JBD_BMS::read_data_(bool first) {
   static int state;
   static uint16_t csum;
   static uint16_t dcsum;
@@ -174,7 +174,7 @@ bool JDB_BMS::read_data_(bool first) {
   return true;
 }
 
-void JDB_BMS::parse_data_(uint8_t cmd) {
+void JBD_BMS::parse_data_(uint8_t cmd) {
   if (cmd == 3) {
     if (this->voltage_sensor_ != nullptr)
       this->voltage_sensor_->publish_state(get_16_bit_uint_(0) / 100.0f);
@@ -250,9 +250,9 @@ void JDB_BMS::parse_data_(uint8_t cmd) {
   }
 }
 
-uint16_t JDB_BMS::get_16_bit_uint_(uint8_t start_index) {
+uint16_t JBD_BMS::get_16_bit_uint_(uint8_t start_index) {
   return (uint16_t(this->data_[start_index]) << 8) | uint16_t(this->data_[start_index + 1]);
 }
 
-}  // namespace jdb_bms
+}  // namespace jbd_bms
 }  // namespace esphome
