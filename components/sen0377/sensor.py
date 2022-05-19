@@ -117,7 +117,7 @@ async def to_code(config):
         cg.add(var.set_hydrogen_sensor(sens))
     if CONF_AMMONIA in config:
         sens = await sensor.new_sensor(config[CONF_AMMONIA])
-        cg.add(var.set_co_sensor(sens))
+        cg.add(var.set_ammonia_sensor(sens))
     if CONF_NO2 in config:
         sens = await sensor.new_sensor(config[CONF_NO2])
         cg.add(var.set_no2_sensor(sens))
