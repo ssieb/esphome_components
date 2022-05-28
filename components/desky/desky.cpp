@@ -6,11 +6,28 @@ namespace desky {
 
 static const char *TAG = "desky";
 
+const char *desky_operation_to_str(DeskyOperation op) {
+  switch (op) {
+    case DESKY_OPERATION_IDLE:
+      return "IDLE";
+    case DESKY_OPERATION_RAISING:
+      return "RAISING";
+    case DESKY_OPERATION_LOWERING:
+      return "LOWERING";
+    default:
+      return "UNKNOWN";
+  }
+}
+
 void Desky::setup() {
   if (this->up_pin_ != nullptr)
     this->up_pin_->digital_write(false);
   if (this->down_pin_ != nullptr)
     this->down_pin_->digital_write(false);
+  if (this->request_pin_ != nullptr) {
+    this->request_pin_->digital_write(true);
+    this->request_time_ = millis();
+  }
 }
 
 void Desky::loop() {
@@ -47,13 +64,15 @@ void Desky::loop() {
   }
 
   if (this->target_pos_ >= 0) {
-    if (abs(this->target_pos_ - this->current_pos_) < this->stopping_distance_) {
-      this->target_pos_ = -1;
-      if (this->up_pin_ != nullptr)
-        this->up_pin_->digital_write(false);
-      if (this->down_pin_ != nullptr)
-        this->down_pin_->digital_write(false);
-    }
+    if (abs(this->target_pos_ - this->current_pos_) < this->stopping_distance_)
+      this->stop();
+    if ((this->timeout_ >= 0) && (millis() - this->start_time_ >= this->timeout_))
+      this->stop();
+  }
+
+  if ((this->request_time_ > 0) && (millis() - this->request_time_ >= 100)) {
+    this->request_pin_->digital_write(false);
+    this->request_time_ = 0;
   }
 }
 
@@ -62,6 +81,7 @@ void Desky::dump_config() {
   LOG_SENSOR("", "Height", this->height_sensor_);
   LOG_PIN("Up pin: ", this->up_pin_);
   LOG_PIN("Down pin: ", this->down_pin_);
+  LOG_PIN("Request pin: ", this->request_pin_);
 }
 
 void Desky::move_to(int target_pos) {
@@ -71,12 +91,25 @@ void Desky::move_to(int target_pos) {
     if (this->up_pin_ == nullptr)
       return;
     this->up_pin_->digital_write(true);
+    this->current_operation = DESKY_OPERATION_RAISING;
   } else {
     if (this->down_pin_ == nullptr)
       return;
     this->down_pin_->digital_write(true);
+    this->current_operation = DESKY_OPERATION_LOWERING;
   }
   this->target_pos_ = target_pos;
+  if (this->timeout_ >= 0)
+    this->start_time_ = millis();
+}
+
+void Desky::stop() {
+  this->target_pos_ = -1;
+  if (this->up_pin_ != nullptr)
+    this->up_pin_->digital_write(false);
+  if (this->down_pin_ != nullptr)
+    this->down_pin_->digital_write(false);
+  this->current_operation = DESKY_OPERATION_IDLE;
 }
 
 }  // namespace desky

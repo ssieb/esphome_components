@@ -15,11 +15,25 @@ desky:
   height:  # optional sensor publishing the current height
     name: Desk Height
     # any other sensor options
-  up: 2    # optional <pin> config
-  down: 4  # optional <pin> config
+  up:    # optional <pin> config
+    number: 4
+    inverted: true  # probably needed
+  down:  # optional <pin> config
+    number: 5
+    inverted: true  # probably needed
+  request:  # optional <pin> config to request height updates at boot
+    number: 12
+    inverted: true  # probably needed
   stopping_distance: 15  # optional distance from target to turn off moving, default 15
+  timeout: 15s  # optional time limit for moving, default is none
 
 on_...:
   then:
     - lambda: id(my_desky).move_to(150);
+    - lambda: id(my_desky).stop();
+
+binary_sensor:
+  - platform: template
+    name: Desky moving
+    lambda: return id(my_desky).current_operation != desky::DESKY_OPERATION_IDLE;
 ```
