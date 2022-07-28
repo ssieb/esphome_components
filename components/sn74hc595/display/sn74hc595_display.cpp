@@ -12,14 +12,9 @@ uint8_t digits[] = { 0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xF8, 0x80, 0x90 
 
 void SN74HC595Display::setup() {
   ESP_LOGCONFIG(TAG, "Setting up SN74HC595 display...");
-  this->high_freq_.start();
 }
 
 void SN74HC595Display::loop() {
-  static int pos = 0;
-  this->parent_->set_output_bits((1 << (3 - pos)) + (buffer_[pos] << 8));
-  if (++pos > 3)
-    pos = 0;
 }
 
 void SN74HC595Display::dump_config() {
@@ -39,6 +34,8 @@ float SN74HC595Display::get_setup_priority() const { return setup_priority::PROC
 
 void SN74HC595Display::display() {
   ESP_LOGVV(TAG, "Display %02X%02X%02X%02X", buffer_[0], buffer_[1], buffer_[2], buffer_[3]);
+  uint32_t bits = buffer_[0] | (buffer_[1] << 8) | (buffer_[2] << 16) | (buffer_[3] << 24);
+  this->parent_->set_output_bits(bits);
 }
 
 uint8_t SN74HC595Display::print(uint8_t start_pos, const char *str) {
