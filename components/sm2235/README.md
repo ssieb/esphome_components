@@ -1,11 +1,11 @@
 # SM2235 LED driver
 
-Requires a configured i2c bus
-
 Example:
 ```yaml
 sm2235:
   - id: my_sm        #optional
+    sda: 4
+    scl: 5
     rgb_current: 12  #optional
     cw_current: 25   #optional
 

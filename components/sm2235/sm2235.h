@@ -1,8 +1,8 @@
 #pragma once
 
 #include "esphome/core/component.h"
+#include "esphome/core/hal.h"
 #include "esphome/components/output/float_output.h"
-#include "esphome/components/i2c/i2c.h"
 
 namespace esphome {
 namespace sm2235 {
@@ -21,10 +21,13 @@ class SM2235Channel : public output::FloatOutput {
   SM2235 *parent_;
 };
 
-class SM2235 : public Component, public i2c::I2CDevice {
+class SM2235 : public Component {
  public:
+  void setup() override;
   void dump_config() override;
   float get_setup_priority() const override { return setup_priority::HARDWARE; }
+  void set_sda_pin(InternalGPIOPin *pin) { this->sda_pin_ = pin; }
+  void set_scl_pin(InternalGPIOPin *pin) { this->scl_pin_ = pin; }
 
   void register_channel(SM2235Channel *channel, uint8_t num);
   void set_currents(uint8_t currents) { this->currents_ = currents; }
@@ -35,7 +38,12 @@ class SM2235 : public Component, public i2c::I2CDevice {
   uint8_t currents_;
   uint8_t num_channels_{0};
   uint16_t values_[5] = {0};
+  InternalGPIOPin *sda_pin_;
+  InternalGPIOPin *scl_pin_;
 
+  void start_();
+  void stop_();
+  void send_byte_(uint8_t value);
   void update_(uint8_t channel);
 };
 
