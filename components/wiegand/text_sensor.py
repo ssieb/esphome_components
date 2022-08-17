@@ -5,8 +5,6 @@ from esphome.components import uart
 from esphome.components import text_sensor
 from esphome.const import CONF_ID, CONF_STATE
 
-MULTI_CONF = True
-
 wiegand_ns = cg.esphome_ns.namespace('wiegand')
 
 WiegandTextSensor = wiegand_ns.class_('WiegandTextSensor', cg.Component, text_sensor.TextSensor)
