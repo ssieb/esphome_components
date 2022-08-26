@@ -4,10 +4,11 @@ Reads a card number from a Wiegand interface
 
 Example:
 ```yaml
-text_sensor:
-  - platform: wiegand
-    name: reader
+wiegand:
+  - id: reader
     d0: 4
     d1: 5
+    on_tag:
+      - lambda: ESP_LOGD("TEST", "received tag %s", x.c_str());
 ```
 

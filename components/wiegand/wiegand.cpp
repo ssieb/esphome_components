@@ -21,7 +21,7 @@ void IRAM_ATTR HOT WiegandStore::d1_gpio_intr(WiegandStore *arg) {
   arg->done = false;
 }
 
-void WiegandTextSensor::setup() {
+void Wiegand::setup() {
   this->d0_pin_->setup();
   this->store_.d0 = this->d0_pin_->to_isr();
   this->d1_pin_->setup();
@@ -30,24 +30,36 @@ void WiegandTextSensor::setup() {
   this->d1_pin_->attach_interrupt(WiegandStore::d1_gpio_intr, &this->store_, gpio::INTERRUPT_FALLING_EDGE);
 }
 
-void WiegandTextSensor::loop() {
+void Wiegand::loop() {
   if (this->store_.done)
     return;
   if (millis() - this->store_.last_bit_time < 100)
     return;
   uint8_t count = this->store_.count;
-  uint32_t value = this->store_.value;
+  uint64_t value = this->store_.value;
   this->store_.count = 0;
   this->store_.value = 0;
   this->store_.done = true;
-  if (count != 26) {
-    ESP_LOGE(TAG, "received %d bits instead of 26", count);
-    return;
+  if (count == 26) {
+    std::string tag = to_string((value >> 1) & 0xffffff);
+    ESP_LOGD(TAG, "received 26-bit tag: %s", tag.c_str());
+    for (auto *trigger : this->tag_triggers_)
+      trigger->trigger(tag);
+  } else if (count == 34) {
+    std::string tag = to_string((value >> 1) & 0xffffffff);
+    ESP_LOGD(TAG, "received 34-bit tag: %s", tag.c_str());
+    for (auto *trigger : this->tag_triggers_)
+      trigger->trigger(tag);
+  } else {
+    ESP_LOGD(TAG, "received %d-bit value: %x", count, value);
   }
-  this->publish_state(to_string((value >> 1) & 0xffffff));
 }
 
-void WiegandTextSensor::dump_config() { LOG_TEXT_SENSOR("", "Wiegand Text Sensor", this); }
+void Wiegand::dump_config() {
+  ESP_LOGCONFIG(TAG, "Wiegand reader:");
+  LOG_PIN("  D0 pin: ", this->d0_pin_);
+  LOG_PIN("  D1 pin: ", this->d1_pin_);
+}
 
 }  // namespace wiegand
 }  // namespace esphome
