@@ -51,7 +51,7 @@ void Wiegand::loop() {
     for (auto *trigger : this->tag_triggers_)
       trigger->trigger(tag);
   } else {
-    ESP_LOGD(TAG, "received %d-bit value: %x", count, value);
+    ESP_LOGD(TAG, "received %d-bit value: %llx", count, value);
   }
 }
 
