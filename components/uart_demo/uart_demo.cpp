@@ -43,6 +43,10 @@ void UARTDemo::write_binary(bool state) {
   this->write_str(ONOFF(state));
 }
 
+void UARTDemo::ping() {
+  this->write_str("PING");
+}
+
 void UARTDemo::write_float(float state) {
   this->write_str(to_string(state).c_str());
 }
@@ -67,6 +71,14 @@ void UARTDemoSwitch::dump_config() {
 void UARTDemoSwitch::write_state(bool state) {
   this->parent_->write_binary(state);
   this->publish_state(state);
+}
+
+void UARTDemoButton::dump_config() {
+  LOG_BUTTON("", "UART Demo Button", this);
+}
+
+void UARTDemoButton::press_action() {
+  this->parent_->ping();
 }
 
 }  // namespace uart_demo

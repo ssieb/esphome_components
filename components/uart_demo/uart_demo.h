@@ -2,6 +2,7 @@
 
 #include "esphome/core/component.h"
 #include "esphome/components/binary_sensor/binary_sensor.h"
+#include "esphome/components/button/button.h"
 #include "esphome/components/output/binary_output.h"
 #include "esphome/components/output/float_output.h"
 #include "esphome/components/sensor/sensor.h"
@@ -25,6 +26,7 @@ class UARTDemo : public Component,  public uart::UARTDevice {
 
   void write_binary(bool value);
   void write_float(float value);
+  void ping();
  protected:
   text_sensor::TextSensor *the_text_{nullptr};
   sensor::Sensor *the_sensor_{nullptr};
@@ -58,6 +60,15 @@ class UARTDemoSwitch : public Component, public switch_::Switch {
   void set_parent(UARTDemo *parent) { this->parent_ = parent; }
  protected:
   void write_state(bool state) override;
+  UARTDemo *parent_;
+};
+
+class UARTDemoButton : public Component, public button::Button {
+ public:
+  void dump_config() override;
+  void set_parent(UARTDemo *parent) { this->parent_ = parent; }
+ protected:
+  void press_action() override;
   UARTDemo *parent_;
 };
 

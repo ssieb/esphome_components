@@ -19,6 +19,8 @@ uart_demo:
       id: the_binsensor
     the_switch:
       id: the_switch
+    the_button:
+      id: the_button
 
 light:
   - platform: binary
@@ -32,5 +34,6 @@ interval:
   - interval: 10s
     then:
       - switch.toggle: the_switch
+      - button.press: the_button
 ```
 
