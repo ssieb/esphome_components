@@ -52,6 +52,7 @@ void UARTDemo::write_float(float state) {
 }
 
 void UARTDemoBOutput::dump_config() {
+  LOG_BINARY_OUTPUT(this);
 }
 
 void UARTDemoBOutput::write_state(bool state) {
@@ -59,6 +60,7 @@ void UARTDemoBOutput::write_state(bool state) {
 }
 
 void UARTDemoFOutput::dump_config() {
+  LOG_FLOAT_OUTPUT(this);
 }
 
 void UARTDemoFOutput::write_state(float state) {
@@ -66,6 +68,7 @@ void UARTDemoFOutput::write_state(float state) {
 }
 
 void UARTDemoSwitch::dump_config() {
+  LOG_SWITCH("", "UART Demo Switch", this);
 }
 
 void UARTDemoSwitch::write_state(bool state) {
