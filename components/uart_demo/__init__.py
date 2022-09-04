@@ -71,14 +71,10 @@ async def to_code(config):
         cg.add(var.set_the_binsensor(sens))
 
     if CONF_THE_SWITCH in config:
-        conf = config[CONF_THE_SWITCH]
-        sw = cg.new_Pvariable(conf[CONF_ID])
-        await switch.register_switch(sw, conf)
+        sw = await switch.new_switch(config[CONF_THE_SWITCH])
         cg.add(sw.set_parent(var))
 
     if CONF_THE_BUTTON in config:
-        conf = config[CONF_THE_BUTTON]
-        btn = cg.new_Pvariable(conf[CONF_ID])
-        await button.register_button(btn, conf)
+        btn = await button.new_button(config[CONF_THE_BUTTON])
         cg.add(btn.set_parent(var))
 
