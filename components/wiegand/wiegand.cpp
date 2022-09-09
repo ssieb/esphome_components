@@ -8,6 +8,8 @@ namespace wiegand {
 static const char *TAG = "wiegand.text_sensor";
 
 void IRAM_ATTR HOT WiegandStore::d0_gpio_intr(WiegandStore *arg) {
+  if (arg->d0.digital_read())
+    return;
   arg->count++;
   arg->value <<= 1;
   arg->last_bit_time = millis();
@@ -15,6 +17,8 @@ void IRAM_ATTR HOT WiegandStore::d0_gpio_intr(WiegandStore *arg) {
 }
 
 void IRAM_ATTR HOT WiegandStore::d1_gpio_intr(WiegandStore *arg) {
+  if (arg->d1.digital_read())
+    return;
   arg->count++;
   arg->value = (arg->value << 1) | 1;
   arg->last_bit_time = millis();
