@@ -51,7 +51,7 @@ void Keypad::loop() {
       for (auto &listener : this->listeners_)
         listener->button_released(row, col);
       if (this->keys_.size()) {
-        unsigned char keycode = this->keys_[this->pressed_key_];
+        uint8_t keycode = this->keys_[this->pressed_key_];
         ESP_LOGD(TAG, "key '%c' released", keycode);
         for (auto &listener : this->listeners_)
           listener->key_released(keycode);
@@ -60,9 +60,9 @@ void Keypad::loop() {
     }
 
     active_key = key;
-    if (key != -1)
-      active_start = now;
-    return;
+    if (key == -1)
+      return;
+    active_start = now;
   }
 
   if ((this->pressed_key_ == key) || (now - active_start < this->debounce_time_))
@@ -74,10 +74,11 @@ void Keypad::loop() {
   for (auto &listener : this->listeners_)
     listener->button_pressed(row, col);
   if (this->keys_.size()) {
-    unsigned char keycode = this->keys_[key];
+    uint8_t keycode = this->keys_[key];
     ESP_LOGD(TAG, "key '%c' pressed", keycode);
     for (auto &listener : this->listeners_)
       listener->key_pressed(keycode);
+    this->send_key_(keycode);
   }
   this->pressed_key_ = key;
 }

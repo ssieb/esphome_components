@@ -2,10 +2,11 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import core, pins, automation
 from esphome.automation import maybe_simple_id
+from esphome.components import key_provider
 from esphome.const import CONF_ID, CONF_PIN, CONF_LAMBDA
 
 keypad_ns = cg.esphome_ns.namespace('keypad')
-Keypad = keypad_ns.class_('Keypad', cg.Component)
+Keypad = keypad_ns.class_('Keypad', key_provider.KeyProvider, cg.Component)
 
 CONF_KEYPAD_ID = 'keypad_id'
 CONF_ROWS = 'rows'

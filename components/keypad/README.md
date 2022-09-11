@@ -1,14 +1,13 @@
 # keypad component
 
-This component matrix keypads.  Define a `keypad` component then add `binary_sensor`s or a `text_sensor` to handle the keys.
+This component is for matrix keypads.  Define a `keypad` component then add `binary_sensor`s to handle individual keys.  You need to also import the `key_provider` component.
+If you want automatic handling for multiple keys, e.g. PIN entry, use the `input_builder` component.
 
 The `keys` parameter is optional for the `keypad`, but then you won't be able to check for it in the `binary_sensor`
-and the `text_sensor` won't work.
+and the `input_builder` won't work if you want to use that.
 The optional `has_diodes` parameter is for if the buttons have diodes and the row pins are output only. In that case, set it to true.
 
-For the `binary_sensor`, you need to provide either the `row` and `col` or the `key` parameter.
-
-For the `text_sensor`, you need at least one of the `end_keys` or `max_length` parameters.  The rest are optional.
+For the `binary_sensor`, you need to provide either the `row` and `col` parameters or the `key` parameter.
 
 Example:
 ```yaml
@@ -36,26 +35,5 @@ binary_sensor:
   - platform: keypad
     id: keyA
     key: A
-
-text_sensor:
-  - platform: keypad
-    id: reader
-    keypad_id: mykeypad
-    min_length: 4
-    max_length: 4
-    end_keys: "#"
-    end_key_required: true   # default is false
-    back_keys: "*"
-    clear_keys: "C"
-    timeout: 5s
-    allowed_keys: "0123456789"
-    on_progress:
-      - logger.log: 
-          format: "input progress: '%s'"
-          args: [ 'x.c_str()' ]
-    on_value:
-      - logger.log: 
-          format: "input result: '%s'"
-          args: [ 'x.c_str()' ]
 ```
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "esphome/components/key_provider/key_provider.h"
 #include "esphome/core/component.h"
 #include "esphome/core/hal.h"
 #include "esphome/core/helpers.h"
@@ -12,11 +13,11 @@ class KeypadListener {
  public:
   virtual void button_pressed(int row, int col) {};
   virtual void button_released(int row, int col) {};
-  virtual void key_pressed(unsigned char key) {};
-  virtual void key_released(unsigned char key) {};
+  virtual void key_pressed(uint8_t key) {};
+  virtual void key_released(uint8_t key) {};
 };
 
-class Keypad : public Component {
+class Keypad : public key_provider::KeyProvider, public Component {
  public:
   void setup() override;
   void loop() override;
