@@ -6,6 +6,7 @@ namespace esphome {
 namespace wiegand {
 
 static const char *TAG = "wiegand.text_sensor";
+static const char *KEYS = "0123456789*#";
 
 void IRAM_ATTR HOT WiegandStore::d0_gpio_intr(WiegandStore *arg) {
   if (arg->d0.digital_read())
@@ -47,13 +48,44 @@ void Wiegand::loop() {
   if (count == 26) {
     std::string tag = to_string((value >> 1) & 0xffffff);
     ESP_LOGD(TAG, "received 26-bit tag: %s", tag.c_str());
+    int eparity = 0;
+    for (uint32_t i = 1 << 13; i <= (1 << 26); i <<= 1)
+      if (value & i)
+	eparity++;
+    int oparity = 0;
+    for (uint32_t i = 1; i <= (1 << 13); i <<= 1)
+      if (value & i)
+	oparity++;
+    if ((eparity & 1) || !(oparity & 1)) {
+      ESP_LOGD(TAG, "invalid parity");
+      return;
+    }
     for (auto *trigger : this->tag_triggers_)
       trigger->trigger(tag);
   } else if (count == 34) {
     std::string tag = to_string((value >> 1) & 0xffffffff);
     ESP_LOGD(TAG, "received 34-bit tag: %s", tag.c_str());
+    int eparity = 0;
+    for (uint64_t i = 1 << 18; i <= (1LL << 34); i <<= 1)
+      if (value & i)
+	eparity++;
+    int oparity = 0;
+    for (uint64_t i = 1; i <= (1 << 17); i <<= 1)
+      if (value & i)
+	oparity++;
+    if ((eparity & 1) || !(oparity & 1)) {
+      ESP_LOGD(TAG, "invalid parity");
+      return;
+    }
     for (auto *trigger : this->tag_triggers_)
       trigger->trigger(tag);
+  } else if (count == 4) {
+    for (auto *trigger : this->key_triggers_)
+      trigger->trigger(value);
+    if (value < 12) {
+      uint8_t key = KEYS[value];
+      this->send_key_(key);
+    }
   } else {
     ESP_LOGD(TAG, "received %d-bit value: %llx", count, value);
   }
