@@ -45,6 +45,7 @@ void Wiegand::loop() {
   this->store_.count = 0;
   this->store_.value = 0;
   this->store_.done = true;
+  ESP_LOGD(TAG, "received %d-bit value: %llx", count, value);
   if (count == 26) {
     std::string tag = to_string((value >> 1) & 0xffffff);
     ESP_LOGD(TAG, "received 26-bit tag: %s", tag.c_str());
@@ -58,7 +59,7 @@ void Wiegand::loop() {
 	oparity++;
     if ((eparity & 1) || !(oparity & 1)) {
       ESP_LOGD(TAG, "invalid parity");
-      return;
+      //return;
     }
     for (auto *trigger : this->tag_triggers_)
       trigger->trigger(tag);
@@ -75,7 +76,7 @@ void Wiegand::loop() {
 	oparity++;
     if ((eparity & 1) || !(oparity & 1)) {
       ESP_LOGD(TAG, "invalid parity");
-      return;
+      //return;
     }
     for (auto *trigger : this->tag_triggers_)
       trigger->trigger(tag);
