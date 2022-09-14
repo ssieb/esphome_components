@@ -45,7 +45,7 @@ void Wiegand::loop() {
   this->store_.count = 0;
   this->store_.value = 0;
   this->store_.done = true;
-  ESP_LOGD(TAG, "received %d-bit value: %llx", count, value);
+  ESP_LOGV(TAG, "received %d-bit value: %llx", count, value);
   if (count == 26) {
     std::string tag = to_string((value >> 1) & 0xffffff);
     ESP_LOGD(TAG, "received 26-bit tag: %s", tag.c_str());
@@ -54,12 +54,12 @@ void Wiegand::loop() {
       if (value & i)
 	eparity++;
     int oparity = 0;
-    for (uint32_t i = 1; i <= (1 << 13); i <<= 1)
+    for (uint32_t i = 1; i <= (1 << 12); i <<= 1)
       if (value & i)
 	oparity++;
     if ((eparity & 1) || !(oparity & 1)) {
       ESP_LOGD(TAG, "invalid parity");
-      //return;
+      return;
     }
     for (auto *trigger : this->tag_triggers_)
       trigger->trigger(tag);
@@ -67,16 +67,16 @@ void Wiegand::loop() {
     std::string tag = to_string((value >> 1) & 0xffffffff);
     ESP_LOGD(TAG, "received 34-bit tag: %s", tag.c_str());
     int eparity = 0;
-    for (uint64_t i = 1 << 18; i <= (1LL << 34); i <<= 1)
+    for (uint64_t i = 1 << 17; i <= (1LL << 33); i <<= 1)
       if (value & i)
 	eparity++;
     int oparity = 0;
-    for (uint64_t i = 1; i <= (1 << 17); i <<= 1)
+    for (uint64_t i = 1; i <= (1 << 16); i <<= 1)
       if (value & i)
 	oparity++;
     if ((eparity & 1) || !(oparity & 1)) {
       ESP_LOGD(TAG, "invalid parity");
-      //return;
+      return;
     }
     for (auto *trigger : this->tag_triggers_)
       trigger->trigger(tag);
@@ -88,7 +88,7 @@ void Wiegand::loop() {
       this->send_key_(key);
     }
   } else {
-    ESP_LOGD(TAG, "received %d-bit value: %llx", count, value);
+    ESP_LOGD(TAG, "received unknown %d-bit value: %llx", count, value);
   }
 }
 
