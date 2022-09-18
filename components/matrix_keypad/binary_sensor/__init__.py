@@ -8,7 +8,7 @@ CONF_KEY = 'key'
 CONF_ROW = 'row'
 CONF_COL = 'col'
 
-DEPENDENCIES = ['keypad']
+DEPENDENCIES = ['matrix_keypad']
 
 KeypadBinarySensor = keypad_ns.class_('KeypadBinarySensor', binary_sensor.BinarySensor)
 

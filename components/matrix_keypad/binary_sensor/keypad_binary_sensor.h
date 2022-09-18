@@ -1,6 +1,6 @@
 #pragma once
 
-#include "esphome/components/keypad/keypad.h"
+#include "esphome/components/matrix_keypad/keypad.h"
 #include "esphome/components/binary_sensor/binary_sensor.h"
 
 namespace esphome {
