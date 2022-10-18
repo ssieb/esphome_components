@@ -62,7 +62,7 @@ void VBus::loop() {
         septet_spread(this->buffer_.data(), 7, 6, this->buffer_[13]);
         uint16_t id = (this->buffer_[8] << 8) + this->buffer_[7];
         uint32_t value = (this->buffer_[12] << 24) + (this->buffer_[11] << 16) + (this->buffer_[10] << 8) + this->buffer_[9];
-        ESP_LOGD(TAG, "P1 C%04x %04x->%04x: %04x %04x (%d)", this->command_, this->source_, this->dest_, id, value, value);
+        ESP_LOGV(TAG, "P1 C%04x %04x->%04x: %04x %04x (%d)", this->command_, this->source_, this->dest_, id, value, value);
       } else if ((this->protocol_ == 0x10) && (this->buffer_.size() == 9)) {
         if (!checksum(this->buffer_.data(), 0, 9)) {
           ESP_LOGE(TAG, "P1 checksum failed");
@@ -97,11 +97,16 @@ void VBus::loop() {
         this->buffer_.push_back(this->fbytes_[i]);
       if (++this->cframe_ < this->frames_)
         continue;
-      ESP_LOGD(TAG, "P2 C%04x %04x->%04x: %s", this->command_, this->source_, this->dest_, format_hex(this->buffer_).c_str());
+      ESP_LOGV(TAG, "P2 C%04x %04x->%04x: %s", this->command_, this->source_, this->dest_, format_hex(this->buffer_).c_str());
+      this->message_callback_.call(this->source_, this->dest_, this->command_, this->buffer_);
       this->state_ = 0;
       continue;
     }
   }
+}
+
+void VBus::add_message_callback(std::function<void(uint16_t, uint16_t, uint16_t, std::vector<uint8_t>)> &&callback) {
+  this->message_callback_.add(std::move(callback));
 }
 
 }  // namespace vbus

@@ -14,6 +14,8 @@ class VBus : public uart::UARTDevice, public Component {
 
   float get_setup_priority() const { return setup_priority::DATA; }
 
+  void add_message_callback(std::function<void(uint16_t, uint16_t, uint16_t, std::vector<uint8_t>)> &&callback);
+
  protected:
   int state_{0};
   std::vector<uint8_t> buffer_;
@@ -25,6 +27,8 @@ class VBus : public uart::UARTDevice, public Component {
   uint8_t cframe_;
   uint8_t fbytes_[6];
   int fbcount_;
+
+  CallbackManager<void(uint16_t, uint16_t, uint16_t, std::vector<uint8_t>)> message_callback_{};
 };
 
 }  // namespace vbus
