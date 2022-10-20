@@ -98,15 +98,22 @@ void VBus::loop() {
       if (++this->cframe_ < this->frames_)
         continue;
       ESP_LOGV(TAG, "P2 C%04x %04x->%04x: %s", this->command_, this->source_, this->dest_, format_hex(this->buffer_).c_str());
-      this->message_callback_.call(this->source_, this->dest_, this->command_, this->buffer_);
+      for (auto &listener : this->listeners_)
+        listener->on_message(this->source_, this->dest_, this->command_, this->buffer_);
       this->state_ = 0;
       continue;
     }
   }
 }
 
-void VBus::add_message_callback(std::function<void(uint16_t, uint16_t, uint16_t, std::vector<uint8_t>)> &&callback) {
-  this->message_callback_.add(std::move(callback));
+void VBusListener::on_message(uint16_t command, uint16_t source, uint16_t dest, std::vector<uint8_t> &message) {
+  if ((this->command_ != -1) && (this->command_ != command))
+    return;
+  if ((this->source_ != -1) && (this->source_ != source))
+    return;
+  if ((this->dest_ != -1) && (this->dest_ != dest))
+    return;
+  this->handle_message_(message);
 }
 
 }  // namespace vbus
