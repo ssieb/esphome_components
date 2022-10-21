@@ -26,7 +26,7 @@ void HT16K33AlphaDisplay::setup() {
     display->write_bytes(DISPLAY_COMMAND_DISPLAY_ON, nullptr, 0);
   }
   this->set_brightness(1);
-  memset(this->buffer_, 0, 64);
+  memset(this->buffer_, 0, this->custom_buffer_);
 }
 
 void HT16K33AlphaDisplay::loop() {
@@ -66,7 +66,7 @@ void HT16K33AlphaDisplay::display_() {
 }
 
 void HT16K33AlphaDisplay::update() {
-  memset(this->buffer_, 0, 64);
+  memset(this->buffer_, 0, this->custom_buffer_);
   int prev_fill = this->buffer_fill_;
   this->buffer_fill_ = 0;
   this->call_writer();
@@ -101,8 +101,26 @@ float HT16K33AlphaDisplay::get_brightness() {
 void HT16K33AlphaDisplay::print(const char *str) {
   uint8_t pos = this->buffer_fill_;
   uint16_t fontc = 0;
+
+  // continuous scrolling
+  std::string r_str = str; // create a "real" string
+  std::string t_str = str; // create a "test" string
+
+  // remove . from string
+  char chars[] = ".";
+  for (unsigned int i = 0; i < strlen(chars); ++i)
+    t_str.erase(std::remove(t_str.begin(), t_str.end(), chars[i]), t_str.end());
+  //
+
+  if (this->c_scroll_ && t_str.length() > this->c_scroll_display_length_) // check if continuous scrolling is enabled and the test string is longer than the display length
+  {
+    r_str.append(" " + this->c_scroll_spacer_ + " "); // append a spacer
+    r_str.append(r_str.begin(), r_str.begin() + this->c_scroll_display_length_); // append the beginning of the string in the length of the display
+    str = r_str.c_str(); // overwrite the original variable
+  }
+  
   while (*str != '\0') {
-    if (pos >= 64) {
+    if (pos >= this->custom_buffer_) {
       ESP_LOGW(TAG, "output buffer full!");
       break;
     }
@@ -128,7 +146,7 @@ void HT16K33AlphaDisplay::print(const std::string &str) { this->print(str.c_str(
 void HT16K33AlphaDisplay::printf(const char *format, ...) {
   va_list arg;
   va_start(arg, format);
-  char buffer[64];
+  char buffer[this->custom_buffer_];
   int ret = vsnprintf(buffer, sizeof(buffer), format, arg);
   va_end(arg);
   if (ret > 0)
@@ -137,7 +155,7 @@ void HT16K33AlphaDisplay::printf(const char *format, ...) {
 
 #ifdef USE_TIME
 void HT16K33AlphaDisplay::strftime(const char *format, time::ESPTime time) {
-  char buffer[64];
+  char buffer[this->custom_buffer_];
   size_t ret = time.strftime(buffer, sizeof(buffer), format);
   if (ret > 0)
     this->print(buffer);
