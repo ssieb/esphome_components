@@ -20,10 +20,14 @@ display:
     scroll_speed: 250ms
     scroll_dwell: 2s
     scroll_delay: 3
+    c_scroll: false
+    c_scroll_display_length: 4
+    c_scroll_spacer: "-."
     lambda: |-
       it.print("ABCD");
     secondary_displays:
       - address: 0x71
+    custom_buffer: 64
 ```
 
 # Optional parameters
@@ -36,5 +40,12 @@ display:
 
 `scroll_delay:` is the number (float, minimum 1) of `scroll_speed` cycles to wait at the beginning before starting to scroll, default 3
 
+`c_scroll:` "continuous scrolling", default to false
+
+`c_scroll_display_length:` is the amount of characters the display is able to show at once, default 4 (only needed if `c_scroll:` is enabled)
+
+`c_scroll_spacer:` is the text displayed between the end and the beginning of the continuous scroll, default "-." (only needed if `c_scroll:` is enabled)
+
 `secondary_display:` is a list of i2c devices where `address:` is required and `i2c_id:` is optional unless there is more than one i2c bus.
 
+`custom_buffer:` is a custom buffer size (how large the "text to display" is able to be), default 64
