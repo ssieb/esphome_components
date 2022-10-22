@@ -17,6 +17,10 @@ void Clima::loop() {
     }
     if (c != 3) {
       this->buffer_.push_back(c);
+      if (this->buffer_.size() > 62) {
+	ESP_LOGE(TAG, "didn't find ETX");
+        this->reading_ = false;
+      }
       continue;
     }
     this->reading_ = false;
