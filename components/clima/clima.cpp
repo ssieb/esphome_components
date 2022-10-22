@@ -61,9 +61,9 @@ void Clima::handle_data_(uint8_t *data) {
   if (this->brightness_east_sensor_ != nullptr)
     this->brightness_east_sensor_->publish_state(parse_number<float>((char *)&data[18]).value_or(NAN) * 1000);
   if (this->brightness_west_sensor_ != nullptr)
-    this->brightness_west_sensor_->publish_state(parse_number<float>((char *)&data[24]).value_or(NAN) * 1000);
+    this->brightness_west_sensor_->publish_state(parse_number<float>((char *)&data[30]).value_or(NAN) * 1000);
   if (this->brightness_south_sensor_ != nullptr)
-    this->brightness_south_sensor_->publish_state(parse_number<float>((char *)&data[30]).value_or(NAN) * 1000);
+    this->brightness_south_sensor_->publish_state(parse_number<float>((char *)&data[24]).value_or(NAN) * 1000);
   if (this->twilight_sensor_ != nullptr)
     this->twilight_sensor_->publish_state(parse_number<float>((char *)&data[36]).value_or(NAN));
   if (this->humidity_sensor_ != nullptr)
