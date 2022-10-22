@@ -99,7 +99,7 @@ void VBus::loop() {
         continue;
       ESP_LOGV(TAG, "P2 C%04x %04x->%04x: %s", this->command_, this->source_, this->dest_, format_hex(this->buffer_).c_str());
       for (auto &listener : this->listeners_)
-        listener->on_message(this->source_, this->dest_, this->command_, this->buffer_);
+        listener->on_message(this->command_, this->source_, this->dest_, this->buffer_);
       this->state_ = 0;
       continue;
     }
