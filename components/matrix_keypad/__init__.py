@@ -5,6 +5,10 @@ from esphome.automation import maybe_simple_id
 from esphome.components import key_provider
 from esphome.const import CONF_ID, CONF_PIN, CONF_LAMBDA
 
+AUTO_LOAD = [ "key_provider" ]
+
+MULTI_CONF = True
+
 keypad_ns = cg.esphome_ns.namespace('keypad')
 Keypad = keypad_ns.class_('Keypad', key_provider.KeyProvider, cg.Component)
 
