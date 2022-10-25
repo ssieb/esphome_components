@@ -11,6 +11,7 @@ input_builder:
     source_id: mykeypad
     min_length: 4
     max_length: 4
+    start_keys: ""  # When set the builder start only when the given key is pressed first.
     end_keys: "#"
     end_key_required: true   # default is false
     back_keys: "*"
