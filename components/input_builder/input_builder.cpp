@@ -26,6 +26,8 @@ void InputBuilder::dump_config() {
     ESP_LOGCONFIG(TAG, "  erase keys '%s'", this->back_keys_.c_str());
   if (!this->clear_keys_.empty())
     ESP_LOGCONFIG(TAG, "  clear keys '%s'", this->clear_keys_.c_str());
+  if (!this->start_keys_.empty()) {
+    ESP_LOGCONFIG(TAG, "  start keys '%s'", this->start_keys_.c_str());
   if (!this->end_keys_.empty()) {
     ESP_LOGCONFIG(TAG, "  end keys '%s'", this->end_keys_.c_str());
     ESP_LOGCONFIG(TAG, "  end key is required: %s", ONOFF(this->end_key_required_));
@@ -41,9 +43,17 @@ void InputBuilder::set_provider(key_provider::KeyProvider *provider) {
     this->key_pressed_(key);
   });
 }
-
+  
+bool InputBuilder::can_handle_(uint8_t key) {
+  if (!this->is_started_ ) 
+    this->is_started_  = this->back_keys_.find(key) != std::string::npos);
+  return this->is_started_;
+}
+  
 void InputBuilder::key_pressed_(uint8_t key) {
   this->last_key_time_ = millis();
+  if (!this->end_keys_.empty() && !this->can_handle_(key)) 
+    return;
   if (this->back_keys_.find(key) != std::string::npos) {
     if (!this->result_.empty()) {
       this->result_.pop_back();
@@ -56,6 +66,7 @@ void InputBuilder::key_pressed_(uint8_t key) {
       this->result_.clear();
       this->progress_trigger_->trigger(this->result_);
     }
+    this->is_started = false;
     return;
   }
   if (this->end_keys_.find(key) != std::string::npos) {
@@ -64,6 +75,7 @@ void InputBuilder::key_pressed_(uint8_t key) {
       this->result_.clear();
       this->progress_trigger_->trigger(this->result_);
     }
+    this->is_started = false;
     return;
   }
   if (!this->allowed_keys_.empty() && (this->allowed_keys_.find(key) == std::string::npos))
@@ -73,6 +85,7 @@ void InputBuilder::key_pressed_(uint8_t key) {
   if ((this->max_length_ > 0) && (this->result_.size() == this->max_length_) && (!this->end_key_required_)) {
     this->result_trigger_->trigger(this->result_);
     this->result_.clear();
+    this->is_started = false;
   }
   this->progress_trigger_->trigger(this->result_);
 }
