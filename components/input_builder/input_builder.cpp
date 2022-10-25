@@ -43,13 +43,13 @@ void InputBuilder::set_provider(key_provider::KeyProvider *provider) {
     this->key_pressed_(key);
   });
 }
-  
+
 bool InputBuilder::can_handle_(uint8_t key) {
   if (!this->is_started_ ) 
     this->is_started_  = this->start_keys_.find(key) != std::string::npos);
   return this->is_started_;
 }
-  
+
 void InputBuilder::key_pressed_(uint8_t key) {
   this->last_key_time_ = millis();
   if (!this->start_keys_.empty() && !this->can_handle_(key)) 
