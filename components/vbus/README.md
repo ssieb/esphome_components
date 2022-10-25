@@ -30,6 +30,25 @@ sensor:
       name: Heat Quantity
 
   - platform: vbus
+    model: deltasol cs2
+    temperature_1:
+      name: Temperature 1
+    temperature_2:
+      name: Temperature 2
+    temperature_3:
+      name: Temperature 3
+    temperature_4:
+      name: Temperature 4
+    temperature_5:
+      name: Temperature 5
+    pump_speed:
+      name: Pump Speed
+    operating_hours:
+      name: Operating Hours
+    heat_quantity:
+      name: Heat Quantity
+
+  - platform: vbus
     model: deltasol_bs_plus
     temperature_1:
       name: Temperature 1
