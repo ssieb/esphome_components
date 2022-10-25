@@ -14,6 +14,7 @@ class InputBuilder : public Component {
   void set_provider(key_provider::KeyProvider *provider);
   void set_min_length(int min_length) { this->min_length_ = min_length; };
   void set_max_length(int max_length) { this->max_length_ = max_length; };
+  void set_start_keys(std::string start_keys) { this->start_keys_ = start_keys; };
   void set_end_keys(std::string end_keys) { this->end_keys_ = end_keys; };
   void set_end_key_required(bool end_key_required) { this->end_key_required_ = end_key_required; };
   void set_back_keys(std::string back_keys) { this->back_keys_ = back_keys; };
@@ -25,10 +26,13 @@ class InputBuilder : public Component {
 
  protected:
   void key_pressed_(uint8_t key);
-
+  bool can_handle_(uint8_t key);
+ 
   int min_length_{0};
   int max_length_{0};
+  std::string start_keys_;
   std::string end_keys_;
+  bool is_started_{false};
   bool end_key_required_{false};
   std::string back_keys_;
   std::string clear_keys_;
@@ -42,4 +46,3 @@ class InputBuilder : public Component {
 
 }  // namespace input_builder
 }  // namespace esphome
-
