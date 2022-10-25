@@ -9,6 +9,6 @@ external_components:
   - source:
       type: git
       url: https://github.com/ssieb/custom_components
-    components: [ keypad ]
+    components: [ matrix_keypad ]
 ```
 
