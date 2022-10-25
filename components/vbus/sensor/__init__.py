@@ -124,7 +124,7 @@ CONFIG_SCHEMA = cv.typed_schema(
 
         CONF_DELTASOL_CS2: cv.COMPONENT_SCHEMA.extend(
             {
-                cv.GenerateID(): cv.declare_id(DeltaSol_C),
+                cv.GenerateID(): cv.declare_id(DeltaSol_CS2),
                 cv.GenerateID(CONF_VBUS_ID): cv.use_id(VBus),
                 cv.Optional(CONF_TEMPERATURE_1): sensor.sensor_schema(
                     unit_of_measurement=UNIT_CELSIUS,
