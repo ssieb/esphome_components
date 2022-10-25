@@ -4,6 +4,7 @@ from esphome import automation
 from esphome.components import key_provider
 from esphome.const import CONF_ID, CONF_MAX_LENGTH, CONF_MIN_LENGTH, CONF_SOURCE_ID, CONF_TIMEOUT
 
+CONF_START_KEYS = 'start_keys'
 CONF_END_KEYS = 'end_keys'
 CONF_END_KEY_REQUIRED = 'end_key_required'
 CONF_BACK_KEYS = 'back_keys'
@@ -24,6 +25,7 @@ CONFIG_SCHEMA = cv.All(cv.COMPONENT_SCHEMA.extend({
     cv.GenerateID(CONF_SOURCE_ID): cv.use_id(key_provider.KeyProvider),
     cv.Optional(CONF_MIN_LENGTH): cv.int_,
     cv.Optional(CONF_MAX_LENGTH): cv.int_,
+    cv.Optional(CONF_START_KEYS): cv.string,
     cv.Optional(CONF_END_KEYS): cv.string,
     cv.Optional(CONF_END_KEY_REQUIRED): cv.boolean,
     cv.Optional(CONF_BACK_KEYS): cv.string,
@@ -44,6 +46,8 @@ async def to_code(config):
         cg.add(var.set_min_length(config[CONF_MIN_LENGTH]))
     if CONF_MAX_LENGTH in config:
         cg.add(var.set_max_length(config[CONF_MAX_LENGTH]))
+    if CONF_START_KEYS in config:
+        cg.add(var.set_start_keys(config[CONF_START_KEYS]))
     if CONF_END_KEYS in config:
         cg.add(var.set_end_keys(config[CONF_END_KEYS]))
     if CONF_END_KEY_REQUIRED in config:
