@@ -2,6 +2,7 @@
 
 #include "esphome/components/key_provider/key_provider.h"
 #include "esphome/core/automation.h"
+#include "esphome/core/log.h"
 
 namespace esphome {
 namespace input_builder {
