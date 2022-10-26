@@ -61,7 +61,7 @@ void InputBuilder::clear_result_(){
 
 void InputBuilder::key_pressed_(uint8_t key) {
   this->last_key_time_ = millis();
-  if (!this->start_keys_.empty() && !this->can_handle_(key))
+  if ((!this->start_keys_.empty()) && (!this->can_handle_(key)))
     return;
   if (this->back_keys_.find(key) != std::string::npos) {
     if (!this->result_.empty()) {
