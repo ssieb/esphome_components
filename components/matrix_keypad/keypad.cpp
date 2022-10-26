@@ -23,6 +23,7 @@ void Keypad::loop() {
   int key = -1;
   bool error = false;
   int pos = 0, row, col;
+  uint8_t keycode;
   for (auto *row : this->rows_) {
     if (!has_diodes_)
       row->pin_mode(gpio::FLAG_OUTPUT);
@@ -47,12 +48,15 @@ void Keypad::loop() {
     if ((active_key != -1) && (this->pressed_key_ == active_key)) {
       row = this->pressed_key_ / this->columns_.size();
       col = this->pressed_key_ % this->columns_.size();
-      ESP_LOGD(TAG, "key @ row %d, col %d released", row, col);
+      if (this->keys_.size()) {
+        keycode = this->keys_[this->pressed_key_];
+      } else {
+        keycode = 0;
+      }
+      ESP_LOGV(TAG, "key '%c' @ row %d, col %d released",keycode, row, col);
       for (auto &listener : this->listeners_)
         listener->button_released(row, col);
       if (this->keys_.size()) {
-        uint8_t keycode = this->keys_[this->pressed_key_];
-        ESP_LOGD(TAG, "key '%c' released", keycode);
         for (auto &listener : this->listeners_)
           listener->key_released(keycode);
       }
@@ -70,12 +74,15 @@ void Keypad::loop() {
 
   row = key / this->columns_.size();
   col = key % this->columns_.size();
-  ESP_LOGD(TAG, "key @ row %d, col %d pressed", row, col);
+  if (this->keys_.size()) {
+    keycode = this->keys_[key];
+  } else {
+    keycode = 0;
+  }
+  ESP_LOGV(TAG, "key '%c' @ row %d, col %d pressed",keycode, row, col);  
   for (auto &listener : this->listeners_)
     listener->button_pressed(row, col);
   if (this->keys_.size()) {
-    uint8_t keycode = this->keys_[key];
-    ESP_LOGD(TAG, "key '%c' pressed", keycode);
     for (auto &listener : this->listeners_)
       listener->key_pressed(keycode);
     this->send_key_(keycode);

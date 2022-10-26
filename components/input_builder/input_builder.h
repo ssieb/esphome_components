@@ -17,9 +17,7 @@ class InputBuilder : public Component {
   void set_provider(key_provider::KeyProvider *provider);
   void set_min_length(int min_length) { this->min_length_ = min_length; };
   void set_max_length(int max_length) { this->max_length_ = max_length; };
-  void set_start_keys(std::string keys) { this->start_keys_ = keys;
-      ESP_LOGD("InputBuilder set_start_keys", "____>  start keys is set to '%s'", this->start_keys_.c_str());
-   };
+  void set_start_keys(std::string keys) { this->start_keys_ = keys; };
   void set_end_keys(std::string end_keys) { this->end_keys_ = end_keys; };
   void set_end_key_required(bool end_key_required) { this->end_key_required_ = end_key_required; };
   void set_back_keys(std::string back_keys) { this->back_keys_ = back_keys; };
