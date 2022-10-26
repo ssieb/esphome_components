@@ -1,4 +1,4 @@
-# keypad component
+# matrix_keypad component
 
 This component is for matrix keypads.  Define a `keypad` component then add `binary_sensor`s to handle individual keys.  You need to also import the `key_provider` component.
 If you want automatic handling for multiple keys, e.g. PIN entry, use the `input_builder` component.
