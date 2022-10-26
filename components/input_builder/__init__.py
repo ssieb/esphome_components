@@ -3,6 +3,7 @@ import esphome.config_validation as cv
 from esphome import automation
 from esphome.components import key_provider
 from esphome.const import CONF_ID, CONF_MAX_LENGTH, CONF_MIN_LENGTH, CONF_SOURCE_ID, CONF_TIMEOUT
+from esphome.automation import Condition, maybe_simple_id
 
 CONF_START_KEYS = 'start_keys'
 CONF_END_KEYS = 'end_keys'
@@ -19,6 +20,10 @@ MULTI_CONF = True
 
 input_builder_ns = cg.esphome_ns.namespace('input_builder')
 InputBuilder = input_builder_ns.class_('InputBuilder', cg.Component)
+
+# Condition
+InputBuilderCondition = input_builder_ns.class_("InputBuilderCondition", Condition)
+
 
 CONFIG_SCHEMA = cv.All(cv.COMPONENT_SCHEMA.extend({
     cv.GenerateID(): cv.declare_id(InputBuilder),
@@ -67,3 +72,25 @@ async def to_code(config):
     if CONF_TIMEOUT in config:
         cg.add(var.set_timeout(config[CONF_TIMEOUT]))
 
+
+INPUT_BUILDER_CONDITION_SCHEMA = maybe_simple_id(
+    {
+        cv.Required(CONF_ID): cv.use_id(InputBuilder),
+    }
+)
+
+
+@automation.register_condition(
+    "input_builder.is_active", InputBuilderCondition, INPUT_BUILDER_CONDITION_SCHEMA
+)
+async def input_builder_is_active_to_code(config, condition_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    return cg.new_Pvariable(condition_id, template_arg, paren, True)
+
+
+@automation.register_condition(
+    "input_builder.is_inactive", InputBuilderCondition, INPUT_BUILDER_CONDITION_SCHEMA
+)
+async def input_builder_is_inactive_to_code(config, condition_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    return cg.new_Pvariable(condition_id, template_arg, paren, False)

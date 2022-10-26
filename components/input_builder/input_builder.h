@@ -6,6 +6,8 @@
 namespace esphome {
 namespace input_builder {
 
+
+
 class InputBuilder : public Component {
  public:
   InputBuilder();
@@ -23,6 +25,7 @@ class InputBuilder : public Component {
   Trigger<std::string> *get_progress_trigger() const { return this->progress_trigger_; };
   Trigger<std::string> *get_result_trigger() const { return this->result_trigger_; };
   void set_timeout(int timeout) { this->timeout_ = timeout; };
+  bool is_started() { return this->is_started_; }
 
  protected:
   void key_pressed_(uint8_t key);
@@ -44,6 +47,18 @@ class InputBuilder : public Component {
   uint32_t last_key_time_;
   uint32_t timeout_{0};
 };
+
+
+template<typename... Ts> class InputBuilderCondition : public Condition<Ts...> {
+ public:
+  InputBuilderCondition(InputBuilder *parent, bool state) : parent_(parent), state_(state) {}
+  bool check(Ts... x) override { return this->parent_->is_started_ == this->state_; }
+
+ protected:
+  InputBuilder *parent_;
+  bool state_;
+};
+
 
 }  // namespace input_builder
 }  // namespace esphome

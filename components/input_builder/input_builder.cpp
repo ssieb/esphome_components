@@ -44,8 +44,10 @@ void InputBuilder::set_provider(key_provider::KeyProvider *provider) {
 }
 
 bool InputBuilder::can_handle_(uint8_t key) {
-  if (!this->is_started_ )
+  ESP_LOGD(TAG, "Check start key: '%c' %s %s",key, ONOFF(this->is_started_), ONOFF(this->start_keys_.find(key) != std::string::npos)  )
+  if (!this->is_started_ ) {
     this->is_started_  = this->start_keys_.find(key) != std::string::npos;
+  }
   return this->is_started_;
 }
 
@@ -59,14 +61,12 @@ void InputBuilder::clear_result_(){
 
 void InputBuilder::key_pressed_(uint8_t key) {
   this->last_key_time_ = millis();
-  if (!this->start_keys_.empty() && !this->can_handle_(key)) 
+  if (!this->start_keys_.empty() && !this->can_handle_(key))
     return;
   if (this->back_keys_.find(key) != std::string::npos) {
     if (!this->result_.empty()) {
       this->result_.pop_back();
       this->progress_trigger_->trigger(this->result_);
-    } else {
-      this->clear_result_();
     }
     return;
   }
