@@ -12,8 +12,7 @@ InputBuilder::InputBuilder() : progress_trigger_(new Trigger<std::string>()), re
 void InputBuilder::loop() {
   if ((this->timeout_ == 0) || (this->result_.size() == 0) || (millis() - this->last_key_time_ < this->timeout_))
     return;
-  this->result_.clear();
-  this->progress_trigger_->trigger(this->result_);
+  this->clear_result_();
 }
 
 void InputBuilder::dump_config() {
@@ -45,9 +44,17 @@ void InputBuilder::set_provider(key_provider::KeyProvider *provider) {
 }
 
 bool InputBuilder::can_handle_(uint8_t key) {
-  if (!this->is_started_ ) 
-    this->is_started_  = this->start_keys_.find(key) != std::string::npos);
+  if (!this->is_started_ )
+    this->is_started_  = this->start_keys_.find(key) != std::string::npos;
   return this->is_started_;
+}
+
+void InputBuilder::clear_result_(){
+    this->is_started = false;
+    if (!this->result_.empty()) {
+      this->result_.clear();
+      this->progress_trigger_->trigger(this->result_);
+    }
 }
 
 void InputBuilder::key_pressed_(uint8_t key) {
@@ -58,24 +65,20 @@ void InputBuilder::key_pressed_(uint8_t key) {
     if (!this->result_.empty()) {
       this->result_.pop_back();
       this->progress_trigger_->trigger(this->result_);
+    } else {
+      this->clear_result_();
     }
     return;
   }
   if (this->clear_keys_.find(key) != std::string::npos) {
-    if (!this->result_.empty()) {
-      this->result_.clear();
-      this->progress_trigger_->trigger(this->result_);
-    }
-    this->is_started = false;
+    this->clear_result_();
     return;
   }
   if (this->end_keys_.find(key) != std::string::npos) {
     if ((this->min_length_ == 0) || (this->result_.size() >= this->min_length_)) {
       this->result_trigger_->trigger(this->result_);
-      this->result_.clear();
-      this->progress_trigger_->trigger(this->result_);
+      this->clear_result_();
     }
-    this->is_started = false;
     return;
   }
   if (!this->allowed_keys_.empty() && (this->allowed_keys_.find(key) == std::string::npos))
@@ -84,8 +87,8 @@ void InputBuilder::key_pressed_(uint8_t key) {
     this->result_.push_back(key);
   if ((this->max_length_ > 0) && (this->result_.size() == this->max_length_) && (!this->end_key_required_)) {
     this->result_trigger_->trigger(this->result_);
-    this->result_.clear();
-    this->is_started = false;
+    this->clear_result_();
+    return;
   }
   this->progress_trigger_->trigger(this->result_);
 }

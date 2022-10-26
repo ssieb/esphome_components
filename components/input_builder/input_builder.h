@@ -27,6 +27,7 @@ class InputBuilder : public Component {
  protected:
   void key_pressed_(uint8_t key);
   bool can_handle_(uint8_t key);
+  void clear_result_();
  
   int min_length_{0};
   int max_length_{0};
