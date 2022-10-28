@@ -1,4 +1,4 @@
-#include "vbus_models.h"
+#include "vbus_sensor.h"
 #include "esphome/core/helpers.h"
 #include "esphome/core/log.h"
 
