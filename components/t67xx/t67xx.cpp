@@ -71,7 +71,7 @@ void T67xx::update() {
 void T67xx::start_calibration() {
   static uint8_t calibrate[5] = {0x05, 0x03, 0xec, 0xff, 0x00};
   uint8_t data[5];
-  ESP_LOGD("starting calibration");
+  ESP_LOGD(TAG, "starting calibration");
   if (this->write(calibrate, 5) != i2c::ERROR_OK) {
     ESP_LOGE(TAG, "error writing to sensor");
     this->mark_failed();
