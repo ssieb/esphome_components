@@ -6,71 +6,69 @@ namespace pca9536d {
 
 static const char *TAG = "pca9536d";
 
-void PCA9536DComponent::setup() {
+void PCA9536D::setup() {
   ESP_LOGCONFIG(TAG, "Setting up PCA9536D...");
-  if (!read_gpio_()) {
-    ESP_LOGE(TAG, "PCA9536D not available under 0x%02X", address_);
-    mark_failed();
+  if (!this->read_gpio_()) {
+    ESP_LOGE(TAG, "PCA9536D not available under 0x%02X", this->address_);
+    this->mark_failed();
     return;
   }
 
-  write_gpio_();
+  this->write_gpio_();
 }
 
-void PCA9536DComponent::dump_config() {
+void PCA9536D::dump_config() {
   ESP_LOGCONFIG(TAG, "PCA9536D:");
   LOG_I2C_DEVICE(this)
-  if (is_failed())
+  if (this->is_failed())
     ESP_LOGE(TAG, "Communication with PCA9536D failed!");
 }
 
-bool PCA9536DComponent::digital_read(uint8_t pin) {
-  read_gpio_();
-  return inputs_ & (1 << pin);
+bool PCA9536D::digital_read(uint8_t pin) {
+  this->read_gpio_();
+  return this->inputs_ & (1 << pin);
 }
 
-void PCA9536DComponent::digital_write(uint8_t pin, bool value) {
+void PCA9536D::digital_write(uint8_t pin, bool value) {
   if (value)
-    outputs_ |= (1 << pin);
+    this->outputs_ |= (1 << pin);
   else
-    outputs_ &= ~(1 << pin);
-  write_gpio_();
+    this->outputs_ &= ~(1 << pin);
+  this->write_gpio_();
 }
 
-void PCA9536DComponent::pin_mode(uint8_t pin, uint8_t mode) {
+void PCA9536D::set_pin_mode(uint8_t pin, uint8_t mode) {
   switch (mode) {
-    case PCA9536D_INPUT:
-      modes_ |= 1 << pin;
+    case gpio::FLAG_INPUT:
+      this->modes_ |= 1 << pin;
       break;
-    case PCA9536D_OUTPUT:
-      modes_ &= ~(1 << pin);
-      break;
-    default:
+    case gpio::FLAG_OUTPUT:
+      this->modes_ &= ~(1 << pin);
       break;
   }
-  set_modes_();
+  this->set_modes_();
 }
 
-bool PCA9536DComponent::read_gpio_() {
-  if (is_failed())
+bool PCA9536D::read_gpio_() {
+  if (this->is_failed())
     return false;
 
   uint8_t data;
-  if (!read_bytes(0, &data, 1)) {
-    status_set_warning();
+  if (!this->read_bytes(0, &data, 1)) {
+    this->status_set_warning();
     return false;
   }
 
-  inputs_ = data;
-  status_clear_warning();
+  this->inputs_ = data;
+  this->status_clear_warning();
   return true;
 }
 
-bool PCA9536DComponent::write_gpio_() {
-  if (is_failed())
+bool PCA9536D::write_gpio_() {
+  if (this->is_failed())
     return false;
 
-  uint8_t data = outputs_;
+  uint8_t data = this->outputs_;
   if (!this->write_bytes(1, &data, 1)) {
     this->status_set_warning();
     return false;
@@ -80,11 +78,11 @@ bool PCA9536DComponent::write_gpio_() {
   return true;
 }
 
-bool PCA9536DComponent::set_modes_() {
-  if (is_failed())
+bool PCA9536D::set_modes_() {
+  if (this->is_failed())
     return false;
 
-  uint8_t data = modes_;
+  uint8_t data = this->modes_;
   if (!this->write_bytes(3, &data, 1)) {
     this->status_set_warning();
     return false;
@@ -94,16 +92,17 @@ bool PCA9536DComponent::set_modes_() {
   return true;
 }
 
-void PCA9536DGPIOPin::setup() { pin_mode(mode_); }
+void PCA9536DGPIOPin::setup() { this->pin_mode(this->flags_); }
 
-bool PCA9536DGPIOPin::digital_read() { return parent_->digital_read(pin_) != inverted_; }
+bool PCA9536DGPIOPin::digital_read() { return this->parent_->digital_read(this->pin_) != this->inverted_; }
 
-void PCA9536DGPIOPin::digital_write(bool value) { parent_->digital_write(pin_, value != inverted_); }
+void PCA9536DGPIOPin::digital_write(bool value) { this->parent_->digital_write(this->pin_, value != this->inverted_); }
 
-void PCA9536DGPIOPin::pin_mode(uint8_t mode) { parent_->pin_mode(pin_, mode); }
+void PCA9536DGPIOPin::pin_mode(gpio::Flags flags) { this->parent_->set_pin_mode(this->pin_, flags); }
 
-PCA9536DGPIOPin::PCA9536DGPIOPin(PCA9536DComponent *parent, uint8_t pin, uint8_t mode, bool inverted)
-    : GPIOPin(pin, mode, inverted), parent_(parent) {}
+std::string PCA9536DGPIOPin::dump_summary() const {
+  return str_sprintf("%u via PCA9536D", pin_);
+}
 
 }  // namespace pca9536d
 }  // namespace esphome
