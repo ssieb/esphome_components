@@ -6,6 +6,9 @@ from esphome.const import (
     CONF_COMMAND,
     CONF_LAMBDA,
     CONF_MODEL,
+    CONF_MULTIPLY,
+    CONF_OFFSET,
+    CONF_SENSORS,
     CONF_SOURCE,
     DEVICE_CLASS_DURATION,
     DEVICE_CLASS_EMPTY,
@@ -23,10 +26,10 @@ from esphome.const import (
 )
 from .. import vbus_ns, VBus, CONF_VBUS_ID
 
-DeltaSol_C = vbus_ns.class_('DeltaSol_C', cg.Component)
-DeltaSol_CS2 = vbus_ns.class_('DeltaSol_CS2', cg.Component)
-DeltaSol_BS_Plus = vbus_ns.class_('DeltaSol_BS_Plus', cg.Component)
-VBusCustom = vbus_ns.class_('VBusCustom', cg.Component)
+DeltaSol_C = vbus_ns.class_('DeltaSol_C_sensor', cg.Component)
+DeltaSol_CS2 = vbus_ns.class_('DeltaSol_CS2_sensor', cg.Component)
+DeltaSol_BS_Plus = vbus_ns.class_('DeltaSol_BS_Plus_sensor', cg.Component)
+VBusCustom = vbus_ns.class_('VBusCustom_sensor', cg.Component)
 
 CONF_DELTASOL_C = "deltasol_c"
 CONF_DELTASOL_CS2 = "deltasol_cs2"
@@ -49,6 +52,31 @@ CONF_HEAT_QUANTITY = "heat_quantity"
 CONF_DEST = "dest"
 
 UNIT_HOUR = "h"
+
+CONF_U_BYTE = "u_byte"
+
+SensorValueType_ns = vbus_ns.namespace("SensorValueType")
+SensorValueType = SensorValueType_ns.enum("SensorValueType")
+SENSOR_VALUE_TYPE = {
+    CONF_U_BYTE: SensorValueType.U_BYTE,
+    "S_BYTE": SensorValueType.S_BYTE,
+    "U_WORD": SensorValueType.U_WORD,
+    "S_WORD": SensorValueType.S_WORD,
+    "U_DWORD": SensorValueType.U_DWORD,
+    "S_DWORD": SensorValueType.S_DWORD,
+    "DECIMAL": SensorValueType.DECIMAL,
+}
+
+CUSTOM_SENSOR_SCHEMA = cv.typed_schema(
+    {
+        CONF_U_BYTE: sensor.sensor_schema().extend(
+            {
+                cv.Required(CONF_OFFSET): cv.positive_int,
+                cv.Optional(CONF_MULTIPLY, default=1): cv.float_,
+            }
+        )
+    }
+)
 
 CONFIG_SCHEMA = cv.typed_schema(
     {
@@ -263,6 +291,7 @@ CONFIG_SCHEMA = cv.typed_schema(
                 cv.Optional(CONF_SOURCE): cv.uint16_t,
                 cv.Optional(CONF_DEST): cv.uint16_t,
                 cv.Optional(CONF_LAMBDA): cv.lambda_,
+                #cv.Optional(CONF_SENSORS): cv.ensure_list(
             }
         ),
     },

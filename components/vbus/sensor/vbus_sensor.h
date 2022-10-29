@@ -8,7 +8,7 @@ namespace vbus {
 
 using message_handler_t = std::function<void(std::vector<uint8_t> &)>;
 
-class DeltaSol_C : public VBusListener, public Component {
+class DeltaSol_C_sensor : public VBusListener, public Component {
  public:
   void dump_config() override;
   void set_temperature1_sensor(sensor::Sensor *sensor) { this->temperature1_sensor_ = sensor; }
@@ -36,7 +36,7 @@ class DeltaSol_C : public VBusListener, public Component {
   void handle_message_(std::vector<uint8_t> &message) override;
 };
 
-class DeltaSol_CS2 : public VBusListener, public Component {
+class DeltaSol_CS2_sensor : public VBusListener, public Component {
  public:
   void dump_config() override;
   void set_temperature1_sensor(sensor::Sensor *sensor) { this->temperature1_sensor_ = sensor; }
@@ -62,7 +62,7 @@ class DeltaSol_CS2 : public VBusListener, public Component {
   void handle_message_(std::vector<uint8_t> &message) override;
 };
 
-class DeltaSol_BS_Plus : public VBusListener, public Component {
+class DeltaSol_BS_Plus_sensor : public VBusListener, public Component {
  public:
   void dump_config() override;
   void set_temperature1_sensor(sensor::Sensor *sensor) { this->temperature1_sensor_ = sensor; }
@@ -90,7 +90,7 @@ class DeltaSol_BS_Plus : public VBusListener, public Component {
   void handle_message_(std::vector<uint8_t> &message) override;
 };
 
-class VBusCustom : public VBusListener, public Component {
+class VBusCustom_sensor : public VBusListener, public Component {
  public:
   void dump_config() override;
   void set_message_handler(message_handler_t &&handler) { this->message_handler_ = handler; };

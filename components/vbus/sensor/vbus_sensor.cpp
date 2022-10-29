@@ -9,11 +9,11 @@ static inline uint16_t get_16(std::vector<uint8_t> &message, int start) {
   return (message[start + 1] << 8) + message[start];
 }
 
-void DeltaSol_C::dump_config() {
+void DeltaSol_C_sensor::dump_config() {
   ESP_LOGCONFIG(this->TAG_, "Deltasol C:");
 }
 
-void DeltaSol_C::handle_message_(std::vector<uint8_t> &message) {
+void DeltaSol_C_sensor::handle_message_(std::vector<uint8_t> &message) {
   if (this->temperature1_sensor_ != nullptr)
     this->temperature1_sensor_->publish_state(get_16(message, 0) * 0.1f);
   if (this->temperature2_sensor_ != nullptr)
@@ -34,11 +34,11 @@ void DeltaSol_C::handle_message_(std::vector<uint8_t> &message) {
     this->heat_quantity_sensor_->publish_state(get_16(message, 16) + get_16(message, 18) * 1000 + get_16(message, 20) * 1000000);
 }
 
-void DeltaSol_CS2::dump_config() {
+void DeltaSol_CS2_sensor::dump_config() {
   ESP_LOGCONFIG(this->TAG_, "Deltasol CS2:");
 }
 
-void DeltaSol_CS2::handle_message_(std::vector<uint8_t> &message) {
+void DeltaSol_CS2_sensor::handle_message_(std::vector<uint8_t> &message) {
   if (this->temperature1_sensor_ != nullptr)
     this->temperature1_sensor_->publish_state(get_16(message, 0) * 0.1f);
   if (this->temperature2_sensor_ != nullptr)
@@ -57,11 +57,11 @@ void DeltaSol_CS2::handle_message_(std::vector<uint8_t> &message) {
     this->heat_quantity_sensor_->publish_state((get_16(message, 26) << 16) + get_16(message, 24));
 }
 
-void DeltaSol_BS_Plus::dump_config() {
+void DeltaSol_BS_Plus_sensor::dump_config() {
   ESP_LOGCONFIG(this->TAG_, "Deltasol BS Plus:");
 }
 
-void DeltaSol_BS_Plus::handle_message_(std::vector<uint8_t> &message) {
+void DeltaSol_BS_Plus_sensor::handle_message_(std::vector<uint8_t> &message) {
   if (this->temperature1_sensor_ != nullptr)
     this->temperature1_sensor_->publish_state(get_16(message, 0) * 0.1f);
   if (this->temperature2_sensor_ != nullptr)
@@ -82,11 +82,11 @@ void DeltaSol_BS_Plus::handle_message_(std::vector<uint8_t> &message) {
     this->heat_quantity_sensor_->publish_state(get_16(message, 20) + get_16(message, 22) * 1000 + get_16(message, 24) * 1000000);
 }
 
-void VBusCustom::dump_config() {
+void VBusCustom_sensor::dump_config() {
   ESP_LOGCONFIG(this->TAG_, "VBus Custom:");
 }
 
-void VBusCustom::handle_message_(std::vector<uint8_t> &message) {
+void VBusCustom_sensor::handle_message_(std::vector<uint8_t> &message) {
   if (this->message_handler_.has_value())
     (*this->message_handler_)(message);
 }
