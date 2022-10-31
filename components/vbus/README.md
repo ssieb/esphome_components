@@ -41,8 +41,6 @@ sensor:
       name: Temperature 3
     temperature_4:
       name: Temperature 4
-    temperature_5:
-      name: Temperature 5
     pump_speed:
       name: Pump Speed
     operating_hours:
@@ -103,14 +101,6 @@ text_sensor:
     version:
       name: Version
 
-  - platform: vbus
-    model: custom
-    command: 0x100
-    source: 0x1234
-    dest: 0x10
-    lambda: |-
-      // the data is in `x`
-
 binary_sensor:
   - platform: vbus
     model: deltasol c
@@ -160,14 +150,6 @@ binary_sensor:
       name: Option Recooling
     hqm:
       name: Option Heat Quantity Measurement
-
-  - platform: vbus
-    model: custom
-    command: 0x100
-    source: 0x1234
-    dest: 0x10
-    lambda: |-
-      // the data is in `x`
 ```
 
 The `uart_id` is optional.

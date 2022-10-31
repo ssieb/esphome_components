@@ -78,15 +78,5 @@ class DeltaSol_BS_Plus_bsensor : public VBusListener, public Component {
   void handle_message_(std::vector<uint8_t> &message) override;
 };
 
-class VBusCustom_bsensor : public VBusListener, public Component {
- public:
-  void dump_config() override;
-  void set_message_handler(message_handler_t &&handler) { this->message_handler_ = handler; };
- protected:
-  static constexpr const char *TAG_ = "vbus.custom.binary";
-  optional<message_handler_t> message_handler_{};
-  void handle_message_(std::vector<uint8_t> &message) override;
-};
-
 }  // namespace vbus
 }  // namespace esphome

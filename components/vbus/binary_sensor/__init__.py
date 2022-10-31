@@ -3,10 +3,7 @@ import esphome.config_validation as cv
 from esphome.components import binary_sensor
 from esphome.const import (
     CONF_ID,
-    CONF_COMMAND,
-    CONF_LAMBDA,
     CONF_MODEL,
-    CONF_SOURCE,
 )
 from .. import (
     vbus_ns,
@@ -15,14 +12,11 @@ from .. import (
     CONF_DELTASOL_C,
     CONF_DELTASOL_CS2,
     CONF_DELTASOL_BS_PLUS,
-    CONF_CUSTOM,
-    CONF_DEST,
 )
 
 DeltaSol_C = vbus_ns.class_('DeltaSol_C_bsensor', cg.Component)
 DeltaSol_CS2 = vbus_ns.class_('DeltaSol_CS2_bsensor', cg.Component)
 DeltaSol_BS_Plus = vbus_ns.class_('DeltaSol_BS_Plus_bsensor', cg.Component)
-VBusCustom = vbus_ns.class_('VBusCustom_bsensor', cg.Component)
 
 CONF_RELAY1 = "relay1"
 CONF_RELAY2 = "relay2"
@@ -77,17 +71,6 @@ CONFIG_SCHEMA = cv.typed_schema(
                 cv.Optional(CONF_TUBE_COLLECTOR): binary_sensor.binary_sensor_schema(),
                 cv.Optional(CONF_RECOOLING): binary_sensor.binary_sensor_schema(),
                 cv.Optional(CONF_HQM): binary_sensor.binary_sensor_schema(),
-            }
-        ),
-
-        CONF_CUSTOM: cv.COMPONENT_SCHEMA.extend(
-            {
-                cv.GenerateID(): cv.declare_id(VBusCustom),
-                cv.GenerateID(CONF_VBUS_ID): cv.use_id(VBus),
-                cv.Optional(CONF_COMMAND): cv.uint16_t,
-                cv.Optional(CONF_SOURCE): cv.uint16_t,
-                cv.Optional(CONF_DEST): cv.uint16_t,
-                cv.Optional(CONF_LAMBDA): cv.lambda_,
             }
         ),
     },
@@ -171,19 +154,6 @@ async def to_code(config):
         if CONF_HQM in config:
             sens = await binary_sensor.new_binary_sensor(config[CONF_HQM])
             cg.add(var.set_hqm_bsensor(sens))
-
-    elif config[CONF_MODEL] == CONF_CUSTOM:
-        if CONF_COMMAND in config:
-          cg.add(var.set_command(config[CONF_COMMAND]))
-        if CONF_SOURCE in config:
-          cg.add(var.set_source(config[CONF_SOURCE]))
-        if CONF_DEST in config:
-          cg.add(var.set_dest(config[CONF_DEST]))
-        if CONF_LAMBDA in config:
-          lambda_ = await cg.process_lambda(
-              config[CONF_LAMBDA], [(cg.std_vector.template(cg.uint8), "x")], return_type=cg.void
-          )
-          cg.add(var.set_message_handler(lambda_))
 
     vbus = await cg.get_variable(config[CONF_VBUS_ID])
     cg.add(vbus.register_listener(var))

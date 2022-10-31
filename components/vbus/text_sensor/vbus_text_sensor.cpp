@@ -49,14 +49,5 @@ void DeltaSol_BS_Plus_tsensor::handle_message_(std::vector<uint8_t> &message) {
   }
 }
 
-void VBusCustom_tsensor::dump_config() {
-  ESP_LOGCONFIG(this->TAG_, "VBus Custom:");
-}
-
-void VBusCustom_tsensor::handle_message_(std::vector<uint8_t> &message) {
-  if (this->message_handler_.has_value())
-    (*this->message_handler_)(message);
-}
-
 }  // namespace vbus
 }  // namespace esphome
