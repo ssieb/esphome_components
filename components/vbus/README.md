@@ -28,6 +28,8 @@ sensor:
       name: Operating Hours 2
     heat_quantity:
       name: Heat Quantity
+    time:
+      name: System Time
 
   - platform: vbus
     model: deltasol cs2
@@ -47,6 +49,8 @@ sensor:
       name: Operating Hours
     heat_quantity:
       name: Heat Quantity
+    version:
+      name: SW Version
 
   - platform: vbus
     model: deltasol_bs_plus
@@ -68,6 +72,94 @@ sensor:
       name: Operating Hours 2
     heat_quantity:
       name: Heat Quantity
+    time:
+      name: System Time
+    version:
+      name: SW Version
+
+  - platform: vbus
+    model: custom
+    command: 0x100
+    source: 0x1234
+    dest: 0x10
+    lambda: |-
+      // the data is in `x`
+
+text_sensor:
+  - platform: vbus
+    model: deltasol c
+    time:
+      name: System Time
+
+  - platform: vbus
+    model: deltasol cs2
+    version:
+      name: Version
+
+  - platform: vbus
+    model: deltasol_bs_plus
+    time:
+      name: System Time
+    version:
+      name: Version
+
+  - platform: vbus
+    model: custom
+    command: 0x100
+    source: 0x1234
+    dest: 0x10
+    lambda: |-
+      // the data is in `x`
+
+binary_sensor:
+  - platform: vbus
+    model: deltasol c
+    sensor1_error:
+      name: Sensor 1 Error
+    sensor2_error:
+      name: Sensor 2 Error
+    sensor3_error:
+      name: Sensor 3 Error
+    sensor4_error:
+      name: Sensor 4 Error
+
+  - platform: vbus
+    model: deltasol cs2
+    sensor1_error:
+      name: Sensor 1 Error
+    sensor2_error:
+      name: Sensor 2 Error
+    sensor3_error:
+      name: Sensor 3 Error
+    sensor4_error:
+      name: Sensor 4 Error
+
+  - platform: vbus
+    model: deltasol_bs_plus
+    relay1:
+      name: Relay 1 On
+    relay2:
+      name: Relay 2 On
+    sensor1_error:
+      name: Sensor 1 Error
+    sensor2_error:
+      name: Sensor 2 Error
+    sensor3_error:
+      name: Sensor 3 Error
+    sensor4_error:
+      name: Sensor 4 Error
+    collector_max:
+      name: Option Collector Max
+    collector_min:
+      name: Option Collector Min
+    collector_frost:
+      name: Option Collector Frost
+    tube_collector:
+      name: Option Tube Collector
+    recooling:
+      name: Option Recooling
+    hqm:
+      name: Option Heat Quantity Measurement
 
   - platform: vbus
     model: custom

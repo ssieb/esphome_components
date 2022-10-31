@@ -10,6 +10,8 @@ from esphome.const import (
     CONF_OFFSET,
     CONF_SENSORS,
     CONF_SOURCE,
+    CONF_TIME,
+    CONF_VERSION,
     DEVICE_CLASS_DURATION,
     DEVICE_CLASS_EMPTY,
     DEVICE_CLASS_ENERGY,
@@ -21,20 +23,25 @@ from esphome.const import (
     STATE_CLASS_MEASUREMENT,
     UNIT_CELSIUS,
     UNIT_EMPTY,
+    UNIT_MINUTE,
     UNIT_PERCENT,
     UNIT_WATT_HOURS,
 )
-from .. import vbus_ns, VBus, CONF_VBUS_ID
+from .. import (
+    vbus_ns,
+    VBus,
+    CONF_VBUS_ID,
+    CONF_DELTASOL_C,
+    CONF_DELTASOL_CS2,
+    CONF_DELTASOL_BS_PLUS,
+    CONF_CUSTOM,
+    CONF_DEST,
+)
 
 DeltaSol_C = vbus_ns.class_('DeltaSol_C_sensor', cg.Component)
 DeltaSol_CS2 = vbus_ns.class_('DeltaSol_CS2_sensor', cg.Component)
 DeltaSol_BS_Plus = vbus_ns.class_('DeltaSol_BS_Plus_sensor', cg.Component)
 VBusCustom = vbus_ns.class_('VBusCustom_sensor', cg.Component)
-
-CONF_DELTASOL_C = "deltasol_c"
-CONF_DELTASOL_CS2 = "deltasol_cs2"
-CONF_DELTASOL_BS_PLUS = "deltasol_bs_plus"
-CONF_CUSTOM = "custom"
 
 CONF_TEMPERATURE_1 = "temperature_1"
 CONF_TEMPERATURE_2 = "temperature_2"
@@ -48,8 +55,6 @@ CONF_OPERATING_HOURS = "operating_hours"
 CONF_OPERATING_HOURS_1 = "operating_hours_1"
 CONF_OPERATING_HOURS_2 = "operating_hours_2"
 CONF_HEAT_QUANTITY = "heat_quantity"
-
-CONF_DEST = "dest"
 
 UNIT_HOUR = "h"
 
@@ -147,6 +152,13 @@ CONFIG_SCHEMA = cv.typed_schema(
                     device_class=DEVICE_CLASS_ENERGY,
                     state_class=STATE_CLASS_MEASUREMENT,
                 ),
+                cv.Optional(CONF_TIME): sensor.sensor_schema(
+                    unit_of_measurement=UNIT_MINUTE,
+                    icon=ICON_TIMER,
+                    accuracy_decimals=0,
+                    device_class=DEVICE_CLASS_DURATION,
+                    state_class=STATE_CLASS_MEASUREMENT,
+                ),
             }
         ),
 
@@ -209,6 +221,9 @@ CONFIG_SCHEMA = cv.typed_schema(
                     accuracy_decimals=0,
                     device_class=DEVICE_CLASS_ENERGY,
                     state_class=STATE_CLASS_MEASUREMENT,
+                ),
+                cv.Optional(CONF_VERSION): sensor.sensor_schema(
+                    accuracy_decimals=2,
                 ),
             }
         ),
@@ -280,6 +295,16 @@ CONFIG_SCHEMA = cv.typed_schema(
                     device_class=DEVICE_CLASS_ENERGY,
                     state_class=STATE_CLASS_MEASUREMENT,
                 ),
+                cv.Optional(CONF_TIME): sensor.sensor_schema(
+                    unit_of_measurement=UNIT_MINUTE,
+                    icon=ICON_TIMER,
+                    accuracy_decimals=0,
+                    device_class=DEVICE_CLASS_DURATION,
+                    state_class=STATE_CLASS_MEASUREMENT,
+                ),
+                cv.Optional(CONF_VERSION): sensor.sensor_schema(
+                    accuracy_decimals=2,
+                ),
             }
         ),
 
@@ -332,6 +357,9 @@ async def to_code(config):
         if CONF_HEAT_QUANTITY in config:
             sens = await sensor.new_sensor(config[CONF_HEAT_QUANTITY])
             cg.add(var.set_heat_quantity_sensor(sens))
+        if CONF_TIME in config:
+            sens = await sensor.new_sensor(config[CONF_TIME])
+            cg.add(var.set_time_sensor(sens))
 
     elif config[CONF_MODEL] == CONF_DELTASOL_CS2:
         cg.add(var.set_command(0x0100))
@@ -361,6 +389,9 @@ async def to_code(config):
         if CONF_HEAT_QUANTITY in config:
             sens = await sensor.new_sensor(config[CONF_HEAT_QUANTITY])
             cg.add(var.set_heat_quantity_sensor(sens))
+        if CONF_VERSION in config:
+            sens = await sensor.new_sensor(config[CONF_VERSION])
+            cg.add(var.set_version_sensor(sens))
 
     elif config[CONF_MODEL] == CONF_DELTASOL_BS_PLUS:
         cg.add(var.set_command(0x0100))
@@ -393,6 +424,12 @@ async def to_code(config):
         if CONF_HEAT_QUANTITY in config:
             sens = await sensor.new_sensor(config[CONF_HEAT_QUANTITY])
             cg.add(var.set_heat_quantity_sensor(sens))
+        if CONF_TIME in config:
+            sens = await sensor.new_sensor(config[CONF_TIME])
+            cg.add(var.set_time_sensor(sens))
+        if CONF_VERSION in config:
+            sens = await sensor.new_sensor(config[CONF_VERSION])
+            cg.add(var.set_version_sensor(sens))
 
     elif config[CONF_MODEL] == CONF_CUSTOM:
         if CONF_COMMAND in config:

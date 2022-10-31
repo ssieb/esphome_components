@@ -10,6 +10,13 @@ VBus = vbus_ns.class_('VBus', uart.UARTDevice, cg.Component)
 
 CONF_VBUS_ID = "vbus_id"
 
+CONF_DELTASOL_C = "deltasol_c"
+CONF_DELTASOL_CS2 = "deltasol_cs2"
+CONF_DELTASOL_BS_PLUS = "deltasol_bs_plus"
+CONF_CUSTOM = "custom"
+
+CONF_DEST = "dest"
+
 CONFIG_SCHEMA = uart.UART_DEVICE_SCHEMA.extend({
     cv.GenerateID(): cv.declare_id(VBus),
 })
