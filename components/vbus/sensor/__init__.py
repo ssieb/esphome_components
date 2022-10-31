@@ -16,6 +16,7 @@ from esphome.const import (
     DEVICE_CLASS_EMPTY,
     DEVICE_CLASS_ENERGY,
     DEVICE_CLASS_TEMPERATURE,
+    ENTITY_CATEGORY_DIAGNOSTIC,
     ICON_PERCENT,
     ICON_RADIATOR,
     ICON_THERMOMETER,
@@ -158,6 +159,7 @@ CONFIG_SCHEMA = cv.typed_schema(
                     accuracy_decimals=0,
                     device_class=DEVICE_CLASS_DURATION,
                     state_class=STATE_CLASS_MEASUREMENT,
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
                 ),
             }
         ),
@@ -224,6 +226,7 @@ CONFIG_SCHEMA = cv.typed_schema(
                 ),
                 cv.Optional(CONF_VERSION): sensor.sensor_schema(
                     accuracy_decimals=2,
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
                 ),
             }
         ),
@@ -301,9 +304,11 @@ CONFIG_SCHEMA = cv.typed_schema(
                     accuracy_decimals=0,
                     device_class=DEVICE_CLASS_DURATION,
                     state_class=STATE_CLASS_MEASUREMENT,
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
                 ),
                 cv.Optional(CONF_VERSION): sensor.sensor_schema(
                     accuracy_decimals=2,
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
                 ),
             }
         ),

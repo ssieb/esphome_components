@@ -4,6 +4,8 @@ from esphome.components import binary_sensor
 from esphome.const import (
     CONF_ID,
     CONF_MODEL,
+    DEVICE_CLASS_PROBLEM,
+    ENTITY_CATEGORY_DIAGNOSTIC,
 )
 from .. import (
     vbus_ns,
@@ -37,10 +39,22 @@ CONFIG_SCHEMA = cv.typed_schema(
             {
                 cv.GenerateID(): cv.declare_id(DeltaSol_C),
                 cv.GenerateID(CONF_VBUS_ID): cv.use_id(VBus),
-                cv.Optional(CONF_SENSOR1_ERROR): binary_sensor.binary_sensor_schema(),
-                cv.Optional(CONF_SENSOR2_ERROR): binary_sensor.binary_sensor_schema(),
-                cv.Optional(CONF_SENSOR3_ERROR): binary_sensor.binary_sensor_schema(),
-                cv.Optional(CONF_SENSOR4_ERROR): binary_sensor.binary_sensor_schema(),
+                cv.Optional(CONF_SENSOR1_ERROR): binary_sensor.binary_sensor_schema(
+                    device_class=DEVICE_CLASS_PROBLEM,
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
+                cv.Optional(CONF_SENSOR2_ERROR): binary_sensor.binary_sensor_schema(
+                    device_class=DEVICE_CLASS_PROBLEM,
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
+                cv.Optional(CONF_SENSOR3_ERROR): binary_sensor.binary_sensor_schema(
+                    device_class=DEVICE_CLASS_PROBLEM,
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
+                cv.Optional(CONF_SENSOR4_ERROR): binary_sensor.binary_sensor_schema(
+                    device_class=DEVICE_CLASS_PROBLEM,
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
             }
         ),
 
@@ -48,10 +62,22 @@ CONFIG_SCHEMA = cv.typed_schema(
             {
                 cv.GenerateID(): cv.declare_id(DeltaSol_CS2),
                 cv.GenerateID(CONF_VBUS_ID): cv.use_id(VBus),
-                cv.Optional(CONF_SENSOR1_ERROR): binary_sensor.binary_sensor_schema(),
-                cv.Optional(CONF_SENSOR2_ERROR): binary_sensor.binary_sensor_schema(),
-                cv.Optional(CONF_SENSOR3_ERROR): binary_sensor.binary_sensor_schema(),
-                cv.Optional(CONF_SENSOR4_ERROR): binary_sensor.binary_sensor_schema(),
+                cv.Optional(CONF_SENSOR1_ERROR): binary_sensor.binary_sensor_schema(
+                    device_class=DEVICE_CLASS_PROBLEM,
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
+                cv.Optional(CONF_SENSOR2_ERROR): binary_sensor.binary_sensor_schema(
+                    device_class=DEVICE_CLASS_PROBLEM,
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
+                cv.Optional(CONF_SENSOR3_ERROR): binary_sensor.binary_sensor_schema(
+                    device_class=DEVICE_CLASS_PROBLEM,
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
+                cv.Optional(CONF_SENSOR4_ERROR): binary_sensor.binary_sensor_schema(
+                    device_class=DEVICE_CLASS_PROBLEM,
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
             }
         ),
 
@@ -61,16 +87,40 @@ CONFIG_SCHEMA = cv.typed_schema(
                 cv.GenerateID(CONF_VBUS_ID): cv.use_id(VBus),
                 cv.Optional(CONF_RELAY1): binary_sensor.binary_sensor_schema(),
                 cv.Optional(CONF_RELAY2): binary_sensor.binary_sensor_schema(),
-                cv.Optional(CONF_SENSOR1_ERROR): binary_sensor.binary_sensor_schema(),
-                cv.Optional(CONF_SENSOR2_ERROR): binary_sensor.binary_sensor_schema(),
-                cv.Optional(CONF_SENSOR3_ERROR): binary_sensor.binary_sensor_schema(),
-                cv.Optional(CONF_SENSOR4_ERROR): binary_sensor.binary_sensor_schema(),
-                cv.Optional(CONF_COLLECTOR_MAX): binary_sensor.binary_sensor_schema(),
-                cv.Optional(CONF_COLLECTOR_MIN): binary_sensor.binary_sensor_schema(),
-                cv.Optional(CONF_COLLECTOR_FROST): binary_sensor.binary_sensor_schema(),
-                cv.Optional(CONF_TUBE_COLLECTOR): binary_sensor.binary_sensor_schema(),
-                cv.Optional(CONF_RECOOLING): binary_sensor.binary_sensor_schema(),
-                cv.Optional(CONF_HQM): binary_sensor.binary_sensor_schema(),
+                cv.Optional(CONF_SENSOR1_ERROR): binary_sensor.binary_sensor_schema(
+                    device_class=DEVICE_CLASS_PROBLEM,
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
+                cv.Optional(CONF_SENSOR2_ERROR): binary_sensor.binary_sensor_schema(
+                    device_class=DEVICE_CLASS_PROBLEM,
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
+                cv.Optional(CONF_SENSOR3_ERROR): binary_sensor.binary_sensor_schema(
+                    device_class=DEVICE_CLASS_PROBLEM,
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
+                cv.Optional(CONF_SENSOR4_ERROR): binary_sensor.binary_sensor_schema(
+                    device_class=DEVICE_CLASS_PROBLEM,
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
+                cv.Optional(CONF_COLLECTOR_MAX): binary_sensor.binary_sensor_schema(
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
+                cv.Optional(CONF_COLLECTOR_MIN): binary_sensor.binary_sensor_schema(
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
+                cv.Optional(CONF_COLLECTOR_FROST): binary_sensor.binary_sensor_schema(
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
+                cv.Optional(CONF_TUBE_COLLECTOR): binary_sensor.binary_sensor_schema(
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
+                cv.Optional(CONF_RECOOLING): binary_sensor.binary_sensor_schema(
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
+                cv.Optional(CONF_HQM): binary_sensor.binary_sensor_schema(
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
             }
         ),
     },
