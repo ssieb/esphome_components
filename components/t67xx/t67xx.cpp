@@ -7,18 +7,41 @@ namespace t67xx {
 
 static const char *const TAG = "t67xx";
 
+static const uint8_t status[5] = {0x04, 0x13, 0x8a, 0x00, 0x01};
+static const uint8_t gas_ppm[5] = {0x04, 0x13, 0x8b, 0x00, 0x01};
+static const uint8_t calibrate[5] = {0x05, 0x03, 0xec, 0xff, 0x00};
+
+void T67xx::loop() {
+  if (this->is_failed())
+    return;
+
+  if (this->calibrating_ != nullptr) {
+    uint8_t data[4];
+    if (this->write(status, 5) != i2c::ERROR_OK) {
+      ESP_LOGE(TAG, "error writing to sensor");
+      this->mark_failed();
+      return;
+    }
+    if (this->read(data, 4) != i2c::ERROR_OK) {
+      ESP_LOGE(TAG, "error reading status");
+      this->mark_failed();
+      return;
+    }
+    this->calibrating_->publish_state(data[2] & 0x80);
+  }
+}
+
 void T67xx::dump_config() {
   LOG_SENSOR("", "T67XX", this);
   LOG_I2C_DEVICE(this);
   LOG_UPDATE_INTERVAL(this);
+  LOG_BINARY_SENSOR("  ", "Is calibrating", this->calibrating_);
 }
 
 void T67xx::update() {
   if (this->is_failed())
     return;
 
-  static uint8_t status[5] = {0x04, 0x13, 0x8a, 0x00, 0x01};
-  static uint8_t gas_ppm[5] = {0x04, 0x13, 0x8b, 0x00, 0x01};
   uint8_t data[4];
   if (this->write(status, 5) != i2c::ERROR_OK) {
     ESP_LOGE(TAG, "error writing to sensor");
@@ -69,7 +92,6 @@ void T67xx::update() {
 }
 
 void T67xx::start_calibration() {
-  static uint8_t calibrate[5] = {0x05, 0x03, 0xec, 0xff, 0x00};
   uint8_t data[5];
   ESP_LOGD(TAG, "starting calibration");
   if (this->write(calibrate, 5) != i2c::ERROR_OK) {

@@ -9,4 +9,6 @@ Example:
 sensor:
   - platform: t67xx
     name: CO2
+    calibrating:
+      name: Is Calibrating
 ```
