@@ -10,7 +10,9 @@ static inline uint16_t get_16(std::vector<uint8_t> &message, int start) {
 }
 
 void DeltaSol_C_tsensor::dump_config() {
-  ESP_LOGCONFIG(this->TAG_, "Deltasol C:");
+  const char *TAG = this->TAG_;
+  ESP_LOGCONFIG(TAG, "Deltasol C:");
+  LOG_TEXT_SENSOR("  ", "System Time", this->time_tsensor_);
 }
 
 void DeltaSol_C_tsensor::handle_message_(std::vector<uint8_t> &message) {
@@ -22,7 +24,9 @@ void DeltaSol_C_tsensor::handle_message_(std::vector<uint8_t> &message) {
 }
 
 void DeltaSol_CS2_tsensor::dump_config() {
-  ESP_LOGCONFIG(this->TAG_, "Deltasol CS2:");
+  const char *TAG = this->TAG_;
+  ESP_LOGCONFIG(TAG, "Deltasol CS2:");
+  LOG_TEXT_SENSOR("  ", "Version", this->version_tsensor_);
 }
 
 void DeltaSol_CS2_tsensor::handle_message_(std::vector<uint8_t> &message) {
@@ -34,7 +38,10 @@ void DeltaSol_CS2_tsensor::handle_message_(std::vector<uint8_t> &message) {
 }
 
 void DeltaSol_BS_Plus_tsensor::dump_config() {
-  ESP_LOGCONFIG(this->TAG_, "Deltasol BS Plus:");
+  const char *TAG = this->TAG_;
+  ESP_LOGCONFIG(TAG, "Deltasol BS Plus:");
+  LOG_TEXT_SENSOR("  ", "System Time", this->time_tsensor_);
+  LOG_TEXT_SENSOR("  ", "Version", this->version_tsensor_);
 }
 
 void DeltaSol_BS_Plus_tsensor::handle_message_(std::vector<uint8_t> &message) {

@@ -10,7 +10,18 @@ static inline uint16_t get_16(std::vector<uint8_t> &message, int start) {
 }
 
 void DeltaSol_C_sensor::dump_config() {
-  ESP_LOGCONFIG(this->TAG_, "Deltasol C:");
+  const char *TAG = this->TAG_;
+  ESP_LOGCONFIG(TAG, "Deltasol C:");
+  LOG_SENSOR("  ", "Temperature 1", this->temperature1_sensor_);
+  LOG_SENSOR("  ", "Temperature 2", this->temperature2_sensor_);
+  LOG_SENSOR("  ", "Temperature 3", this->temperature3_sensor_);
+  LOG_SENSOR("  ", "Temperature 4", this->temperature4_sensor_);
+  LOG_SENSOR("  ", "Pump Speed 1", this->pump_speed1_sensor_);
+  LOG_SENSOR("  ", "Pump Speed 2", this->pump_speed2_sensor_);
+  LOG_SENSOR("  ", "Operating Hours 1", this->operating_hours1_sensor_);
+  LOG_SENSOR("  ", "Operating Hours 2", this->operating_hours2_sensor_);
+  LOG_SENSOR("  ", "Heat Quantity", this->heat_quantity_sensor_);
+  LOG_SENSOR("  ", "System Time", this->time_sensor_);
 }
 
 void DeltaSol_C_sensor::handle_message_(std::vector<uint8_t> &message) {
@@ -37,7 +48,16 @@ void DeltaSol_C_sensor::handle_message_(std::vector<uint8_t> &message) {
 }
 
 void DeltaSol_CS2_sensor::dump_config() {
-  ESP_LOGCONFIG(this->TAG_, "Deltasol CS2:");
+  const char *TAG = this->TAG_;
+  ESP_LOGCONFIG(TAG, "Deltasol CS2:");
+  LOG_SENSOR("  ", "Temperature 1", this->temperature1_sensor_);
+  LOG_SENSOR("  ", "Temperature 2", this->temperature2_sensor_);
+  LOG_SENSOR("  ", "Temperature 3", this->temperature3_sensor_);
+  LOG_SENSOR("  ", "Temperature 4", this->temperature4_sensor_);
+  LOG_SENSOR("  ", "Pump Speed", this->pump_speed_sensor_);
+  LOG_SENSOR("  ", "Operating Hours", this->operating_hours_sensor_);
+  LOG_SENSOR("  ", "Heat Quantity", this->heat_quantity_sensor_);
+  LOG_SENSOR("  ", "FW Version", this->version_sensor_);
 }
 
 void DeltaSol_CS2_sensor::handle_message_(std::vector<uint8_t> &message) {
@@ -49,8 +69,6 @@ void DeltaSol_CS2_sensor::handle_message_(std::vector<uint8_t> &message) {
     this->temperature3_sensor_->publish_state(get_16(message, 4) * 0.1f);
   if (this->temperature4_sensor_ != nullptr)
     this->temperature4_sensor_->publish_state(get_16(message, 6) * 0.1f);
-  if (this->temperature5_sensor_ != nullptr)
-    this->temperature5_sensor_->publish_state(get_16(message, 8) * 0.1f);
   if (this->pump_speed_sensor_ != nullptr)
     this->pump_speed_sensor_->publish_state(message[12]);
   if (this->operating_hours_sensor_ != nullptr)
@@ -62,7 +80,19 @@ void DeltaSol_CS2_sensor::handle_message_(std::vector<uint8_t> &message) {
 }
 
 void DeltaSol_BS_Plus_sensor::dump_config() {
-  ESP_LOGCONFIG(this->TAG_, "Deltasol BS Plus:");
+  const char *TAG = this->TAG_;
+  ESP_LOGCONFIG(TAG, "Deltasol BS Plus:");
+  LOG_SENSOR("  ", "Temperature 1", this->temperature1_sensor_);
+  LOG_SENSOR("  ", "Temperature 2", this->temperature2_sensor_);
+  LOG_SENSOR("  ", "Temperature 3", this->temperature3_sensor_);
+  LOG_SENSOR("  ", "Temperature 4", this->temperature4_sensor_);
+  LOG_SENSOR("  ", "Pump Speed 1", this->pump_speed1_sensor_);
+  LOG_SENSOR("  ", "Pump Speed 2", this->pump_speed2_sensor_);
+  LOG_SENSOR("  ", "Operating Hours 1", this->operating_hours1_sensor_);
+  LOG_SENSOR("  ", "Operating Hours 2", this->operating_hours2_sensor_);
+  LOG_SENSOR("  ", "Heat Quantity", this->heat_quantity_sensor_);
+  LOG_SENSOR("  ", "System Time", this->time_sensor_);
+  LOG_SENSOR("  ", "FW Version", this->version_sensor_);
 }
 
 void DeltaSol_BS_Plus_sensor::handle_message_(std::vector<uint8_t> &message) {
