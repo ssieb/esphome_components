@@ -27,6 +27,11 @@ void T67xx::loop() {
       this->status_set_warning();
       return;
     }
+    if ((data[0] != 4) || (data[1] != 2)) {
+      ESP_LOGE(TAG, "invalid status response");
+      this->status_set_warning();
+      return;
+    }
     this->calibrating_->publish_state(data[2] & 0x80);
   }
 }
@@ -48,6 +53,11 @@ void T67xx::update() {
   }
   if (this->read(data, 4) != i2c::ERROR_OK) {
     ESP_LOGE(TAG, "error reading status");
+    this->status_set_warning();
+    return;
+  }
+  if ((data[0] != 4) || (data[1] != 2)) {
+    ESP_LOGE(TAG, "invalid status response");
     this->status_set_warning();
     return;
   }
@@ -82,6 +92,11 @@ void T67xx::update() {
   }
   if (this->read(data, 4) != i2c::ERROR_OK) {
     ESP_LOGE(TAG, "error reading data");
+    this->status_set_warning();
+    return;
+  }
+  if ((data[0] != 4) || (data[1] != 2)) {
+    ESP_LOGE(TAG, "invalid data response");
     this->status_set_warning();
     return;
   }
