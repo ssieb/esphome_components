@@ -19,12 +19,12 @@ void T67xx::loop() {
     uint8_t data[4];
     if (this->write(status, 5) != i2c::ERROR_OK) {
       ESP_LOGE(TAG, "error writing to sensor");
-      this->set_has_warning();
+      this->status_set_warning();
       return;
     }
     if (this->read(data, 4) != i2c::ERROR_OK) {
       ESP_LOGE(TAG, "error reading status");
-      this->set_has_warning();
+      this->status_set_warning();
       return;
     }
     this->calibrating_->publish_state(data[2] & 0x80);
@@ -43,17 +43,17 @@ void T67xx::update() {
   this->status_clear_warning();
   if (this->write(status, 5) != i2c::ERROR_OK) {
     ESP_LOGE(TAG, "error writing to sensor");
-    this->set_has_warning();
+    this->status_set_warning();
     return;
   }
   if (this->read(data, 4) != i2c::ERROR_OK) {
     ESP_LOGE(TAG, "error reading status");
-    this->set_has_warning();
+    this->status_set_warning();
     return;
   }
   if (data[3] & 2) {
     ESP_LOGE(TAG, "flash error");
-    this->set_has_warning();
+    this->status_set_warning();
     return;
   }
   if (data[3] & 4) {
@@ -63,7 +63,7 @@ void T67xx::update() {
   }
   if (data[3] & 1) {
     ESP_LOGE(TAG, "unkown error");
-    this->set_has_warning();
+    this->status_set_warning();
     return;
   }
   if (data[2] & 8) {
@@ -77,12 +77,12 @@ void T67xx::update() {
 
   if (this->write(gas_ppm, 5) != i2c::ERROR_OK) {
     ESP_LOGE(TAG, "error writing to sensor");
-    this->set_has_warning();
+    this->status_set_warning();
     return;
   }
   if (this->read(data, 4) != i2c::ERROR_OK) {
     ESP_LOGE(TAG, "error reading data");
-    this->set_has_warning();
+    this->status_set_warning();
     return;
   }
 
@@ -94,12 +94,12 @@ void T67xx::start_calibration() {
   ESP_LOGD(TAG, "starting calibration");
   if (this->write(calibrate, 5) != i2c::ERROR_OK) {
     ESP_LOGE(TAG, "error writing to sensor");
-    this->set_has_warning();
+    this->status_set_warning();
     return;
   }
   if (this->read(data, 5) != i2c::ERROR_OK) {
     ESP_LOGE(TAG, "error reading data");
-    this->set_has_warning();
+    this->status_set_warning();
     return;
   }
 }
