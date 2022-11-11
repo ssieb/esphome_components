@@ -46,6 +46,8 @@ void Wiegand::loop() {
   this->store_.value = 0;
   this->store_.done = true;
   ESP_LOGV(TAG, "received %d-bit value: %llx", count, value);
+  for (auto *trigger : this->raw_triggers_)
+    trigger->trigger(count, value);
   if (count == 26) {
     std::string tag = to_string((value >> 1) & 0xffffff);
     ESP_LOGD(TAG, "received 26-bit tag: %s", tag.c_str());
