@@ -35,6 +35,24 @@ void Wiegand::setup() {
   this->d1_pin_->attach_interrupt(WiegandStore::d1_gpio_intr, &this->store_, gpio::INTERRUPT_FALLING_EDGE);
 }
 
+bool check_eparity(uint64_t value, int start, int length) {
+  int parity = 0;
+  uint64_t mask = 1LL << start;
+  for (int i = 0; i <= length; i++, mask <<= 1)
+    if (value & i)
+      parity++;
+  return !(parity & 1);
+}
+
+bool check_oparity(uint64_t value, int start, int length) {
+  int parity = 0;
+  uint64_t mask = 1LL << start;
+  for (int i = 0; i <= length; i++, mask <<= 1)
+    if (value & i)
+      parity++;
+  return parity & 1;
+}
+
 void Wiegand::loop() {
   if (this->store_.done)
     return;
@@ -51,16 +69,8 @@ void Wiegand::loop() {
   if (count == 26) {
     std::string tag = to_string((value >> 1) & 0xffffff);
     ESP_LOGD(TAG, "received 26-bit tag: %s", tag.c_str());
-    int eparity = 0;
-    for (uint32_t i = 1 << 13; i <= (1 << 26); i <<= 1)
-      if (value & i)
-	eparity++;
-    int oparity = 0;
-    for (uint32_t i = 1; i <= (1 << 12); i <<= 1)
-      if (value & i)
-	oparity++;
-    if ((eparity & 1) || !(oparity & 1)) {
-      ESP_LOGD(TAG, "invalid parity");
+    if (!check_eparity(value, 13, 13) || !check_oparity(value, 0, 13)) {
+      ESP_LOGW(TAG, "invalid parity");
       return;
     }
     for (auto *trigger : this->tag_triggers_)
@@ -68,16 +78,17 @@ void Wiegand::loop() {
   } else if (count == 34) {
     std::string tag = to_string((value >> 1) & 0xffffffff);
     ESP_LOGD(TAG, "received 34-bit tag: %s", tag.c_str());
-    int eparity = 0;
-    for (uint64_t i = 1 << 17; i <= (1LL << 33); i <<= 1)
-      if (value & i)
-	eparity++;
-    int oparity = 0;
-    for (uint64_t i = 1; i <= (1 << 16); i <<= 1)
-      if (value & i)
-	oparity++;
-    if ((eparity & 1) || !(oparity & 1)) {
-      ESP_LOGD(TAG, "invalid parity");
+    if (!check_eparity(value, 17, 17) || !check_oparity(value, 0, 17)) {
+      ESP_LOGW(TAG, "invalid parity");
+      return;
+    }
+    for (auto *trigger : this->tag_triggers_)
+      trigger->trigger(tag);
+  } else if (count == 37) {
+    std::string tag = to_string((value >> 1) & 0x7ffffffff);
+    ESP_LOGD(TAG, "received 37-bit tag: %s", tag.c_str());
+    if (!check_eparity(value, 18, 19) || !check_oparity(value, 0, 19)) {
+      ESP_LOGW(TAG, "invalid parity");
       return;
     }
     for (auto *trigger : this->tag_triggers_)
