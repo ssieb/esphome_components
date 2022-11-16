@@ -1,23 +1,23 @@
-#include "input_builder.h"
+#include "key_collector.h"
 #include "esphome/core/hal.h"
 #include "esphome/core/log.h"
 
 namespace esphome {
-namespace input_builder {
+namespace key_collector {
 
-static const char *TAG = "input_builder";
+static const char *const TAG = "key_collector";
 
-InputBuilder::InputBuilder() : progress_trigger_(new Trigger<std::string>()), result_trigger_(new Trigger<std::string>()) {}
+KeyCollector::KeyCollector() : progress_trigger_(new Trigger<std::string>()), result_trigger_(new Trigger<std::string>()) {}
 
-void InputBuilder::loop() {
+void KeyCollector::loop() {
   if ((this->timeout_ == 0) || (this->result_.size() == 0) || (millis() - this->last_key_time_ < this->timeout_))
     return;
   this->result_.clear();
   this->progress_trigger_->trigger(this->result_);
 }
 
-void InputBuilder::dump_config() {
-  ESP_LOGCONFIG(TAG, "Input builder");
+void KeyCollector::dump_config() {
+  ESP_LOGCONFIG(TAG, "Key Collector:");
   if (this->min_length_ > 0)
     ESP_LOGCONFIG(TAG, "  min length: %d", this->min_length_);
   if (this->max_length_ > 0)
@@ -36,13 +36,13 @@ void InputBuilder::dump_config() {
     ESP_LOGCONFIG(TAG, "  entry timeout: %0.1f", this->timeout_ / 1000.0);
 }
 
-void InputBuilder::set_provider(key_provider::KeyProvider *provider) {
+void KeyCollector::set_provider(key_provider::KeyProvider *provider) {
   provider->add_on_key_callback([this](uint8_t key) {
     this->key_pressed_(key);
   });
 }
 
-void InputBuilder::key_pressed_(uint8_t key) {
+void KeyCollector::key_pressed_(uint8_t key) {
   this->last_key_time_ = millis();
   if (this->back_keys_.find(key) != std::string::npos) {
     if (!this->result_.empty()) {
@@ -77,6 +77,6 @@ void InputBuilder::key_pressed_(uint8_t key) {
   this->progress_trigger_->trigger(this->result_);
 }
 
-}  // namespace input_builder
+}  // namespace key_collector
 }  // namespace esphome
 

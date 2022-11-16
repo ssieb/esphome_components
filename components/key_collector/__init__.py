@@ -16,11 +16,11 @@ AUTO_LOAD = ['key_provider']
 
 MULTI_CONF = True
 
-input_builder_ns = cg.esphome_ns.namespace('input_builder')
-InputBuilder = input_builder_ns.class_('InputBuilder', cg.Component)
+key_collector_ns = cg.esphome_ns.namespace('key_collector')
+KeyCollector = key_collector_ns.class_('KeyCollector', cg.Component)
 
 CONFIG_SCHEMA = cv.All(cv.COMPONENT_SCHEMA.extend({
-    cv.GenerateID(): cv.declare_id(InputBuilder),
+    cv.GenerateID(): cv.declare_id(KeyCollector),
     cv.GenerateID(CONF_SOURCE_ID): cv.use_id(key_provider.KeyProvider),
     cv.Optional(CONF_MIN_LENGTH): cv.int_,
     cv.Optional(CONF_MAX_LENGTH): cv.int_,

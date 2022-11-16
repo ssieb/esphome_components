@@ -3,7 +3,7 @@
 Reads a card or key presses from a Wiegand interface.
 You must also import the `key_provider` component.
 
-If you want automatic handling for multiple keys, e.g. PIN entry, use the `input_builder` component.
+If you want automatic handling for multiple keys, e.g. PIN entry, use the `key_collector` component.
 
 Example:
 ```yaml

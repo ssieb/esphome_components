@@ -1,4 +1,4 @@
-# input_builder component
+# key_collector component
 
 This component collects key presses from a `key_provider` like the `matrix_keypad` or `wiegand` components.
 
@@ -6,7 +6,7 @@ You need at least one of the `end_keys` or `max_length` parameters.  The rest ar
 
 Example:
 ```yaml
-input_builder:
+key_collector:
   - id: pin_reader
     source_id: mykeypad
     min_length: 4

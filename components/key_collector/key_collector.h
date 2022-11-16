@@ -4,11 +4,11 @@
 #include "esphome/core/automation.h"
 
 namespace esphome {
-namespace input_builder {
+namespace key_collector {
 
-class InputBuilder : public Component {
+class KeyCollector : public Component {
  public:
-  InputBuilder();
+  KeyCollector();
   void loop() override;
   void dump_config() override;
   void set_provider(key_provider::KeyProvider *provider);
@@ -40,6 +40,6 @@ class InputBuilder : public Component {
   uint32_t timeout_{0};
 };
 
-}  // namespace input_builder
+}  // namespace key_collector
 }  // namespace esphome
 
