@@ -7,13 +7,12 @@ namespace key_collector {
 
 static const char *const TAG = "key_collector";
 
-KeyCollector::KeyCollector() : progress_trigger_(new Trigger<std::string>()), result_trigger_(new Trigger<std::string>()) {}
+KeyCollector::KeyCollector() : progress_trigger_(new Trigger<std::string, uint8_t>()), result_trigger_(new Trigger<std::string, uint8_t, uint8_t>()) {}
 
 void KeyCollector::loop() {
   if ((this->timeout_ == 0) || (this->result_.size() == 0) || (millis() - this->last_key_time_ < this->timeout_))
     return;
-  this->result_.clear();
-  this->progress_trigger_->trigger(this->result_);
+  this->clear();
 }
 
 void KeyCollector::dump_config() {
@@ -42,27 +41,36 @@ void KeyCollector::set_provider(key_provider::KeyProvider *provider) {
   });
 }
 
+void KeyCollector::clear(bool progress_update) {
+  this->result_.clear();
+  this->start_key_ = 0;
+  if (progress_update)
+    this->progress_trigger_->trigger(this->result_, 0);
+}
+
 void KeyCollector::key_pressed_(uint8_t key) {
   this->last_key_time_ = millis();
+  if (!this->start_keys_.empty() && !this->start_key_) {
+    if (this->start_keys_.find(key) != std::string::npos)
+      this->start_key_ = key;
+    return;
+  }
   if (this->back_keys_.find(key) != std::string::npos) {
     if (!this->result_.empty()) {
       this->result_.pop_back();
-      this->progress_trigger_->trigger(this->result_);
+      this->progress_trigger_->trigger(this->result_, this->start_key_);
     }
     return;
   }
   if (this->clear_keys_.find(key) != std::string::npos) {
-    if (!this->result_.empty()) {
-      this->result_.clear();
-      this->progress_trigger_->trigger(this->result_);
-    }
+    if (!this->result_.empty())
+      this->clear();
     return;
   }
   if (this->end_keys_.find(key) != std::string::npos) {
     if ((this->min_length_ == 0) || (this->result_.size() >= this->min_length_)) {
-      this->result_trigger_->trigger(this->result_);
-      this->result_.clear();
-      this->progress_trigger_->trigger(this->result_);
+      this->result_trigger_->trigger(this->result_, this->start_key_, key);
+      this->clear();
     }
     return;
   }
@@ -71,10 +79,10 @@ void KeyCollector::key_pressed_(uint8_t key) {
   if ((this->max_length_ == 0) || (this->result_.size() < this->max_length_))
     this->result_.push_back(key);
   if ((this->max_length_ > 0) && (this->result_.size() == this->max_length_) && (!this->end_key_required_)) {
-    this->result_trigger_->trigger(this->result_);
-    this->result_.clear();
+    this->result_trigger_->trigger(this->result_, this->start_key_, 0);
+    this->clear(false);
   }
-  this->progress_trigger_->trigger(this->result_);
+  this->progress_trigger_->trigger(this->result_, this->start_key_);
 }
 
 }  // namespace key_collector
