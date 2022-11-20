@@ -23,6 +23,9 @@ class ETA_SH : public Component,  public uart::UARTDevice {
   void set_exhaust_temp_sensor(sensor::Sensor *sensor) { this->exhaust_temp_sensor_ = sensor; }
   void set_outside_temp_sensor(sensor::Sensor *sensor) { this->outside_temp_sensor_ = sensor; }
   void set_buffer_load_sensor(sensor::Sensor *sensor) { this->buffer_load_sensor_ = sensor; }
+  void set_room1_temp_sensor(sensor::Sensor *sensor) { this->room1_temp_sensor_ = sensor; }
+  void set_room1_output_temp_sensor(sensor::Sensor *sensor) { this->room1_output_temp_sensor_ = sensor; }
+  void set_external_heater_temp_sensor(sensor::Sensor *sensor) { this->external_heater_temp_sensor_ = sensor; }
 
  protected:
   uint8_t update_interval_{0};
@@ -34,6 +37,9 @@ class ETA_SH : public Component,  public uart::UARTDevice {
   sensor::Sensor *exhaust_temp_sensor_{nullptr};
   sensor::Sensor *outside_temp_sensor_{nullptr};
   sensor::Sensor *buffer_load_sensor_{nullptr};
+  sensor::Sensor *room1_temp_sensor_{nullptr};
+  sensor::Sensor *room1_output_temp_sensor_{nullptr};
+  sensor::Sensor *external_heater_temp_sensor_{nullptr};
 
   bool reading_{false};
   std::vector<uint8_t> buffer_;

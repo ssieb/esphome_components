@@ -17,10 +17,17 @@ eta_sh:
     name: Buffer Top Temperature
   exhaust_temperature:
     name: Exhaust Temperature
+  room1_temperatur:
+    name: Room 1 Temperature
+  root1_output_termparature:
+    name: Room 1 Output Temperature
   outside_temperature:
     name: Outside Temperature
   buffer_load:
     name: Buffer Load
+  external_heater_temperature:
+    name: External Heater
+  
 ```
 
 All sensors are optional.

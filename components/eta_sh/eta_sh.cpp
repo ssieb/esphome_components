@@ -31,8 +31,11 @@ void ETA_SH::setup() {
   add_sensor(this->buffer_middle_temp_sensor_, 11);
   add_sensor(this->buffer_top_temp_sensor_, 12);
   add_sensor(this->exhaust_temp_sensor_, 15);
+  add_sensor(this->room1_temp_sensor_, 66);
+  add_sensor(this->room1_output_temp_sensor_, 68);
   add_sensor(this->outside_temp_sensor_, 70);
-  add_sensor(this->buffer_load_sensor_, 70);
+  add_sensor(this->buffer_load_sensor_, 75);
+  add_sensor(this->external_heater_temp_sensor_, 117);
   if (count == 0) {
     ESP_LOGW(TAG, "no sensors configured");
     return;
@@ -122,6 +125,14 @@ void ETA_SH::handle_data_(uint8_t *data) {
       if (this->exhaust_temp_sensor_ != nullptr)
         this->exhaust_temp_sensor_->publish_state((float)get16(data + 3) / 10);
       break;
+	 case 66:
+	  if (this->room1_temp_sensor_ != nullptr)
+		this->room1_temp_sensor_->publish_state((float)get16(data +3) / 10);
+	  break;
+	 case 68:
+	  if (this->room1_output_temp_sensor_ != nullptr)
+		this->room1_output_temp_sensor_->publish_state((float)get16(data +3) / 10);
+	  break;
      case 70:
       if (this->outside_temp_sensor_ != nullptr)
         this->outside_temp_sensor_->publish_state((float)get16(data + 3) / 10);
@@ -130,9 +141,14 @@ void ETA_SH::handle_data_(uint8_t *data) {
       if (this->buffer_load_sensor_ != nullptr)
         this->buffer_load_sensor_->publish_state(get16(data + 3));
       break;
+	 case 117:
+	  if (this->external_heater_temp_sensor_ != nullptr)
+		this->external_heater_temp_sensor_->publish_state((float)get16(data +3) /10);
+	  break;
      default:
       ESP_LOGV(TAG, "unknown data value: %02x (%d)", datapoint, datapoint);
       break;
+
     }
   }
 }

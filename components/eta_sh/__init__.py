@@ -22,13 +22,17 @@ eta_sh_ns = cg.esphome_ns.namespace('eta_sh')
 ETA_SH = eta_sh_ns.class_('ETA_SH', cg.Component, uart.UARTDevice)
 
 CONF_BOILER_TEMPERATURE = "boiler_temperature"
+CONF_BOILER_RETURN_TEMPERATURE = "return_temperature"
 CONF_BUFFER_BOTTOM_TEMPERATURE = "buffer_bottom_temperature"
 CONF_BUFFER_MIDDLE_TEMPERATURE = "buffer_middle_temperature"
 CONF_BUFFER_TOP_TEMPERATURE = "buffer_top_temperature"
 CONF_EXHAUST_TEMPERATURE = "exhaust_temperature"
+CONF_ROOM1_TEMPERATURE = "room1_temperature"
+CONF_ROOM1_OUTPUT_TEMPERATURE = "room1_output"
 CONF_OUTSIDE_TEMPERATURE = "outside_temperature"
 CONF_RETURN_TEMPERATURE = "return_temperature"
 CONF_BUFFER_LOAD = "buffer_load"
+CONF_EXTERNAL_HEATER_TEMPERATURE = "external_heater_temperature"
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(ETA_SH),
@@ -38,6 +42,14 @@ CONFIG_SCHEMA = cv.Schema({
         accuracy_decimals=1,
         device_class=DEVICE_CLASS_TEMPERATURE,
     ),
+    
+    cv.Optional(CONF_BOILER_RETURN_TEMPERATURE): sensor.sensor_schema(
+        unit_of_measurement=UNIT_CELSIUS,
+        icon=ICON_THERMOMETER,
+        accuracy_decimals=1,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+    ),
+    
     cv.Optional(CONF_BUFFER_BOTTOM_TEMPERATURE): sensor.sensor_schema(
         unit_of_measurement=UNIT_CELSIUS,
         icon=ICON_THERMOMETER,
@@ -62,6 +74,20 @@ CONFIG_SCHEMA = cv.Schema({
         accuracy_decimals=1,
         device_class=DEVICE_CLASS_TEMPERATURE,
     ),
+    
+    cv.Optional(CONF_ROOM1_TEMPERATURE): sensor.sensor_schema(
+        unit_of_measurement=UNIT_CELSIUS,
+        icon=ICON_THERMOMETER,
+        accuracy_decimals=1,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+    ),
+    cv.Optional(CONF_ROOM1_OUTPUT_TEMPERATURE): sensor.sensor_schema(
+        unit_of_measurement=UNIT_CELSIUS,
+        icon=ICON_THERMOMETER,
+        accuracy_decimals=1,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+    ),
+    
     cv.Optional(CONF_OUTSIDE_TEMPERATURE): sensor.sensor_schema(
         unit_of_measurement=UNIT_CELSIUS,
         icon=ICON_THERMOMETER,
@@ -80,6 +106,14 @@ CONFIG_SCHEMA = cv.Schema({
         accuracy_decimals=0,
         device_class=DEVICE_CLASS_VOLUME,
     ),
+    
+    cv.Optional(CONF_EXTERNAL_HEATER_TEMPERATURE): sensor.sensor_schema(
+        unit_of_measurement=UNIT_CELSIUS,
+        icon=ICON_THERMOMETER,
+        accuracy_decimals=1,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+    ),
+    
 }).extend(uart.UART_DEVICE_SCHEMA)
 
 
@@ -112,6 +146,14 @@ async def to_code(config):
         sens = await sensor.new_sensor(config[CONF_EXHAUST_TEMPERATURE])
         cg.add(var.set_exhaust_temp_sensor(sens))
 
+    if CONF_ROOM1_TEMPERATURE in config:
+        sens = await sensor.new_sensor(config[CONF_ROOM1_TEMPERATURE])
+        cf.add(var.set_room1_temp_sensor(sens))
+
+    if CONF_ROOM1_OUTPUT_TEMPERATURE in config:
+        sens = await sensor.new_sensor(config[CONF_ROOM1_OUTPUT_TEMPERATURE])
+        cf.add(var.set_room1_output_temp_sensor(sens))
+        
     if CONF_OUTSIDE_TEMPERATURE in config:
         sens = await sensor.new_sensor(config[CONF_OUTSIDE_TEMPERATURE])
         cg.add(var.set_outside_temp_sensor(sens))
@@ -120,3 +162,6 @@ async def to_code(config):
         sens = await sensor.new_sensor(config[CONF_BUFFER_LOAD])
         cg.add(var.set_buffer_load_sensor(sens))
 
+    if CONF_EXTERNAL_HEATER_TEMPERATURE in config:
+        sens = await sensor.new_sensor(config[CONF_EXTERNAL_HEATER_TEMPERATURE])
+        cg.add(var.set_external_heater_temp_sensor(sens))
