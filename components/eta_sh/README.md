@@ -6,27 +6,27 @@ Example:
 ```yaml
 eta_sh:
   boiler_temperature:
-    name: Boiler Temperature
+    name: Kesseltemperatur
   return_temperature:
-    name: Return Temperature
+    name: Kesselruecklauf
   buffer_bottom_temperature:
-    name: Buffer Bottom Temperature
+    name: Puffer unten
   buffer_middle_temperature:
-    name: Buffer Middle Temperature
+    name: Puffer mitte
   buffer_top_temperature:
-    name: Buffer Top Temperature
+    name: Puffer oben
   exhaust_temperature:
-    name: Exhaust Temperature
-  room1_temperatur:
-    name: Room 1 Temperature
-  root1_output_termparature:
-    name: Room 1 Output Temperature
+    name: Abgastemperatur
+  room1_temperature:
+    name: Raumtemperatur
+  room1_output:
+    name: Vorlauf Raum 1
   outside_temperature:
-    name: Outside Temperature
+    name: Aussentemperatur
   buffer_load:
-    name: Buffer Load
+    name: Pufferladezustand
   external_heater_temperature:
-    name: External Heater
+    name: Externer Brenner
   
 ```
 
