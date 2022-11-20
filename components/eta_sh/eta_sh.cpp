@@ -27,9 +27,12 @@ void ETA_SH::setup() {
   buffer.push_back(0);
   add_sensor(this->boiler_temp_sensor_, 8);
   add_sensor(this->return_temp_sensor_, 9);
-  add_sensor(this->buffer_below_temp_sensor_, 10);
+  add_sensor(this->buffer_bottom_temp_sensor_, 10);
   add_sensor(this->buffer_middle_temp_sensor_, 11);
-  add_sensor(this->buffer_above_temp_sensor_, 12);
+  add_sensor(this->buffer_top_temp_sensor_, 12);
+  add_sensor(this->exhaust_temp_sensor_, 15);
+  add_sensor(this->outside_temp_sensor_, 70);
+  add_sensor(this->buffer_load_sensor_, 70);
   if (count == 0) {
     ESP_LOGW(TAG, "no sensors configured");
     return;
@@ -101,18 +104,31 @@ void ETA_SH::handle_data_(uint8_t *data) {
         this->return_temp_sensor_->publish_state((float)get16(data + 2) / 10);
       break;
      case 10:
-      if (this->buffer_below_temp_sensor_ != nullptr)
-        this->buffer_below_temp_sensor_->publish_state((float)get16(data + 2) / 10);
+      if (this->buffer_bottom_temp_sensor_ != nullptr)
+        this->buffer_bottom_temp_sensor_->publish_state((float)get16(data + 2) / 10);
       break;
      case 11:
       if (this->buffer_middle_temp_sensor_ != nullptr)
         this->buffer_middle_temp_sensor_->publish_state((float)get16(data + 2) / 10);
       break;
      case 12:
-      if (this->buffer_above_temp_sensor_ != nullptr)
-        this->buffer_above_temp_sensor_->publish_state((float)get16(data + 2) / 10);
+      if (this->buffer_top_temp_sensor_ != nullptr)
+        this->buffer_top_temp_sensor_->publish_state((float)get16(data + 2) / 10);
+      break;
+     case 15:
+      if (this->exhaust_temp_sensor_ != nullptr)
+        this->exhaust_temp_sensor_->publish_state((float)get16(data + 2) / 10);
+      break;
+     case 70:
+      if (this->outside_temp_sensor_ != nullptr)
+        this->outside_temp_sensor_->publish_state((float)get16(data + 2) / 10);
+      break;
+     case 75:
+      if (this->buffer_load_sensor_ != nullptr)
+        this->buffer_load_sensor_->publish_state(get16(data + 2));
       break;
      default:
+      ESP_LOGV(TAG, "unknown data value: %02x (%d)", datapoint, datapoint);
       break;
     }
   }
@@ -122,9 +138,12 @@ void ETA_SH::dump_config() {
   ESP_LOGCONFIG(TAG, "ETA SH:");
   LOG_SENSOR("", "Boiler Temperature", this->boiler_temp_sensor_);
   LOG_SENSOR("", "Return Temperature", this->return_temp_sensor_);
-  LOG_SENSOR("", "Buffer Below Temperature", this->buffer_below_temp_sensor_);
+  LOG_SENSOR("", "Buffer Bottom Temperature", this->buffer_bottom_temp_sensor_);
   LOG_SENSOR("", "Buffer Middle Temperature", this->buffer_middle_temp_sensor_);
-  LOG_SENSOR("", "Buffer Above Temperature", this->buffer_above_temp_sensor_);
+  LOG_SENSOR("", "Buffer Top Temperature", this->buffer_top_temp_sensor_);
+  LOG_SENSOR("", "Exhaust Temperature", this->exhaust_temp_sensor_);
+  LOG_SENSOR("", "Outside Temperature", this->outside_temp_sensor_);
+  LOG_SENSOR("", "Buffer Load", this->buffer_load_sensor_);
 }
 
 }  // namespace eta_sh
