@@ -1,4 +1,4 @@
-Forked to workj together with ssieb at the ETA_sh component
+Forked to work together with ssieb at the ETA_sh component
 
 
 # custom_components
