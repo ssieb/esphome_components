@@ -93,7 +93,11 @@ void ETA_SH::handle_data_(uint8_t *data) {
   data += 4;
   while (count > 0) {
     count -= 5;
-    uint16_t datapoint = get16(data);
+    if (data[0] != 8) {
+      ESP_LOGV(TAG, "data not for us: %02x (%d)", data[0], data[0]);
+      continue;
+    }
+    uint16_t datapoint = get16(data + 1);
     switch (datapoint) {
      case 8:
       if (this->boiler_temp_sensor_ != nullptr)
