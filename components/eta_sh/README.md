@@ -9,12 +9,18 @@ eta_sh:
     name: Boiler Temperature
   return_temperature:
     name: Return Temperature
-  buffer_below_temperature:
-    name: Buffer Below Temperature
+  buffer_bottom_temperature:
+    name: Buffer Bottom Temperature
   buffer_middle_temperature:
     name: Buffer Middle Temperature
-  buffer_above_temperature:
-    name: Buffer Above Temperature
+  buffer_top_temperature:
+    name: Buffer Top Temperature
+  exhaust_temperature:
+    name: Exhaust Temperature
+  outside_temperature:
+    name: Outside Temperature
+  buffer_load:
+    name: Buffer Load
 ```
 
 All sensors are optional.
