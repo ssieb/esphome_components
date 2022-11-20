@@ -101,35 +101,35 @@ void ETA_SH::handle_data_(uint8_t *data) {
     switch (datapoint) {
      case 8:
       if (this->boiler_temp_sensor_ != nullptr)
-        this->boiler_temp_sensor_->publish_state((float)get16(data + 2) / 10);
+        this->boiler_temp_sensor_->publish_state((float)get16(data + 3) / 10);
       break;
      case 9:
       if (this->return_temp_sensor_ != nullptr)
-        this->return_temp_sensor_->publish_state((float)get16(data + 2) / 10);
+        this->return_temp_sensor_->publish_state((float)get16(data + 3) / 10);
       break;
      case 10:
       if (this->buffer_bottom_temp_sensor_ != nullptr)
-        this->buffer_bottom_temp_sensor_->publish_state((float)get16(data + 2) / 10);
+        this->buffer_bottom_temp_sensor_->publish_state((float)get16(data + 3) / 10);
       break;
      case 11:
       if (this->buffer_middle_temp_sensor_ != nullptr)
-        this->buffer_middle_temp_sensor_->publish_state((float)get16(data + 2) / 10);
+        this->buffer_middle_temp_sensor_->publish_state((float)get16(data + 3) / 10);
       break;
      case 12:
       if (this->buffer_top_temp_sensor_ != nullptr)
-        this->buffer_top_temp_sensor_->publish_state((float)get16(data + 2) / 10);
+        this->buffer_top_temp_sensor_->publish_state((float)get16(data + 3) / 10);
       break;
      case 15:
       if (this->exhaust_temp_sensor_ != nullptr)
-        this->exhaust_temp_sensor_->publish_state((float)get16(data + 2) / 10);
+        this->exhaust_temp_sensor_->publish_state((float)get16(data + 3) / 10);
       break;
      case 70:
       if (this->outside_temp_sensor_ != nullptr)
-        this->outside_temp_sensor_->publish_state((float)get16(data + 2) / 10);
+        this->outside_temp_sensor_->publish_state((float)get16(data + 3) / 10);
       break;
      case 75:
       if (this->buffer_load_sensor_ != nullptr)
-        this->buffer_load_sensor_->publish_state(get16(data + 2));
+        this->buffer_load_sensor_->publish_state(get16(data + 3));
       break;
      default:
       ESP_LOGV(TAG, "unknown data value: %02x (%d)", datapoint, datapoint);
