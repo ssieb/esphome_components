@@ -1,3 +1,6 @@
+Forked to workj together with ssieb at the ETA_sh component
+
+
 # custom_components
 My collection of components for esphome
 
