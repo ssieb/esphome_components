@@ -91,8 +91,7 @@ void ETA_SH::handle_data_(uint8_t *data) {
   }
   int count = data[2];
   data += 4;
-  while (count > 0) {
-    count -= 5;
+  for (int count = data[2]; count > 0; count -= 5, data += 5) {
     if (data[0] != 8) {
       ESP_LOGV(TAG, "data not for us: %02x (%d)", data[0], data[0]);
       continue;
