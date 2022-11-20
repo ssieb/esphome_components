@@ -148,11 +148,11 @@ async def to_code(config):
 
     if CONF_ROOM1_TEMPERATURE in config:
         sens = await sensor.new_sensor(config[CONF_ROOM1_TEMPERATURE])
-        cf.add(var.set_room1_temp_sensor(sens))
+        cg.add(var.set_room1_temp_sensor(sens))
 
     if CONF_ROOM1_OUTPUT_TEMPERATURE in config:
         sens = await sensor.new_sensor(config[CONF_ROOM1_OUTPUT_TEMPERATURE])
-        cf.add(var.set_room1_output_temp_sensor(sens))
+        cg.add(var.set_room1_output_temp_sensor(sens))
         
     if CONF_OUTSIDE_TEMPERATURE in config:
         sens = await sensor.new_sensor(config[CONF_OUTSIDE_TEMPERATURE])

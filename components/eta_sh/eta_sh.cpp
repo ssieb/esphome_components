@@ -162,8 +162,11 @@ void ETA_SH::dump_config() {
   LOG_SENSOR("", "Buffer Middle Temperature", this->buffer_middle_temp_sensor_);
   LOG_SENSOR("", "Buffer Top Temperature", this->buffer_top_temp_sensor_);
   LOG_SENSOR("", "Exhaust Temperature", this->exhaust_temp_sensor_);
+  LOG_SENSOR("", "Room 1 Temperature", this->room1_temp_sensor_);
+  LOG_SENSOR("", "Room 1 output Temperature", this->room1_output_temp_sensor_);
   LOG_SENSOR("", "Outside Temperature", this->outside_temp_sensor_);
   LOG_SENSOR("", "Buffer Load", this->buffer_load_sensor_);
+  LOG_SENSOR("", "external Heater Temperature", this->external_heater_temp_sensor_);
 }
 
 }  // namespace eta_sh
