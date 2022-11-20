@@ -70,7 +70,7 @@ void ETA_SH::loop() {
 
     uint8_t *data = this->buffer_.data();
     uint8_t csum = 0;
-    for (int i = 5; i < this->buffer_.size(); i++)
+    for (int i = 4; i < this->buffer_.size(); i++)
       csum += data[i];
     if (csum != data[3]) {
       ESP_LOGE(TAG, "checksum failed: %02x != %02x", csum, data[3]);
@@ -136,6 +136,7 @@ void ETA_SH::handle_data_(uint8_t *data) {
 
 void ETA_SH::dump_config() {
   ESP_LOGCONFIG(TAG, "ETA SH:");
+  ESP_LOGCONFIG(TAG, "  Update interval: %ds", this->update_interval_);
   LOG_SENSOR("", "Boiler Temperature", this->boiler_temp_sensor_);
   LOG_SENSOR("", "Return Temperature", this->return_temp_sensor_);
   LOG_SENSOR("", "Buffer Bottom Temperature", this->buffer_bottom_temp_sensor_);
