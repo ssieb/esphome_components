@@ -11,7 +11,7 @@ Example:
 external_components:
   - source:
       type: git
-      url: https://github.com/ssieb/custom_components
+      url: [https://github.com/Pippowicz/custom_components]
     components: [ keypad ]
 ```
 
