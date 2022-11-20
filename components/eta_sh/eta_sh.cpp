@@ -86,7 +86,7 @@ uint16_t inline get16(uint8_t *data) {
 
 void ETA_SH::handle_data_(uint8_t *data) {
   if ((data[0] != 'M') || (data[1] != 'D')) {
-    ESP_LOGV("unhandled message: '%c%c'", data[0], data[1]);
+    ESP_LOGV(TAG, "unhandled message: '%c%c'", data[0], data[1]);
     return;
   }
   int count = data[2];
