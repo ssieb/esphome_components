@@ -1,3 +1,6 @@
+Forked to work together with ssieb at the ETA_sh component
+
+
 # custom_components
 My collection of components for esphome
 
@@ -8,7 +11,7 @@ Example:
 external_components:
   - source:
       type: git
-      url: https://github.com/ssieb/custom_components
+      url: [https://github.com/Pippowicz/custom_components]
     components: [ keypad ]
 ```
 

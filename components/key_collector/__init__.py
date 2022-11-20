@@ -4,6 +4,7 @@ from esphome import automation
 from esphome.components import key_provider
 from esphome.const import CONF_ID, CONF_MAX_LENGTH, CONF_MIN_LENGTH, CONF_SOURCE_ID, CONF_TIMEOUT
 
+CONF_START_KEYS = 'start_keys'
 CONF_END_KEYS = 'end_keys'
 CONF_END_KEY_REQUIRED = 'end_key_required'
 CONF_BACK_KEYS = 'back_keys'
@@ -24,6 +25,7 @@ CONFIG_SCHEMA = cv.All(cv.COMPONENT_SCHEMA.extend({
     cv.GenerateID(CONF_SOURCE_ID): cv.use_id(key_provider.KeyProvider),
     cv.Optional(CONF_MIN_LENGTH): cv.int_,
     cv.Optional(CONF_MAX_LENGTH): cv.int_,
+    cv.Optional(CONF_START_KEYS): cv.string,
     cv.Optional(CONF_END_KEYS): cv.string,
     cv.Optional(CONF_END_KEY_REQUIRED): cv.boolean,
     cv.Optional(CONF_BACK_KEYS): cv.string,
@@ -55,10 +57,12 @@ async def to_code(config):
     if CONF_ALLOWED_KEYS in config:
         cg.add(var.set_allowed_keys(config[CONF_ALLOWED_KEYS]))
     if CONF_ON_PROGRESS in config:
-        await automation.build_automation(var.get_progress_trigger(), [(cg.std_string, 'x')],
+        await automation.build_automation(var.get_progress_trigger(),
+                                          [(cg.std_string, 'x'), (cg.uint8, 'start')],
                                           config[CONF_ON_PROGRESS])
     if CONF_ON_RESULT in config:
-        await automation.build_automation(var.get_result_trigger(), [(cg.std_string, 'x')],
+        await automation.build_automation(var.get_result_trigger(),
+                                          [(cg.std_string, 'x'), (cg.uint8, 'start'), (cg.uint8, 'end')],
                                           config[CONF_ON_RESULT])
     if CONF_TIMEOUT in config:
         cg.add(var.set_timeout(config[CONF_TIMEOUT]))
