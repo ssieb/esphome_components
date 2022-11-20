@@ -19,7 +19,7 @@ eta_sh:
     name: Abgastemperatur
   room1_temperature:
     name: Raumtemperatur
-  room1_output:
+  room1_output_temperature:
     name: Vorlauf Raum 1
   outside_temperature:
     name: Aussentemperatur
