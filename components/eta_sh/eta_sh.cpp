@@ -25,12 +25,14 @@ void ETA_SH::setup() {
   buffer.push_back(this->update_interval_);
   buffer.push_back(0);
   buffer.push_back(0);
+  add_sensor(this->fan_speed_sensor_,7);
   add_sensor(this->boiler_temp_sensor_, 8);
   add_sensor(this->return_temp_sensor_, 9);
   add_sensor(this->buffer_bottom_temp_sensor_, 10);
   add_sensor(this->buffer_middle_temp_sensor_, 11);
   add_sensor(this->buffer_top_temp_sensor_, 12);
   add_sensor(this->exhaust_temp_sensor_, 15);
+  add_sensor(this->oxygen_sensor_ ,40);
   add_sensor(this->room1_temp_sensor_, 66);
   add_sensor(this->room1_output_temp_sensor_, 68);
   add_sensor(this->outside_temp_sensor_, 70);
@@ -101,6 +103,10 @@ void ETA_SH::handle_data_(uint8_t *data) {
     }
     uint16_t datapoint = get16(data + 1);
     switch (datapoint) {
+     case 7:
+	  if (this->fan_speed_sensor_ != nullptr)
+		  this->fan_speed_sensor_->publish_state((float)get16(data +3));
+	  break;
      case 8:
       if (this->boiler_temp_sensor_ != nullptr)
         this->boiler_temp_sensor_->publish_state((float)get16(data + 3) / 10);
@@ -125,6 +131,10 @@ void ETA_SH::handle_data_(uint8_t *data) {
       if (this->exhaust_temp_sensor_ != nullptr)
         this->exhaust_temp_sensor_->publish_state((float)get16(data + 3) / 10);
       break;
+	 case 40:
+      if (this->oxygen_sensor_ != nullptr)
+        this->oxygen_sensor_->publish_state((float)get16(data + 3) / 100);
+	  break;
 	 case 66:
 	  if (this->room1_temp_sensor_ != nullptr)
 		this->room1_temp_sensor_->publish_state((float)get16(data +3) / 10);

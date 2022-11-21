@@ -7,6 +7,11 @@ Example:
 eta_sh:
   boiler_temperature:
     name: Kesseltemperatur  (Boiler temp)
+  fan_speed:
+    name: Gebläsedrehzahl   (Speed of boiler Fan)
+    unit_of_measurement: RPM
+    icon: 
+      mdi:fan
   return_temperature:
     name: Kesselruecklauf   (Boiler water return temp)
   buffer_bottom_temperature:
@@ -27,6 +32,10 @@ eta_sh:
     name: Pufferladezustand (Buffer load in %)
   external_heater_temperature:
     name: Externer Brenner  (External Oven (expansion, e.g. Oil or Gas)
+  oxygen_sensor:
+    name: Restsauerstoff   	(o2 Sensor Percent of the oven. Returns 327.7 when oven off)
+    filters:
+      - filter_out: 327.7
   
 ```
 

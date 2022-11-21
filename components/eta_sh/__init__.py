@@ -21,12 +21,14 @@ eta_sh_ns = cg.esphome_ns.namespace('eta_sh')
 
 ETA_SH = eta_sh_ns.class_('ETA_SH', cg.Component, uart.UARTDevice)
 
+CONF_FAN_SPEED = "fan_speed"
 CONF_BOILER_TEMPERATURE = "boiler_temperature"
 CONF_BOILER_RETURN_TEMPERATURE = "return_temperature"
 CONF_BUFFER_BOTTOM_TEMPERATURE = "buffer_bottom_temperature"
 CONF_BUFFER_MIDDLE_TEMPERATURE = "buffer_middle_temperature"
 CONF_BUFFER_TOP_TEMPERATURE = "buffer_top_temperature"
 CONF_EXHAUST_TEMPERATURE = "exhaust_temperature"
+CONF_OXYGEN_SENSOR = "oxygen_sensor"
 CONF_ROOM1_TEMPERATURE = "room1_temperature"
 CONF_ROOM1_OUTPUT_TEMPERATURE = "room1_output_temperature"
 CONF_OUTSIDE_TEMPERATURE = "outside_temperature"
@@ -36,6 +38,10 @@ CONF_EXTERNAL_HEATER_TEMPERATURE = "external_heater_temperature"
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(ETA_SH),
+    cv.Optional(CONF_FAN_SPEED): sensor.sensor_schema(
+        accuracy_decimals=0,
+        device_class=DEVICE_CLASS_VOLUME,
+    ),
     cv.Optional(CONF_BOILER_TEMPERATURE): sensor.sensor_schema(
         unit_of_measurement=UNIT_CELSIUS,
         icon=ICON_THERMOMETER,
@@ -73,6 +79,13 @@ CONFIG_SCHEMA = cv.Schema({
         icon=ICON_THERMOMETER,
         accuracy_decimals=1,
         device_class=DEVICE_CLASS_TEMPERATURE,
+    ),
+    
+    cv.Optional(CONF_OXYGEN_SENSOR): sensor.sensor_schema(
+        unit_of_measurement=UNIT_PERCENT,
+        icon=ICON_GAUGE,
+        accuracy_decimals=1,
+        device_class=DEVICE_CLASS_VOLUME,
     ),
     
     cv.Optional(CONF_ROOM1_TEMPERATURE): sensor.sensor_schema(
@@ -121,6 +134,10 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     await uart.register_uart_device(var, config)
+    
+    if CONF_FAN_SPEED in config:
+        sens = await sensor.new_sensor(config[CONF_FAN_SPEED])
+        cg.add(var.set_fan_speed_sensor(sens))
 
     if CONF_BOILER_TEMPERATURE in config:
         sens = await sensor.new_sensor(config[CONF_BOILER_TEMPERATURE])
@@ -145,6 +162,10 @@ async def to_code(config):
     if CONF_EXHAUST_TEMPERATURE in config:
         sens = await sensor.new_sensor(config[CONF_EXHAUST_TEMPERATURE])
         cg.add(var.set_exhaust_temp_sensor(sens))
+
+    if CONF_OXYGEN_SENSOR in config:
+        sens = await sensor.new_sensor(config[CONF_OXYGEN_SENSOR])
+        cg.add(var.set_oxygen_sensor(sens))
 
     if CONF_ROOM1_TEMPERATURE in config:
         sens = await sensor.new_sensor(config[CONF_ROOM1_TEMPERATURE])
