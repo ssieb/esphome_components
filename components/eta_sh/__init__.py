@@ -23,7 +23,6 @@ ETA_SH = eta_sh_ns.class_('ETA_SH', cg.Component, uart.UARTDevice)
 
 CONF_FAN_SPEED = "fan_speed"
 CONF_BOILER_TEMPERATURE = "boiler_temperature"
-CONF_BOILER_RETURN_TEMPERATURE = "return_temperature"
 CONF_BUFFER_BOTTOM_TEMPERATURE = "buffer_bottom_temperature"
 CONF_BUFFER_MIDDLE_TEMPERATURE = "buffer_middle_temperature"
 CONF_BUFFER_TOP_TEMPERATURE = "buffer_top_temperature"
@@ -43,13 +42,6 @@ CONFIG_SCHEMA = cv.Schema({
         device_class=DEVICE_CLASS_VOLUME,
     ),
     cv.Optional(CONF_BOILER_TEMPERATURE): sensor.sensor_schema(
-        unit_of_measurement=UNIT_CELSIUS,
-        icon=ICON_THERMOMETER,
-        accuracy_decimals=1,
-        device_class=DEVICE_CLASS_TEMPERATURE,
-    ),
-    
-    cv.Optional(CONF_BOILER_RETURN_TEMPERATURE): sensor.sensor_schema(
         unit_of_measurement=UNIT_CELSIUS,
         icon=ICON_THERMOMETER,
         accuracy_decimals=1,
