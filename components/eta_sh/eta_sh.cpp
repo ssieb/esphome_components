@@ -92,9 +92,9 @@ void ETA_SH::handle_data_(uint8_t *data) {
     ESP_LOGV(TAG, "unhandled message: '%c%c'", data[0], data[1]);
     return;
   }
-  int count = data[2];
-  data += 4;
-  for (int count = data[2]; count > 0; count -= 5, data += 5) {
+  int count1 = data[2]; 											// set count to num of data packets                         
+  data += 4;                                                   
+  for (int count = count1; count > 0; count -= 5, data += 5) { 		//  for (int count = data[2]; count > 0; count -= 5, data += 5) { <--wrong, because already moved on, new count1
     if (data[0] != 8) {
       ESP_LOGV(TAG, "data not for us: %02x (%d)", data[0], data[0]);
       continue;
