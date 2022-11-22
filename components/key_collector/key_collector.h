@@ -20,8 +20,8 @@ class KeyCollector : public Component {
   void set_back_keys(std::string back_keys) { this->back_keys_ = back_keys; };
   void set_clear_keys(std::string clear_keys) { this->clear_keys_ = clear_keys; };
   void set_allowed_keys(std::string allowed_keys) { this->allowed_keys_ = allowed_keys; };
-  Trigger<std::string> *get_progress_trigger() const { return this->progress_trigger_; };
-  Trigger<std::string> *get_result_trigger() const { return this->result_trigger_; };
+  Trigger<std::string, uint8_t> *get_progress_trigger() const { return this->progress_trigger_; };
+  Trigger<std::string, uint8_t, uint8_t> *get_result_trigger() const { return this->result_trigger_; };
   void set_timeout(int timeout) { this->timeout_ = timeout; };
 
   void clear(bool progress_update = true);
