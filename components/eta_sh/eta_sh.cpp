@@ -32,6 +32,7 @@ void ETA_SH::setup() {
   add_sensor(this->buffer_middle_temp_sensor_, 11);
   add_sensor(this->buffer_top_temp_sensor_, 12);
   add_sensor(this->exhaust_temp_sensor_, 15);
+  add_sensor(this->heater_status_sensor_, 39);
   add_sensor(this->oxygen_sensor_ ,40);
   add_sensor(this->room1_temp_sensor_, 66);
   add_sensor(this->room1_output_temp_sensor_, 68);
@@ -131,6 +132,10 @@ void ETA_SH::handle_data_(uint8_t *data) {
       if (this->exhaust_temp_sensor_ != nullptr)
         this->exhaust_temp_sensor_->publish_state((float)get16(data + 3) / 10);
       break;
+	 case 39:
+	   if (this->heater_status_sensor_ != nullptr)
+	   this->heater_status_sensor_->publish_state((float)get16(data + 3));
+	  break; 
 	 case 40:
       if (this->oxygen_sensor_ != nullptr) {
 		  uint16_t val = get16(data + 3);
@@ -170,12 +175,15 @@ void ETA_SH::handle_data_(uint8_t *data) {
 void ETA_SH::dump_config() {
   ESP_LOGCONFIG(TAG, "ETA SH:");
   ESP_LOGCONFIG(TAG, "  Update interval: %ds", this->update_interval_);
+  LOG_SENSOR("", "Fan Speed", this->fan_speed_sensor_);
   LOG_SENSOR("", "Boiler Temperature", this->boiler_temp_sensor_);
   LOG_SENSOR("", "Return Temperature", this->return_temp_sensor_);
   LOG_SENSOR("", "Buffer Bottom Temperature", this->buffer_bottom_temp_sensor_);
   LOG_SENSOR("", "Buffer Middle Temperature", this->buffer_middle_temp_sensor_);
   LOG_SENSOR("", "Buffer Top Temperature", this->buffer_top_temp_sensor_);
   LOG_SENSOR("", "Exhaust Temperature", this->exhaust_temp_sensor_);
+  LOG_SENSOR("", "Heater Status", this->heater_status_sensor_);
+  LOG_SENSOR("", "Oxygen Sensor", this->oxygen_sensor_);
   LOG_SENSOR("", "Room 1 Temperature", this->room1_temp_sensor_);
   LOG_SENSOR("", "Room 1 output Temperature", this->room1_output_temp_sensor_);
   LOG_SENSOR("", "Outside Temperature", this->outside_temp_sensor_);

@@ -5,9 +5,11 @@ from esphome.components import uart, sensor
 from esphome.const import (
     CONF_ID,
     CONF_TEMPERATURE,
+    CONF_TEXT_SENSORS,
     DEVICE_CLASS_TEMPERATURE,
     DEVICE_CLASS_VOLUME,
     ICON_GAUGE,
+    ICON_ROTATE_RIGHT,
     ICON_THERMOMETER,
     UNIT_CELSIUS,
     UNIT_PERCENT,
@@ -27,6 +29,7 @@ CONF_BUFFER_BOTTOM_TEMPERATURE = "buffer_bottom_temperature"
 CONF_BUFFER_MIDDLE_TEMPERATURE = "buffer_middle_temperature"
 CONF_BUFFER_TOP_TEMPERATURE = "buffer_top_temperature"
 CONF_EXHAUST_TEMPERATURE = "exhaust_temperature"
+CONF_HEATER_STATUS = "heater_status"
 CONF_OXYGEN_SENSOR = "oxygen_sensor"
 CONF_ROOM1_TEMPERATURE = "room1_temperature"
 CONF_ROOM1_OUTPUT_TEMPERATURE = "room1_output_temperature"
@@ -38,6 +41,7 @@ CONF_EXTERNAL_HEATER_TEMPERATURE = "external_heater_temperature"
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(ETA_SH),
     cv.Optional(CONF_FAN_SPEED): sensor.sensor_schema(
+        icon=ICON_ROTATE_RIGHT,
         accuracy_decimals=0,
         device_class=DEVICE_CLASS_VOLUME,
     ),
@@ -73,6 +77,11 @@ CONFIG_SCHEMA = cv.Schema({
         device_class=DEVICE_CLASS_TEMPERATURE,
     ),
     
+    cv.Optional(CONF_HEATER_STATUS) : sensor.sensor_schema(
+        accuracy_decimals=0,
+        device_class=DEVICE_CLASS_VOLUME,
+    ),
+
     cv.Optional(CONF_OXYGEN_SENSOR): sensor.sensor_schema(
         unit_of_measurement=UNIT_PERCENT,
         icon=ICON_GAUGE,
@@ -158,6 +167,10 @@ async def to_code(config):
     if CONF_OXYGEN_SENSOR in config:
         sens = await sensor.new_sensor(config[CONF_OXYGEN_SENSOR])
         cg.add(var.set_oxygen_sensor(sens))
+        
+    if CONF_HEATER_STATUS in config:
+        sens = await sensor.new_sensor(config[CONF_HEATER_STATUS])
+        cg.add(var.set_heater_status_sensor(sens))
 
     if CONF_ROOM1_TEMPERATURE in config:
         sens = await sensor.new_sensor(config[CONF_ROOM1_TEMPERATURE])

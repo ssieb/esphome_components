@@ -22,6 +22,7 @@ class ETA_SH : public Component,  public uart::UARTDevice {
   void set_buffer_middle_temp_sensor(sensor::Sensor *sensor) { this->buffer_middle_temp_sensor_ = sensor; }
   void set_buffer_top_temp_sensor(sensor::Sensor *sensor) { this->buffer_top_temp_sensor_ = sensor; }
   void set_exhaust_temp_sensor(sensor::Sensor *sensor) { this->exhaust_temp_sensor_ = sensor; }
+  void set_heater_status_sensor(sensor::Sensor *sensor) { this ->heater_status_sensor_ = sensor; }
   void set_oxygen_sensor(sensor::Sensor *sensor) { this->oxygen_sensor_ = sensor; }
   void set_outside_temp_sensor(sensor::Sensor *sensor) { this->outside_temp_sensor_ = sensor; }
   void set_buffer_load_sensor(sensor::Sensor *sensor) { this->buffer_load_sensor_ = sensor; }
@@ -38,6 +39,7 @@ class ETA_SH : public Component,  public uart::UARTDevice {
   sensor::Sensor *buffer_middle_temp_sensor_{nullptr};
   sensor::Sensor *buffer_top_temp_sensor_{nullptr};
   sensor::Sensor *exhaust_temp_sensor_{nullptr};
+  sensor::Sensor *heater_status_sensor_{nullptr};
   sensor::Sensor *oxygen_sensor_{nullptr};
   sensor::Sensor *outside_temp_sensor_{nullptr};
   sensor::Sensor *buffer_load_sensor_{nullptr};
