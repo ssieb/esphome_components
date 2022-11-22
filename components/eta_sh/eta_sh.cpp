@@ -132,8 +132,12 @@ void ETA_SH::handle_data_(uint8_t *data) {
         this->exhaust_temp_sensor_->publish_state((float)get16(data + 3) / 10);
       break;
 	 case 40:
-      if (this->oxygen_sensor_ != nullptr)
-        this->oxygen_sensor_->publish_state((float)get16(data + 3) / 100);
+      if (this->oxygen_sensor_ != nullptr) {
+		  uint16_t val = get16(data + 3);
+		  val = (val == 32768 ? 0 :val);
+		  this->oxygen_sensor_->publish_state((float)val /100);
+	  }
+      //  this->oxygen_sensor_->publish_state((float)get16(data + 3) / 100);
 	  break;
 	 case 66:
 	  if (this->room1_temp_sensor_ != nullptr)
