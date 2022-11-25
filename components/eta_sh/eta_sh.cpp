@@ -86,7 +86,7 @@ void ETA_SH::loop() {
   }
 }
 
-uint16_t inline get16(uint8_t *data) {
+int16_t inline get16(uint8_t *data) {								//switched to int to represent negative values
   return (data[0] << 8) | data[1];
 }
 
@@ -102,7 +102,7 @@ void ETA_SH::handle_data_(uint8_t *data) {
       ESP_LOGV(TAG, "data not for us: %02x (%d)", data[0], data[0]);
       continue;
     }
-    uint16_t datapoint = get16(data + 1);
+    int16_t datapoint = get16(data + 1);							//switched to int to represent negative values
     switch (datapoint) {
      case 7:
 	  if (this->fan_speed_sensor_ != nullptr)
