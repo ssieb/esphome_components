@@ -10,8 +10,6 @@ eta_sh:
   fan_speed:
     name: Gebläsedrehzahl   (Speed of boiler Fan)
     unit_of_measurement: RPM
-    icon: 
-      mdi:fan
   return_temperature:
     name: Kesselruecklauf   (Boiler water return temp)
   buffer_bottom_temperature:
