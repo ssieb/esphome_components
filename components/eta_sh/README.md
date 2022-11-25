@@ -35,15 +35,15 @@ eta_sh:
   oxygen_sensor:
     name: Restsauerstoff   	(o2 Sensor Percent / Lambda Sond. Returns 0 when oven off)
   heater_status:
-    name: "Status"			Status of the heater,
-					0: "Tür offen"			(Door open)
-					1: "heizt an"			(starting Fire)
-					2: "in Betrieb"			(working)
-					3: "Übertemperatur"		(over temperature Limit)
-					4: "Glutabbrand"		(embers burning)
-					5: "Feuer aus"			(no Fire)
-					6: "Ausgeschaltet"		(heater off)
-					7: "Störung"			(fault)
+    name: "Status"                      Status of the heater,
+                                        0: "Tür offen"			(Door open)
+                                        1: "heizt an"			(starting Fire)
+                                        2: "in Betrieb"			(working)
+                                        3: "Übertemperatur"		(over temperature Limit)
+                                        4: "Glutabbrand"		(embers burning)
+                                        5: "Feuer aus"			(no Fire)
+                                        6: "Ausgeschaltet"		(heater off)
+                                        7: "Störung"			(fault)
 ```
 
 All sensors are optional.
