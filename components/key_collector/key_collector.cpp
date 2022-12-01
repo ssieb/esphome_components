@@ -25,6 +25,8 @@ void KeyCollector::dump_config() {
     ESP_LOGCONFIG(TAG, "  erase keys '%s'", this->back_keys_.c_str());
   if (!this->clear_keys_.empty())
     ESP_LOGCONFIG(TAG, "  clear keys '%s'", this->clear_keys_.c_str());
+  if (!this->start_keys_.empty())
+    ESP_LOGCONFIG(TAG, "  start keys '%s'", this->start_keys_.c_str());
   if (!this->end_keys_.empty()) {
     ESP_LOGCONFIG(TAG, "  end keys '%s'", this->end_keys_.c_str());
     ESP_LOGCONFIG(TAG, "  end key is required: %s", ONOFF(this->end_key_required_));

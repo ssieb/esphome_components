@@ -46,6 +46,8 @@ async def to_code(config):
         cg.add(var.set_min_length(config[CONF_MIN_LENGTH]))
     if CONF_MAX_LENGTH in config:
         cg.add(var.set_max_length(config[CONF_MAX_LENGTH]))
+    if CONF_START_KEYS in config:
+        cg.add(var.set_start_keys(config[CONF_START_KEYS]))
     if CONF_END_KEYS in config:
         cg.add(var.set_end_keys(config[CONF_END_KEYS]))
     if CONF_END_KEY_REQUIRED in config:
