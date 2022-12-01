@@ -53,8 +53,10 @@ void KeyCollector::clear(bool progress_update) {
 void KeyCollector::key_pressed_(uint8_t key) {
   this->last_key_time_ = millis();
   if (!this->start_keys_.empty() && !this->start_key_) {
-    if (this->start_keys_.find(key) != std::string::npos)
+    if (this->start_keys_.find(key) != std::string::npos) {
       this->start_key_ = key;
+      this->progress_trigger_->trigger(this->result_, this->start_key_);
+    }
     return;
   }
   if (this->back_keys_.find(key) != std::string::npos) {
