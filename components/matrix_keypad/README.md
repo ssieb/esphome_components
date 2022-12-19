@@ -11,7 +11,7 @@ For the `binary_sensor`, you need to provide either the `row` and `col` paramete
 
 Example:
 ```yaml
-keypad:
+matrix_keypad:
   id: mykeypad
   rows:
     - pin: 21
@@ -37,3 +37,37 @@ binary_sensor:
     key: A
 ```
 
+The component also supports the use of a PIN schema which allows for connectivity via sx1509 expander, should also work for other expander platforms as long as the PIN schema is handled.
+
+Example sx1509 
+```yaml
+matrix_keypad:
+  id: garagekeypad
+  rows: 
+    - pin:
+        sx1509: sx1509_hub1
+        number: 0
+    - pin:
+        sx1509: sx1509_hub1
+        number: 1
+    - pin:
+        sx1509: sx1509_hub1
+        number: 2
+    - pin:
+        sx1509: sx1509_hub1
+        number: 3
+  columns:
+    - pin:
+        sx1509: sx1509_hub1
+        number: 8
+    - pin:
+        sx1509: sx1509_hub1
+        number: 9
+    - pin:
+        sx1509: sx1509_hub1
+        number: 10
+    - pin:
+        sx1509: sx1509_hub1
+        number: 11
+  keys: "123A456B789C*0#D"
+```
