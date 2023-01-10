@@ -13,7 +13,6 @@ from esphome.const import (
     DEVICE_CLASS_EMPTY,
     DEVICE_CLASS_ENERGY,
     DEVICE_CLASS_TEMPERATURE,
-    DEVICE_CLASS_WATER,
     ENTITY_CATEGORY_DIAGNOSTIC,
     ICON_PERCENT,
     ICON_RADIATOR,
@@ -56,7 +55,6 @@ CONF_TEMPERATURE_2 = "temperature_2"
 CONF_TEMPERATURE_3 = "temperature_3"
 CONF_TEMPERATURE_4 = "temperature_4"
 CONF_TEMPERATURE_5 = "temperature_5"
-UNIT_LITER_PER_HOUR = "L/h"
 
 UNIT_HOUR = "h"
 
@@ -366,9 +364,8 @@ CONFIG_SCHEMA = cv.typed_schema(
                     entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
                 ),
                 cv.Optional(CONF_FLOW_RATE): sensor.sensor_schema(
-                    unit_of_measurement=UNIT_LITER_PER_HOUR,
                     accuracy_decimals=0,
-                    device_class=DEVICE_CLASS_WATER,
+                    device_class=DEVICE_CLASS_EMPTY,
                     state_class=STATE_CLASS_MEASUREMENT,
                 ),
             }
