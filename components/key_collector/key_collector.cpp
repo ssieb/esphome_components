@@ -7,14 +7,11 @@ namespace key_collector {
 
 static const char *const TAG = "key_collector";
 
-KeyCollector::KeyCollector()
-    : progress_trigger_(new Trigger<std::string, uint8_t>()),
-      result_trigger_(new Trigger<std::string, uint8_t, uint8_t>()),
-      timeout_trigger_(new Trigger<>()) {}
+KeyCollector::KeyCollector() : progress_trigger_(new Trigger<std::string, uint8_t>()), result_trigger_(new Trigger<std::string, uint8_t, uint8_t>()),
+  timeout_trigger_(new Trigger<>()) {}
 
 void KeyCollector::loop() {
-  if ((this->timeout_ == 0) || (this->result_.size() == 0) ||
-      (millis() - this->last_key_time_ < this->timeout_))
+  if ((this->timeout_ == 0) || (this->result_.size() == 0) || (millis() - this->last_key_time_ < this->timeout_))
     return;
   this->clear();
   this->timeout_trigger_->trigger();
@@ -34,8 +31,7 @@ void KeyCollector::dump_config() {
     ESP_LOGCONFIG(TAG, "  start keys '%s'", this->start_keys_.c_str());
   if (!this->end_keys_.empty()) {
     ESP_LOGCONFIG(TAG, "  end keys '%s'", this->end_keys_.c_str());
-    ESP_LOGCONFIG(TAG, "  end key is required: %s",
-                  ONOFF(this->end_key_required_));
+    ESP_LOGCONFIG(TAG, "  end key is required: %s", ONOFF(this->end_key_required_));
   }
   if (!this->allowed_keys_.empty())
     ESP_LOGCONFIG(TAG, "  allowed keys '%s'", this->allowed_keys_.c_str());
@@ -44,8 +40,9 @@ void KeyCollector::dump_config() {
 }
 
 void KeyCollector::set_provider(key_provider::KeyProvider *provider) {
-  provider->add_on_key_callback(
-      [this](uint8_t key) { this->key_pressed_(key); });
+  provider->add_on_key_callback([this](uint8_t key) {
+    this->key_pressed_(key);
+  });
 }
 
 void KeyCollector::clear(bool progress_update) {
@@ -77,25 +74,22 @@ void KeyCollector::key_pressed_(uint8_t key) {
     return;
   }
   if (this->end_keys_.find(key) != std::string::npos) {
-    if ((this->min_length_ == 0) ||
-        (this->result_.size() >= this->min_length_)) {
+    if ((this->min_length_ == 0) || (this->result_.size() >= this->min_length_)) {
       this->result_trigger_->trigger(this->result_, this->start_key_, key);
       this->clear();
     }
     return;
   }
-  if (!this->allowed_keys_.empty() &&
-      (this->allowed_keys_.find(key) == std::string::npos))
+  if (!this->allowed_keys_.empty() && (this->allowed_keys_.find(key) == std::string::npos))
     return;
   if ((this->max_length_ == 0) || (this->result_.size() < this->max_length_))
     this->result_.push_back(key);
-  if ((this->max_length_ > 0) && (this->result_.size() == this->max_length_) &&
-      (!this->end_key_required_)) {
+  if ((this->max_length_ > 0) && (this->result_.size() == this->max_length_) && (!this->end_key_required_)) {
     this->result_trigger_->trigger(this->result_, this->start_key_, 0);
     this->clear(false);
   }
   this->progress_trigger_->trigger(this->result_, this->start_key_);
 }
 
-} // namespace key_collector
-} // namespace esphome
+}  // namespace key_collector
+}  // namespace esphome
