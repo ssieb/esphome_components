@@ -83,7 +83,7 @@ async def to_code(config):
             [(cg.std_string, "x"), (cg.uint8, "start"), (cg.uint8, "end")],
             config[CONF_ON_RESULT],
         )
-    if CONF_ON_TIMEOUT is config:
+    if CONF_ON_TIMEOUT in config:
         await automation.build_automation(
             var.get_timeout_trigger(), [], config[CONF_ON_TIMEOUT]
         )
