@@ -19,7 +19,6 @@ CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
         cv.Optional(CONF_BATTERY_LEVEL): sensor.sensor_schema(
             unit_of_measurement=UNIT_PERCENT,
             device_class=DEVICE_CLASS_BATTERY,
-            icon=ICON_BATTERY,
             accuracy_decimals=0,
         ),
         cv.Optional(CONF_CHARGER_CONNECTED): binary_sensor.binary_sensor_schema(),
