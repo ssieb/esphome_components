@@ -46,13 +46,14 @@ void JSDrive::loop() {
         continue;
       }
       this->rem_buffer_.push_back(c);
-      if (this->rem_buffer_.size() < 5)
+      if (this->rem_buffer_.size() < 4)
         continue;
       this->rem_rx_ = false;
       uint8_t *d = this->rem_buffer_.data();
-      if ((d[3] != 0xff) || (d[4] != 0xff)) {
-        ESP_LOGE(TAG, "unexpected end bytes: %02x %02x", d[3], d[4]);
-        this->rem_buffer_.clear();
+      uint8_t csum = d[0] + d[1] + d[2];
+      if (csum != d[3]) {
+        ESP_LOGE(TAG, "remote checksum mismatch: %02x != %02x", csum, d[3]);
+        this->desk_buffer_.clear();
         continue;
       }
       if (this->up_bsensor_ != nullptr)
