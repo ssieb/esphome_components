@@ -29,9 +29,9 @@ static int segs_to_num(uint8_t segments) {
    case 0x6f:
     return 9;
    default:
-    ESP_LOGE(TAG, "unknown digit: %02f", segments & 0x7f);
+    ESP_LOGV(TAG, "unknown digit: %02f", segments & 0x7f);
   }
-  return 0;
+  return -1;
 }
 
 void JSDrive::loop() {
@@ -89,10 +89,23 @@ void JSDrive::loop() {
         continue;
       }
       if (this->height_sensor_ != nullptr) {
-        float num = segs_to_num(d[0]) * 100 + segs_to_num(d[1]) * 10 + segs_to_num(d[2]);
-        if (d[1] & 0x80)
-          num /= 10.0;
-        this->height_sensor_->publish_state(num);
+        do {
+          if (d[3] != 1) {
+            ESP_LOGV(TAG, "unknown message type %02x", d[3]);
+            break;
+          }
+          if ((d[0] | d[1] | d[2]) == 0)
+            break;
+          int d0 = segs_to_num(d[0]);
+          int d1 = segs_to_num(d[1]);
+          int d2 = segs_to_num(d[2]);
+          if (d0 < 0 || d1 < 0 || d2 < 0)
+            break;
+          float num = segs_to_num(d[0]) * 100 + segs_to_num(d[1]) * 10 + segs_to_num(d[2]);
+          if (d[1] & 0x80)
+            num /= 10.0;
+          this->height_sensor_->publish_state(num);
+        } while (false);
       }
       this->desk_buffer_.clear();
     }

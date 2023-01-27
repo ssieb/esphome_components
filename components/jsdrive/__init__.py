@@ -23,7 +23,9 @@ CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend({
     cv.GenerateID(): cv.declare_id(JSDrive),
     cv.Optional(CONF_REMOTE_UART): cv.use_id(uart.UARTComponent),
     cv.Optional(CONF_DESK_UART): cv.use_id(uart.UARTComponent),
-    cv.Optional(CONF_HEIGHT): sensor.sensor_schema(),
+    cv.Optional(CONF_HEIGHT): sensor.sensor_schema(
+        accuracy_decimals = 1
+    ),
     cv.Optional(CONF_UP): binary_sensor.binary_sensor_schema(),
     cv.Optional(CONF_DOWN): binary_sensor.binary_sensor_schema(),
     cv.Optional(CONF_MEMORY1): binary_sensor.binary_sensor_schema(),
