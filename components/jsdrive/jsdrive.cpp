@@ -40,7 +40,7 @@ void JSDrive::loop() {
     while (this->remote_uart_->available()) {
       this->remote_uart_->read_byte(&c);
       if (!this->rem_rx_) {
-        if (c != 0x5a)
+        if (c != 0xa5)
           continue;
         this->rem_rx_ = true;
         continue;
