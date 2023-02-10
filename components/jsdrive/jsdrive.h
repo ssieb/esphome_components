@@ -8,6 +8,14 @@
 namespace esphome {
 namespace jsdrive {
 
+enum JSDriveOperation : uint8_t {
+  JSDRIVE_OPERATION_IDLE = 0,
+  JSDRIVE_OPERATION_RAISING,
+  JSDRIVE_OPERATION_LOWERING,
+};
+
+const char *jsdrive_operation_to_str(JSDriveOperation op);
+
 class JSDrive : public Component {
  public:
   float get_setup_priority() const override { return setup_priority::LATE; }
@@ -21,6 +29,11 @@ class JSDrive : public Component {
   void set_memory1_bsensor(binary_sensor::BinarySensor *sensor) { memory1_bsensor_ = sensor; }
   void set_memory2_bsensor(binary_sensor::BinarySensor *sensor) { memory2_bsensor_ = sensor; }
   void set_memory3_bsensor(binary_sensor::BinarySensor *sensor) { memory3_bsensor_ = sensor; }
+
+  void move_to(float height);
+  void stop();
+
+  JSDriveOperation current_operation{JSDRIVE_OPERATION_IDLE};
 
  protected:
   uart::UARTComponent *remote_uart_{nullptr};
@@ -36,6 +49,11 @@ class JSDrive : public Component {
   std::vector<uint8_t> desk_buffer_;
   bool rem_rx_{false};
   bool desk_rx_{false};
+  float current_pos_{0};
+  float target_pos_{-1};
+  bool moving_{false};
+  bool move_dir;  // true is up
+  uint32_t last_send_{0};
 };
 
 }  // namespace jsdrive

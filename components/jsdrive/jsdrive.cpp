@@ -6,6 +6,19 @@ namespace jsdrive {
 
 static const char *const TAG = "jsdrive";
 
+const char *jsdrive_operation_to_str(JSDriveOperation op) {
+  switch (op) {
+    case JSDRIVE_OPERATION_IDLE:
+      return "IDLE";
+    case JSDRIVE_OPERATION_RAISING:
+      return "RAISING";
+    case JSDRIVE_OPERATION_LOWERING:
+      return "LOWERING";
+    default:
+      return "UNKNOWN";
+  }
+}
+
 static int segs_to_num(uint8_t segments) {
   switch (segments & 0x7f) {
    case 0x3f:
@@ -36,42 +49,11 @@ static int segs_to_num(uint8_t segments) {
 
 void JSDrive::loop() {
   uint8_t c;
-  if (this->remote_uart_ != nullptr) {
-    while (this->remote_uart_->available()) {
-      this->remote_uart_->read_byte(&c);
-      if (!this->rem_rx_) {
-        if (c != 0xa5)
-          continue;
-        this->rem_rx_ = true;
-        continue;
-      }
-      this->rem_buffer_.push_back(c);
-      if (this->rem_buffer_.size() < 4)
-        continue;
-      this->rem_rx_ = false;
-      uint8_t *d = this->rem_buffer_.data();
-      uint8_t csum = d[0] + d[1] + d[2];
-      if (csum != d[3]) {
-        ESP_LOGE(TAG, "remote checksum mismatch: %02x != %02x", csum, d[3]);
-        this->desk_buffer_.clear();
-        continue;
-      }
-      if (this->up_bsensor_ != nullptr)
-        this->up_bsensor_->publish_state(d[1] & 0x20);
-      if (this->down_bsensor_ != nullptr)
-        this->down_bsensor_->publish_state(d[1] & 0x40);
-      if (this->memory1_bsensor_ != nullptr)
-        this->memory1_bsensor_->publish_state(d[1] & 2);
-      if (this->memory2_bsensor_ != nullptr)
-        this->memory2_bsensor_->publish_state(d[1] & 4);
-      if (this->memory3_bsensor_ != nullptr)
-        this->memory3_bsensor_->publish_state(d[1] & 8);
-      this->rem_buffer_.clear();
-    }
-  }
   if (this->desk_uart_ != nullptr) {
     while (this->desk_uart_->available()) {
       this->desk_uart_->read_byte(&c);
+      if (this->rem_uart_ != nullptr)
+        this->rem_uart_.write_byte(c);
       if (!this->desk_rx_) {
         if (c != 0x5a)
           continue;
@@ -105,10 +87,57 @@ void JSDrive::loop() {
           float num = segs_to_num(d[0]) * 100 + segs_to_num(d[1]) * 10 + segs_to_num(d[2]);
           if (d[1] & 0x80)
             num /= 10.0;
+          this->current_pos_ = num;
           this->height_sensor_->publish_state(num);
         } while (false);
       }
       this->desk_buffer_.clear();
+    }
+  }
+  if (this->moving_) {
+    if ((this->dir_ && (this->current_pos_ >= this->target_pos_)) ||
+        (!this->dir_ && (this->current_pos_ <= this->target_pos_))) {
+      this->moving_ = false;
+    } else if (millis() - this->last_send_ > 200) {
+      static uint8_t buf[] = {0xa5, 0, 0, 0, 0xff};
+      buf[2] = (this->dir_ ? 0x20 : 0x40);
+      buf[3] = 0xff - buf[2];
+      this->desk.uart_.write_array(buf, 5);
+    }
+  }
+  if (this->remote_uart_ != nullptr) {
+    while (this->remote_uart_->available()) {
+      this->remote_uart_->read_byte(&c);
+      if (!this->moving_ && this->desk_uart_ != nullptr)
+        this->desk_uart_.write_byte(c);
+      if (!this->rem_rx_) {
+        if (c != 0xa5)
+          continue;
+        this->rem_rx_ = true;
+        continue;
+      }
+      this->rem_buffer_.push_back(c);
+      if (this->rem_buffer_.size() < 4)
+        continue;
+      this->rem_rx_ = false;
+      uint8_t *d = this->rem_buffer_.data();
+      uint8_t csum = d[0] + d[1] + d[2];
+      if (csum != d[3]) {
+        ESP_LOGE(TAG, "remote checksum mismatch: %02x != %02x", csum, d[3]);
+        this->desk_buffer_.clear();
+        continue;
+      }
+      if (this->up_bsensor_ != nullptr)
+        this->up_bsensor_->publish_state(d[1] & 0x20);
+      if (this->down_bsensor_ != nullptr)
+        this->down_bsensor_->publish_state(d[1] & 0x40);
+      if (this->memory1_bsensor_ != nullptr)
+        this->memory1_bsensor_->publish_state(d[1] & 2);
+      if (this->memory2_bsensor_ != nullptr)
+        this->memory2_bsensor_->publish_state(d[1] & 4);
+      if (this->memory3_bsensor_ != nullptr)
+        this->memory3_bsensor_->publish_state(d[1] & 8);
+      this->rem_buffer_.clear();
     }
   }
 }
@@ -121,6 +150,20 @@ void JSDrive::dump_config() {
   LOG_BINARY_SENSOR("  ", "Memory1", this->memory1_bsensor_);
   LOG_BINARY_SENSOR("  ", "Memory2", this->memory2_bsensor_);
   LOG_BINARY_SENSOR("  ", "Memory3", this->memory3_bsensor_);
+}
+
+void JSDrive::move_to(float height) {
+  if (this->desk_uart_ == nullptr)
+    return;
+  this->moving_ = true;
+  this->target_position_ = height;
+  this->dir_ = height > this->current_position;
+  this->current_operation = this->dir_ ? JSDRIVE_OPERATION_RAISING : JSDRIVE_OPERATION_LOWERING;
+}
+
+void JSDrive::stop() {
+  this->moving_ = false;
+  this->current_operation = JSDRIVE_OPERATION_IDLE;
 }
 
 }  // namespace jsdrive

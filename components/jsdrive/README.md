@@ -24,3 +24,5 @@ jsdrive:
 
 `height` is a `sensor`, the others are `binary_sensor`s indicating the button states.
 
+There are methods `move_to(height)` and `stop()` that you can use in a lambda.
+
