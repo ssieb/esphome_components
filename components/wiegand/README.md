@@ -1,3 +1,5 @@
+# This component has been merged to esphome: <https://next.esphome.io/components/wiegand.html>
+
 # Wiegard card reader
 
 Reads a card or key presses from a Wiegand interface.

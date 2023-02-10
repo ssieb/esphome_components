@@ -1,3 +1,5 @@
+# This component has been merged to esphome: <https://next.esphome.io/components/vbus.html>
+
 # VBus protocol component
 
 A configured uart component is required.
