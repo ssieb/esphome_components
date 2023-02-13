@@ -40,7 +40,7 @@ void IP5306::update() {
       case 0x80: value = 75; break;
       case 0x00: value = 100; break;
     }
-  this->battery_level_->publish_state(value);
+    this->battery_level_->publish_state(value);
   }
   if (this->read_register(IP5306_REG_READ0, data, 2) != i2c::ERROR_OK) {
     ESP_LOGE(TAG, "unable to read status");
