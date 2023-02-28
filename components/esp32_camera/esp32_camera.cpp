@@ -187,7 +187,8 @@ ESP32Camera::ESP32Camera(const std::string &name) : EntityBase(name) {
   this->config_.pixel_format = PIXFORMAT_JPEG;
   this->config_.frame_size = FRAMESIZE_VGA;  // 640x480
   this->config_.jpeg_quality = 10;
-  this->config_.fb_count = 1;
+  this->config_.fb_count = 1;  
+  this->config_.fb_location = CAMERA_FB_IN_DRAM;
 
   global_esp32_camera = this;
 }
