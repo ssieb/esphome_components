@@ -1,3 +1,5 @@
+# This component has been merged to esphome: <https://next.esphome.io/components/key_collector.html>
+
 # key_collector component
 
 This component collects key presses from a `key_provider` like the `matrix_keypad` or `wiegand` components.

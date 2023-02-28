@@ -1,3 +1,5 @@
+# This component has been merged to esphome: <https://next.esphome.io/components/matrix_keypad.html>
+
 # keypad component
 
 This component is for matrix keypads.  Define a `keypad` component then add `binary_sensor`s to handle individual keys.  You need to also import the `key_provider` component.
