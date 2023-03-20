@@ -79,22 +79,18 @@ void JSDrive::loop() {
         continue;
       }
       this->desk_buffer_.push_back(c);
-      if (this->desk_buffer_.size() < 5)
+      if (this->desk_buffer_.size() < 4)
         continue;
       this->desk_rx_ = false;
       uint8_t *d = this->desk_buffer_.data();
-      uint8_t csum = d[0] + d[1] + d[2] + d[3];
-      if (csum != d[4]) {
-        ESP_LOGE(TAG, "desk checksum mismatch: %02x != %02x", csum, d[4]);
+      uint8_t csum = d[0] + d[1] + d[2];
+      if (csum != d[3]) {
+        ESP_LOGE(TAG, "desk checksum mismatch: %02x != %02x", csum, d[3]);
         this->desk_buffer_.clear();
         continue;
       }
       if (this->height_sensor_ != nullptr) {
         do {
-          if (d[3] != 1) {
-            ESP_LOGV(TAG, "unknown message type %02x", d[3]);
-            break;
-          }
           if ((d[0] | d[1] | d[2]) == 0)
             break;
           int d0 = segs_to_num(d[0]);
