@@ -8,6 +8,7 @@ jsdrive:
   id: my_jsdrive
   desk_uart: desk_bus
   remote_uart: remote_bus
+  message_length: 6    # optional, 5 or 6, default is 6
   height:
     name: Desk Height
   up:

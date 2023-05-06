@@ -52,8 +52,8 @@ void JSDrive::loop() {
   if (this->desk_uart_ != nullptr) {
     while (this->desk_uart_->available()) {
       this->desk_uart_->read_byte(&c);
-      if (this->rem_uart_ != nullptr)
-        this->rem_uart_.write_byte(c);
+      if (this->remote_uart_ != nullptr)
+        this->remote_uart_->write_byte(c);
       if (!this->desk_rx_) {
         if (c != 0x5a)
           continue;
@@ -61,19 +61,22 @@ void JSDrive::loop() {
         continue;
       }
       this->desk_buffer_.push_back(c);
-      if (this->desk_buffer_.size() < 5)
+      if (this->desk_buffer_.size() < this->message_length_ - 1)
         continue;
       this->desk_rx_ = false;
       uint8_t *d = this->desk_buffer_.data();
-      uint8_t csum = d[0] + d[1] + d[2] + d[3];
-      if (csum != d[4]) {
-        ESP_LOGE(TAG, "desk checksum mismatch: %02x != %02x", csum, d[4]);
+      uint8_t csum = d[0] + d[1] + d[2];
+      if (this->message_length_ > 5)
+        csum += d[3];
+      uint8_t tcsum = this->message_length_ == 5 ? d[3] : d[4];
+      if (csum != tcsum) {
+        ESP_LOGE(TAG, "desk checksum mismatch: %02x != %02x", csum, tcsum);
         this->desk_buffer_.clear();
         continue;
       }
       if (this->height_sensor_ != nullptr) {
         do {
-          if (d[3] != 1) {
+          if ((this->message_length_ == 6) && (d[3] != 1)) {
             ESP_LOGV(TAG, "unknown message type %02x", d[3]);
             break;
           }
@@ -95,21 +98,21 @@ void JSDrive::loop() {
     }
   }
   if (this->moving_) {
-    if ((this->dir_ && (this->current_pos_ >= this->target_pos_)) ||
-        (!this->dir_ && (this->current_pos_ <= this->target_pos_))) {
+    if ((this->move_dir_ && (this->current_pos_ >= this->target_pos_)) ||
+        (!this->move_dir_ && (this->current_pos_ <= this->target_pos_))) {
       this->moving_ = false;
     } else if (millis() - this->last_send_ > 200) {
       static uint8_t buf[] = {0xa5, 0, 0, 0, 0xff};
-      buf[2] = (this->dir_ ? 0x20 : 0x40);
+      buf[2] = (this->move_dir_ ? 0x20 : 0x40);
       buf[3] = 0xff - buf[2];
-      this->desk.uart_.write_array(buf, 5);
+      this->desk_uart_->write_array(buf, 5);
     }
   }
   if (this->remote_uart_ != nullptr) {
     while (this->remote_uart_->available()) {
       this->remote_uart_->read_byte(&c);
       if (!this->moving_ && this->desk_uart_ != nullptr)
-        this->desk_uart_.write_byte(c);
+        this->desk_uart_->write_byte(c);
       if (!this->rem_rx_) {
         if (c != 0xa5)
           continue;
@@ -144,6 +147,8 @@ void JSDrive::loop() {
 
 void JSDrive::dump_config() {
   ESP_LOGCONFIG(TAG, "JSDrive Desk");
+  if (this->desk_uart_ != nullptr)
+    ESP_LOGCONFIG(TAG, "  Message Length: %d", this->message_length_);
   LOG_SENSOR("", "Height", this->height_sensor_);
   LOG_BINARY_SENSOR("  ", "Up", this->up_bsensor_);
   LOG_BINARY_SENSOR("  ", "Down", this->down_bsensor_);
@@ -156,9 +161,9 @@ void JSDrive::move_to(float height) {
   if (this->desk_uart_ == nullptr)
     return;
   this->moving_ = true;
-  this->target_position_ = height;
-  this->dir_ = height > this->current_position;
-  this->current_operation = this->dir_ ? JSDRIVE_OPERATION_RAISING : JSDRIVE_OPERATION_LOWERING;
+  this->target_pos_ = height;
+  this->move_dir_ = height > this->current_pos_;
+  this->current_operation = this->move_dir_ ? JSDRIVE_OPERATION_RAISING : JSDRIVE_OPERATION_LOWERING;
 }
 
 void JSDrive::stop() {

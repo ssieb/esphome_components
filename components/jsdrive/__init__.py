@@ -13,6 +13,7 @@ JSDrive = jsdrive_ns.class_('JSDrive', cg.Component)
 
 CONF_REMOTE_UART = "remote_uart"
 CONF_DESK_UART = "desk_uart"
+CONF_MESSAGE_LENGTH = "message_length"
 CONF_UP = "up"
 CONF_DOWN = "down"
 CONF_MEMORY1 = "memory1"
@@ -23,6 +24,7 @@ CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend({
     cv.GenerateID(): cv.declare_id(JSDrive),
     cv.Optional(CONF_REMOTE_UART): cv.use_id(uart.UARTComponent),
     cv.Optional(CONF_DESK_UART): cv.use_id(uart.UARTComponent),
+    cv.Optional(CONF_MESSAGE_LENGTH, default=6): cv.int_range(min=5, max=6),
     cv.Optional(CONF_HEIGHT): sensor.sensor_schema(
         accuracy_decimals = 1
     ),
@@ -44,6 +46,7 @@ async def to_code(config):
     if CONF_DESK_UART in config:
         desk_uart = await cg.get_variable(config[CONF_DESK_UART])
         cg.add(var.set_desk_uart(desk_uart))
+        cg.add(var.set_message_length(config[CONF_MESSAGE_LENGTH]))
     if CONF_HEIGHT in config:
         sens = await sensor.new_sensor(config[CONF_HEIGHT])
         cg.add(var.set_height_sensor(sens))
