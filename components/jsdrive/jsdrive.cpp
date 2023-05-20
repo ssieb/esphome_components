@@ -91,7 +91,8 @@ void JSDrive::loop() {
           if (d[1] & 0x80)
             num /= 10.0;
           this->current_pos_ = num;
-          this->height_sensor_->publish_state(num);
+          if (!this->height_sensor_->has_state() || (this->height_sensor_->state != num))
+            this->height_sensor_->publish_state(num);
         } while (false);
       }
       this->desk_buffer_.clear();
