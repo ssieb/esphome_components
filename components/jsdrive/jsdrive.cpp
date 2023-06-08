@@ -49,7 +49,9 @@ static int segs_to_num(uint8_t segments) {
 
 void JSDrive::loop() {
   uint8_t c;
+  bool have_data = false;
   if (this->desk_uart_ != nullptr) {
+    float num;
     while (this->desk_uart_->available()) {
       this->desk_uart_->read_byte(&c);
       if (this->remote_uart_ != nullptr)
@@ -87,28 +89,31 @@ void JSDrive::loop() {
           int d2 = segs_to_num(d[2]);
           if (d0 < 0 || d1 < 0 || d2 < 0)
             break;
-          float num = segs_to_num(d[0]) * 100 + segs_to_num(d[1]) * 10 + segs_to_num(d[2]);
+          num = segs_to_num(d[0]) * 100 + segs_to_num(d[1]) * 10 + segs_to_num(d[2]);
+          have_data = true;
           if (d[1] & 0x80)
             num /= 10.0;
           this->current_pos_ = num;
-          if (!this->height_sensor_->has_state() || (this->height_sensor_->state != num))
-            this->height_sensor_->publish_state(num);
         } while (false);
       }
       this->desk_buffer_.clear();
     }
+    if (have_data && (!this->height_sensor_->has_state() || (this->height_sensor_->state != num)))
+      this->height_sensor_->publish_state(num);
   }
   if (this->moving_) {
     if ((this->move_dir_ && (this->current_pos_ >= this->target_pos_)) ||
         (!this->move_dir_ && (this->current_pos_ <= this->target_pos_))) {
       this->moving_ = false;
-    } else if (millis() - this->last_send_ > 200) {
+    } else {
       static uint8_t buf[] = {0xa5, 0, 0, 0, 0xff};
       buf[2] = (this->move_dir_ ? 0x20 : 0x40);
       buf[3] = 0xff - buf[2];
       this->desk_uart_->write_array(buf, 5);
     }
   }
+  uint8_t buttons = 0;
+  have_data = false;
   if (this->remote_uart_ != nullptr) {
     while (this->remote_uart_->available()) {
       this->remote_uart_->read_byte(&c);
@@ -131,17 +136,20 @@ void JSDrive::loop() {
         this->desk_buffer_.clear();
         continue;
       }
-      if (this->up_bsensor_ != nullptr)
-        this->up_bsensor_->publish_state(d[1] & 0x20);
-      if (this->down_bsensor_ != nullptr)
-        this->down_bsensor_->publish_state(d[1] & 0x40);
-      if (this->memory1_bsensor_ != nullptr)
-        this->memory1_bsensor_->publish_state(d[1] & 2);
-      if (this->memory2_bsensor_ != nullptr)
-        this->memory2_bsensor_->publish_state(d[1] & 4);
-      if (this->memory3_bsensor_ != nullptr)
-        this->memory3_bsensor_->publish_state(d[1] & 8);
+      buttons = d[1];
       this->rem_buffer_.clear();
+    }
+    if (have_data) {
+      if (this->up_bsensor_ != nullptr)
+        this->up_bsensor_->publish_state(buttons & 0x20);
+      if (this->down_bsensor_ != nullptr)
+        this->down_bsensor_->publish_state(buttons & 0x40);
+      if (this->memory1_bsensor_ != nullptr)
+        this->memory1_bsensor_->publish_state(buttons & 2);
+      if (this->memory2_bsensor_ != nullptr)
+        this->memory2_bsensor_->publish_state(buttons & 4);
+      if (this->memory3_bsensor_ != nullptr)
+        this->memory3_bsensor_->publish_state(buttons & 8);
     }
   }
 }
