@@ -12,3 +12,5 @@ external_components:
     components: [ keypad ]
 ```
 
+## NOTE: Some components were merged to esphome :tada:
+- [keypad](https://github.com/ssieb/custom_components/tree/master/components/keypad) -> [matrix_keypad](https://esphome.io/components/matrix_keypad.html?highlight=keypad)
