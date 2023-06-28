@@ -136,7 +136,7 @@ void HT16K33AlphaDisplay::printf(const char *format, ...) {
 }
 
 #ifdef USE_TIME
-void HT16K33AlphaDisplay::strftime(const char *format, time::ESPTime time) {
+void HT16K33AlphaDisplay::strftime(const char *format, ESPTime time) {
   char buffer[64];
   size_t ret = time.strftime(buffer, sizeof(buffer), format);
   if (ret > 0)
