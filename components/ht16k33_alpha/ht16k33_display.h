@@ -6,6 +6,7 @@
 
 #ifdef USE_TIME
 #include "esphome/components/time/real_time_clock.h"
+#include "esphome/core/time.h"
 #endif
 
 namespace esphome {
@@ -36,7 +37,7 @@ class HT16K33AlphaDisplay : public PollingComponent, public i2c::I2CDevice {
 
 #ifdef USE_TIME
   /// Evaluate the strftime-format and print the text
-  void strftime(const char *format, time::ESPTime time) __attribute__((format(strftime, 2, 0)));
+  void strftime(const char *format, ESPTime time) __attribute__((format(strftime, 2, 0)));
 #endif
 
  protected:
