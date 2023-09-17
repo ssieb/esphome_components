@@ -56,8 +56,9 @@ void Desky::loop() {
      case 3:
       value = (high_byte << 8) + c;
       this->current_pos_ = value;
-      if (this->height_sensor_ != nullptr)
-        this->height_sensor_->publish_state(value);
+      // only publish an updated value if it has changed
+      if (this->height_sensor_->get_raw_state() != value)
+	this->height_sensor_->publish_state(value);
       state = 0;
       break;
     }
