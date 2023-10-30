@@ -12,6 +12,9 @@ static const uint8_t IP5306_REG_CHARGE_OUT_BIT = 0x10;  // charge out bit
 
 static const uint8_t IP5306_REG_CHG_DIG = 0x24;  // charge current
 static const uint8_t IP5306_REG_CHG_CTL0 = 0x20;  // charge voltage
+static const uint8_t IP5306_REG_CHG_CTL1 = 0x21;  // charge control
+static const uint8_t IP5306_REG_CHG_CTL2 = 0x22;  // charge control
+static const uint8_t IP5306_REG_CHG_CTL3 = 0x23;  // charge control
 
 static const uint8_t IP5306_REG_SYS_CTL0 = 0x00;  // initialize
 static const uint8_t IP5306_REG_SYS_CTL1 = 0x01;  // sys control 1
@@ -67,49 +70,49 @@ void IP5306::setup() {
   }
   ESP_LOGI(TAG, "ip5306 setChargeVolt done");
 
-  if (!setPowerBoostOnOff(true)) {
+  if (!setPowerBoostOnOff(powerBoostOn_)) {
     ESP_LOGE(TAG, "setPowerBoostOnOff failed");
     this->mark_failed();
     return;
   }
   ESP_LOGI(TAG, "ip5306 setPowerBoostOnOff done");
 
-  if (!setPowerBoostSet(true)) {
+  if (!setPowerBoostSet(powerBoostSet_)) {
     ESP_LOGE(TAG, "setPowerBoostSet failed");
     this->mark_failed();
     return;
   }
   ESP_LOGI(TAG, "ip5306 setPowerBoostSet done");
 
-  if (!setPowerVin(true)) {
+  if (!setPowerVin(powerVin_)) {
     ESP_LOGE(TAG, "setPowerVin failed");
     this->mark_failed();
     return;
   }
   ESP_LOGI(TAG, "ip5306 setPowerVin done");
 
-  if (!enablePowerBtn(true)) {
+  if (!enablePowerBtn(enablePowerBtn_)) {
     ESP_LOGE(TAG, "enablePowerBtn failed");
     this->mark_failed();
     return;
   }
   ESP_LOGI(TAG, "ip5306 enablePowerBtn done");
 
-  if (!setPowerBoostKeepOn(true)) {
+  if (!setPowerBoostKeepOn(powerBoostKeepOn_)) {
     ESP_LOGE(TAG, "setPowerBoostKeepOn failed");
     this->mark_failed();
     return;
   }
   ESP_LOGI(TAG, "ip5306 setPowerBoostKeepOn done");
 
-  if (!setAutoBootOnLoad(false)) {
+  if (!setAutoBootOnLoad(autoBootOnLoad_)) {
     ESP_LOGE(TAG, "setAutoBootOnLoad failed");
     this->mark_failed();
     return;
   }
   ESP_LOGI(TAG, "ip5306 setAutoBootOnLoad done");
 
-  if (!setLowPowerShutdownTime(64)) {
+  if (!setLowPowerShutdownTime(lowPowerShutdownTime_)) {
     ESP_LOGE(TAG, "setLowPowerShutdownTime failed");
     this->mark_failed();
     return;
@@ -121,25 +124,25 @@ void IP5306::completeChargingSetup() {
   uint8_t data[1];
   uint8_t value;
   // End charge current 200ma
-  if (this->read_register(0x21, data, 1) == i2c::ERROR_OK) {
+  if (this->read_register(IP5306_REG_CHG_CTL1, data, 1) == i2c::ERROR_OK) {
     value = (data[0] & 0x3f) | 0x00;
-    this->write_register(0x21, &value, 1);
+    this->write_register(IP5306_REG_CHG_CTL1, &value, 1);
   } else {
     ESP_LOGE(TAG, "completeChargingSetup read 1 failed");
   }
 
   // Add volt 28mv
-  if (this->read_register(0x22, data, 1) == i2c::ERROR_OK) {
+  if (this->read_register(IP5306_REG_CHG_CTL2, data, 1) == i2c::ERROR_OK) {
     value = (data[0] & 0xfc) | 0x02;
-    this->write_register(0x22, &value, 1);
+    this->write_register(IP5306_REG_CHG_CTL2, &value, 1);
   } else {
     ESP_LOGE(TAG, "completeChargingSetup read 2 failed");
   }
 
   // Vin charge CC
-  if (this->read_register(0x23, data, 1) == i2c::ERROR_OK) {
+  if (this->read_register(IP5306_REG_CHG_CTL3, data, 1) == i2c::ERROR_OK) {
     value = (data[0] & 0xdf) | 0x20;
-    this->write_register(0x23, &value, 1);
+    this->write_register(IP5306_REG_CHG_CTL3, &value, 1);
   } else {
     ESP_LOGE(TAG, "completeChargingSetup read 3 failed");
   }
