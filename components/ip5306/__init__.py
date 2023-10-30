@@ -19,14 +19,8 @@ CONF_POWER_VIN = "power_vin"
 CONF_POWER_BTN = "power_btn"
 CONF_POWER_BOOST_KEEP_ON = "power_boost_keep_on"
 CONF_AUTO_BOOT_ON_LOAD = "auto_boot_on_load"
+CONF_ENABLE_POWER_BTN = "enable_power_btn"
 CONF_LOW_POWER_SHUTDOWN_TIME = "low_power_shutdown_time"
-
-
-async def ids_to_code(config, var, types):
-    for key in types:
-        if key in config:
-            conf = await cg.get_variable(config[key])
-            cg.add(getattr(var, f"set_{key}")(conf))
 
 CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
     {
@@ -39,23 +33,31 @@ CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
         cv.Optional(CONF_CHARGER_CONNECTED): binary_sensor.binary_sensor_schema(),
         cv.Optional(CONF_CHARGE_FULL): binary_sensor.binary_sensor_schema(),
         cv.Optional(CONF_CHARGER_ACTIVE): binary_sensor.binary_sensor_schema(),
-        cv.Optional(CONF_POWER_BOOST_ON, default=True): binary_sensor.binary_sensor_schema(),
-        cv.Optional(CONF_POWER_BOOST_SET, default=True): binary_sensor.binary_sensor_schema(),
-        cv.Optional(CONF_POWER_VIN, default=True): binary_sensor.binary_sensor_schema(),
-        cv.Optional(CONF_POWER_BTN, default=True): binary_sensor.binary_sensor_schema(),
-        cv.Optional(CONF_POWER_BOOST_KEEP_ON, default=True): binary_sensor.binary_sensor_schema(),
-        cv.Optional(CONF_AUTO_BOOT_ON_LOAD, default=False): binary_sensor.binary_sensor_schema(),
+        cv.Optional(CONF_POWER_BOOST_ON, default=True): cv.boolean,
+        cv.Optional(CONF_POWER_BOOST_SET, default=True): cv.boolean,
+        cv.Optional(CONF_POWER_VIN, default=True): cv.boolean,
+        cv.Optional(CONF_POWER_BTN, default=True): cv.boolean,
+        cv.Optional(CONF_POWER_BOOST_KEEP_ON, default=True): cv.boolean,
+        cv.Optional(CONF_AUTO_BOOT_ON_LOAD, default=False): cv.boolean,
+        cv.Optional(CONF_ENABLE_POWER_BTN, default=True): cv.boolean,
         cv.Optional(CONF_LOW_POWER_SHUTDOWN_TIME, default=64): cv.uint8_t,
     }
 ).extend(i2c.i2c_device_schema(0x75))
 
-IP5306_TYPES = {
+def keys_to_code(config, var, types):
+    for key in types:
+        if key in config:
+            conf = config[key]
+            cg.add(getattr(var, f"set_{key}")(conf))
+
+IP5306_KEYS = {
     CONF_POWER_BOOST_ON,
     CONF_POWER_BOOST_SET,
     CONF_POWER_VIN,
     CONF_POWER_BTN,
     CONF_POWER_BOOST_KEEP_ON,
     CONF_AUTO_BOOT_ON_LOAD,
+    CONF_ENABLE_POWER_BTN,
     CONF_LOW_POWER_SHUTDOWN_TIME
 }
 
@@ -80,4 +82,4 @@ async def to_code(config):
         sens = await binary_sensor.new_binary_sensor(config[CONF_CHARGE_FULL])
         cg.add(var.set_charge_full(sens))
 
-    await ids_to_code(config, var, IP5306_TYPES)
+    keys_to_code(config, var, IP5306_KEYS)

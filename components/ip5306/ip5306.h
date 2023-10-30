@@ -26,6 +26,7 @@ class IP5306 : public i2c::I2CDevice, public Component {
   void set_power_btn(bool enabled) { this->powerBtn_ = enabled; }
   void set_power_boost_keep_on(bool enabled) { this->powerBoostKeepOn_ = enabled; }
   void set_auto_boot_on_load(bool enabled) { this->autoBootOnLoad_ = enabled; }
+  void set_enable_power_btn(bool enabled) { this->enablePowerBtn_ = enabled; }
   void set_low_power_shutdown_time(int time) { this->lowPowerShutdownTime_ = time; }
 
  protected:
@@ -55,6 +56,7 @@ class IP5306 : public i2c::I2CDevice, public Component {
     bool powerBtn_{false};
     bool powerBoostKeepOn_{false};
     bool autoBootOnLoad_{false};
+    bool enablePowerBtn_{false};
     int lowPowerShutdownTime_{0};
 };
 
