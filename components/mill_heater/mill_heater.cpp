@@ -23,13 +23,13 @@ void Mill::loop() {
     this->status_set_warning();
   }
   if (this->plus_key_ != nullptr)
-    this->plus_key_->publish_state(data[5] >= 0x18);
+    this->plus_key_->publish_state(data[5] >= 0x20);
   if (this->minus_key_ != nullptr)
-    this->minus_key_->publish_state(data[6] >= 0x18);
+    this->minus_key_->publish_state(data[6] >= 0x20);
   if (this->wifi_key_ != nullptr)
-    this->wifi_key_->publish_state(data[3] >= 0x18);
+    this->wifi_key_->publish_state(data[3] >= 0x20);
   if (this->clock_key_ != nullptr)
-    this->clock_key_->publish_state(data[4] >= 0x18);
+    this->clock_key_->publish_state(data[4] >= 0x20);
 }
 
 void Mill::update_() {
@@ -40,7 +40,7 @@ void Mill::update_() {
   data[2] = temp >= 100 ? segs[temp / 100] : 0;
   data[3] = segs[temp / 10 % 10];
   data[4] = segs[temp % 10];
-  data[5] = 0;
+  data[5] = 0xff;
   data[6] = (1 << this->power_) - 1 + 0x40;
   if (this->write(data, 7) != i2c::ERROR_OK) {
     ESP_LOGE(TAG, "error writing to display");
