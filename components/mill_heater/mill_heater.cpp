@@ -19,7 +19,7 @@ void Mill::setup() {
 void Mill::loop() {
 }
 
-void Mill::update() {
+void Mill::update_() {
   uint8_t data[7];
   data[0] = 6;
   data[1] = 5;
