@@ -17,6 +17,19 @@ void Mill::setup() {
 }
 
 void Mill::loop() {
+  uint8_t data[7];
+  if (this->read(data, 7) != i2c::ERROR_OK) {
+    ESP_LOGE(TAG, "error reading from display");
+    this->status_set_warning();
+  }
+  if (this->plus_key_ != nullptr)
+    this->plus_key_->publish_state(data[5] >= 0x20);
+  if (this->minus_key_ != nullptr)
+    this->minus_key_->publish_state(data[6] >= 0x20);
+  if (this->wifi_key_ != nullptr)
+    this->wifi_key_->publish_state(data[3] >= 0x20);
+  if (this->clock_key_ != nullptr)
+    this->clock_key_->publish_state(data[4] >= 0x20);
 }
 
 void Mill::update_() {
@@ -36,7 +49,7 @@ void Mill::update_() {
 }
 
 void Mill::set_temp(float temp) {
-  if (temp >= 10)
+  if (temp >= 100)
     temp = 99.9;
   this->temp_ = temp;
   this->update_();
