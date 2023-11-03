@@ -28,15 +28,15 @@ void Mill::loop() {
     key = 0;
     touch = data[5];
   }
-  if ((data[6] >= 0x10) && (data[6] > touch)) {
+  if ((data[6] >= 0x10) && (data[6] > touch + 5)) {
     key = 1;
     touch = data[6];
   }
-  if ((data[3] >= 0x10) && (data[3] > touch)) {
+  if ((data[3] >= 0x10) && (data[3] > touch + 5)) {
     key = 2;
     touch = data[3];
   }
-  if ((data[4] >= 0x10) && (data[4] > touch)) {
+  if ((data[4] >= 0x10) && (data[4] > touch + 5)) {
     key = 3;
     touch = data[4];
   }
