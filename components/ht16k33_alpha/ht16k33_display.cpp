@@ -9,9 +9,9 @@
 #endif
 
 namespace esphome {
-namespace ht16k33_alpha {
+namespace ht16k33 {
 
-static const char *TAG = "ht16k33_alpha";
+static const char *TAG = "ht16k33";
 
 // First set bit determines command, bits after that are the data.
 static const uint8_t DISPLAY_COMMAND_SET_DDRAM_ADDR = 0x00;
@@ -20,7 +20,7 @@ static const uint8_t DISPLAY_COMMAND_DISPLAY_OFF = 0x80;
 static const uint8_t DISPLAY_COMMAND_DISPLAY_ON = 0x81;
 static const uint8_t DISPLAY_COMMAND_DIMMING = 0xE0;
 
-void HT16K33AlphaDisplay::setup() {
+void HT16K33BaseDisplay::setup() {
   for (auto *display : this->displays_) {
     display->write_bytes(DISPLAY_COMMAND_SYSTEM_SETUP, nullptr, 0);
     display->write_bytes(DISPLAY_COMMAND_DISPLAY_ON, nullptr, 0);
@@ -29,7 +29,7 @@ void HT16K33AlphaDisplay::setup() {
   memset(this->buffer_, 0, 64);
 }
 
-void HT16K33AlphaDisplay::loop() {
+void HT16K33BaseDisplay::loop() {
   unsigned long now = millis();
   int numc = this->displays_.size() * 8;
   // check if the buffer has shrunk past the current position since last update
@@ -55,7 +55,27 @@ void HT16K33AlphaDisplay::loop() {
   }
 }
 
-float HT16K33AlphaDisplay::get_setup_priority() const { return setup_priority::PROCESSOR; }
+float HT16K33BaseDisplay::get_setup_priority() const { return setup_priority::PROCESSOR; }
+
+void HT16K337SegmentDisplay::display_() {
+  int offset = this->offset_;
+  constexpr uint8_t size = 10;
+  uint8_t buffer[size];
+  memcpy(buffer, this->buffer_ + offset, 4);
+// TODO: implement method to show/hide colon symbol
+//  if (this->show_colon()) {
+//    buffer[4] = 0x02;
+//  } else {
+    buffer[4] = 0;
+//  }
+  buffer[5] = 0;
+  memcpy(buffer + 6, this->buffer_ + offset + 4, 4);
+
+  for (auto *display : this->displays_) {
+    display->write_bytes(DISPLAY_COMMAND_SET_DDRAM_ADDR, buffer, size);
+    offset += 8;
+  }
+}
 
 void HT16K33AlphaDisplay::display_() {
   int offset = this->offset_;
@@ -65,7 +85,7 @@ void HT16K33AlphaDisplay::display_() {
   }
 }
 
-void HT16K33AlphaDisplay::update() {
+void HT16K33BaseDisplay::update() {
   memset(this->buffer_, 0, 64);
   int prev_fill = this->buffer_fill_;
   this->buffer_fill_ = 0;
@@ -77,7 +97,7 @@ void HT16K33AlphaDisplay::update() {
   this->display_();
 }
 
-void HT16K33AlphaDisplay::set_brightness(float level) {
+void HT16K33BaseDisplay::set_brightness(float level) {
   int val = (int) round(level * 16);
   if (val < 0)
     val = 0;
@@ -94,11 +114,11 @@ void HT16K33AlphaDisplay::set_brightness(float level) {
   }
 }
 
-float HT16K33AlphaDisplay::get_brightness() {
+float HT16K33BaseDisplay::get_brightness() {
   return this->brightness_ / 16.0;
 }
 
-void HT16K33AlphaDisplay::print(const char *str) {
+void HT16K33BaseDisplay::print(const char *str) {
   uint8_t pos = this->buffer_fill_;
   uint16_t fontc = 0;
   while (*str != '\0') {
@@ -111,10 +131,10 @@ void HT16K33AlphaDisplay::print(const char *str) {
     if (c > 127)
       fontc = 0;
     else
-      fontc = pgm_read_word(&alphafonttable[c]);
+      fontc = read_character_(c);
     c = *reinterpret_cast<const uint8_t *>(str);
     if (c == '.') {
-      fontc |= 0x4000;
+      fontc |= decimal_point_mask_();
       str++;
     }
     this->buffer_[pos++] = fontc & 0xff;
@@ -123,9 +143,9 @@ void HT16K33AlphaDisplay::print(const char *str) {
   this->buffer_fill_ = pos;
 }
 
-void HT16K33AlphaDisplay::print(const std::string &str) { this->print(str.c_str()); }
+void HT16K33BaseDisplay::print(const std::string &str) { this->print(str.c_str()); }
 
-void HT16K33AlphaDisplay::printf(const char *format, ...) {
+void HT16K33BaseDisplay::printf(const char *format, ...) {
   va_list arg;
   va_start(arg, format);
   char buffer[64];
@@ -136,7 +156,7 @@ void HT16K33AlphaDisplay::printf(const char *format, ...) {
 }
 
 #ifdef USE_TIME
-void HT16K33AlphaDisplay::strftime(const char *format, ESPTime time) {
+void HT16K33BaseDisplay::strftime(const char *format, ESPTime time) {
   char buffer[64];
   size_t ret = time.strftime(buffer, sizeof(buffer), format);
   if (ret > 0)
@@ -144,6 +164,14 @@ void HT16K33AlphaDisplay::strftime(const char *format, ESPTime time) {
 }
 #endif
 
-}  // namespace ht16k33_alpha
+uint16_t HT16K33AlphaDisplay::read_character_(uint8_t c) const {
+  return pgm_read_word(&alphafonttable[c]);
+}
+
+uint16_t HT16K337SegmentDisplay::read_character_(uint8_t c) const {
+  return pgm_read_word(&sevensegfonttable[c - 32]);
+}
+
+}  // namespace ht16k33
 }  // namespace esphome
 
