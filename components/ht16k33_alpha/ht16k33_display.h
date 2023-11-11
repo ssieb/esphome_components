@@ -40,6 +40,8 @@ class HT16K33BaseDisplay : public PollingComponent, public i2c::I2CDevice {
   void strftime(const char *format, ESPTime time) __attribute__((format(strftime, 2, 0)));
 #endif
 
+  void show_colon(bool show) { this->show_colon_ = show; }
+
  protected:
   void command_(uint8_t value);
   void call_writer() { this->writer_(*this); }
@@ -58,6 +60,7 @@ class HT16K33BaseDisplay : public PollingComponent, public i2c::I2CDevice {
   int buffer_fill_ {0};
   int offset_ {0};
   uint8_t brightness_ = 16;
+  bool show_colon_ {false};
 };
 
 class HT16K33AlphaDisplay : public HT16K33BaseDisplay {

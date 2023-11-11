@@ -1,4 +1,6 @@
-# HT16K33 4 character alphanumeric display
+# HT16K33 4 character display
+
+This component supports both the 4 character 14 segment alphanumeric display and the 4 character (plus colon) 7 segment character display. Use the `type` parameter to select which kind of display you have.
 
 There are no print functions for addressing rows and columns.  With such a small display I didn't see any point.
 All the print functions without the row and column parameters are available.
@@ -7,14 +9,17 @@ All the same parameters for the i2c display can be used other than the dimension
 There are also lambda functions `get_brightness` and `set_brightness` for adjusting the brightness of the display.
 You can extend the display across multiple units.
 
+For the 7-segment displays with colon, there is also the `show_colon` lambda function, that can be used to select whether the colon between the second and third digits should be lit or not.
+
 Example:
 ```yaml
-i2c:    
+i2c:
   sda: D0
   scl: D1
 
 display:
   - platform: ht16k33_alpha
+    type: alpha
     address: 0x70
     scroll: true
     scroll_speed: 250ms
@@ -25,6 +30,9 @@ display:
     secondary_displays:
       - address: 0x71
 ```
+# Required parameters
+
+`type:` choose between `alpha` or `7segment`, depending on which kind of display you have
 
 # Optional parameters
 

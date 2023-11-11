@@ -62,12 +62,11 @@ void HT16K337SegmentDisplay::display_() {
   constexpr uint8_t size = 10;
   uint8_t buffer[size];
   memcpy(buffer, this->buffer_ + offset, 4);
-// TODO: implement method to show/hide colon symbol
-//  if (this->show_colon()) {
-//    buffer[4] = 0x02;
-//  } else {
+  if (this->show_colon_) {
+    buffer[4] = 0x02;
+  } else {
     buffer[4] = 0;
-//  }
+  }
   buffer[5] = 0;
   memcpy(buffer + 6, this->buffer_ + offset + 4, 4);
 
