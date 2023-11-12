@@ -99,12 +99,5 @@ void Mill::set_power(int power) {
   this->update_();
 }
 
-void Mill::set_button(int bnum) {
-  if (bnum > 7)
-    bnum = 7;
-  this->bnum_ = bnum;
-  this->update_();
-}
-
 }  // namespace mill
 }  // namespace esphome
