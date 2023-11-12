@@ -1,12 +1,12 @@
-# HT16K33 4 character alphanumeric display
+# HT16K33 4 character 7-segment display
 
-This component supports the 4 character 14 segment alphanumeric display.
+This component supports the 4 character (plus colon) 7 segment character display.
 
-> :warning: If using this component as an external component, you need to include both `ht16k33_alpha` **and** `ht16k33_base` components.
+> :warning: If using this component as an external component, you need to include both `ht16k33_7segment` **and** `ht16k33_base` components.
 ```yaml
 external_components:
   source: github://ssieb/custom_components/
-  components: [ ht16k33_base, ht16k33_alpha ]
+  components: [ ht16k33_base, ht16k33_7segment ]
 ```
 
 There are no print functions for addressing rows and columns.  With such a small display I didn't see any point.
@@ -16,6 +16,8 @@ All the same parameters for the i2c display can be used other than the dimension
 There are also lambda functions `get_brightness` and `set_brightness` for adjusting the brightness of the display.
 You can extend the display across multiple units.
 
+The colon in the middle of the display will be lit if the print string contains a ":" at the 3rd position (e.g. 12:34).
+
 Example:
 ```yaml
 i2c:
@@ -23,17 +25,17 @@ i2c:
   scl: D1
 
 display:
-  - platform: ht16k33_alpha
+  - platform: ht16k33_7segment
     address: 0x70
     scroll: true
     scroll_speed: 250ms
     scroll_dwell: 2s
     scroll_delay: 3
     lambda: |-
-      it.print("ABCD");
-    secondary_displays:
-      - address: 0x71
+      auto time = id(time_sensor).now();
+      it.strftime("%H:%M", time);
 ```
+
 # Optional parameters
 
 `scroll:` defaults to false

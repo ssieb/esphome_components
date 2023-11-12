@@ -12,9 +12,17 @@
 namespace esphome {
 namespace ht16k33 {
 
+// First set bit determines command, bits after that are the data.
+constexpr uint8_t DISPLAY_COMMAND_SET_DDRAM_ADDR = 0x00;
+constexpr uint8_t DISPLAY_COMMAND_SYSTEM_SETUP = 0x21;
+constexpr uint8_t DISPLAY_COMMAND_DISPLAY_OFF = 0x80;
+constexpr uint8_t DISPLAY_COMMAND_DISPLAY_ON = 0x81;
+constexpr uint8_t DISPLAY_COMMAND_DIMMING = 0xE0;
+
 class HT16K33BaseDisplay : public PollingComponent, public i2c::I2CDevice {
  public:
   void set_writer(std::function<void(HT16K33BaseDisplay &)> &&writer) { this->writer_ = std::move(writer); }
+  void dump_config() override;
   void setup() override;
   void loop() override;
   float get_setup_priority() const override;
@@ -40,14 +48,14 @@ class HT16K33BaseDisplay : public PollingComponent, public i2c::I2CDevice {
   void strftime(const char *format, ESPTime time) __attribute__((format(strftime, 2, 0)));
 #endif
 
-  void show_colon(bool show) { this->show_colon_ = show; }
-
  protected:
   void command_(uint8_t value);
   void call_writer() { this->writer_(*this); }
+
   virtual void display_() = 0;
   virtual uint16_t read_character_(uint8_t c) const = 0;
   virtual uint16_t decimal_point_mask_() const = 0;
+  virtual bool supports_colon_() const =0;
 
   std::vector<i2c::I2CDevice *> displays_ {this};
   std::function<void(HT16K33BaseDisplay &)> writer_;
@@ -61,20 +69,6 @@ class HT16K33BaseDisplay : public PollingComponent, public i2c::I2CDevice {
   int offset_ {0};
   uint8_t brightness_ = 16;
   bool show_colon_ {false};
-};
-
-class HT16K33AlphaDisplay : public HT16K33BaseDisplay {
- protected:
-  void display_() override;
-  uint16_t read_character_(uint8_t c) const override;
-  uint16_t decimal_point_mask_() const override { return 0x4000; }
-};
-
-class HT16K337SegmentDisplay : public HT16K33BaseDisplay {
- protected:
-  void display_() override;
-  uint16_t read_character_(uint8_t c) const override;
-  uint16_t decimal_point_mask_() const override { return 0x80; };
 };
 
 }  // namespace ht16k33
