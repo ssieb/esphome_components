@@ -21,7 +21,8 @@ class Mill : public i2c::I2CDevice, public Component {
 
   void set_temp(float temp);
   void set_power(int power);
-  void set_button(int bnum);
+  void set_dw1(uint8_t value) { this->dw1_ = value; }
+  void set_dw2(uint8_t value) { this->dw2_ = value; }
 
  protected:
   binary_sensor::BinarySensor *plus_key_{nullptr};
@@ -31,7 +32,11 @@ class Mill : public i2c::I2CDevice, public Component {
 
   float temp_{0};
   int power_{0};
-  int bnum_{0};
+  bool power_led_{false};
+  bool lightning_led_{false};
+  bool wifi_led_{false};
+  uint8_t dw1_{6};
+  uint8_t dw2_{5};
 
   void update_();
 };

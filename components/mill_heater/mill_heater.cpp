@@ -5,6 +5,18 @@
 namespace esphome {
 namespace mill {
 
+/*
+LED bits
+0 nothing
+1 Power (Red)
+2 Lightning (White)
+3 MinusButton (White)
+4 PlusButton (White)
+5 WiFiButton (White)
+6 ClockButton (White)
+7 WiFi (Green)
+*/
+
 static const char *const TAG = "mill_heater";
 
 uint8_t segs[] = {0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f};
@@ -52,13 +64,20 @@ void Mill::loop() {
 
 void Mill::update_() {
   uint8_t data[7];
-  data[0] = 6;
-  data[1] = 5;
+  data[0] = this->dw1_; //6;
+  data[1] = this->dw2_; //5;
   int temp = this->temp_ * 10;
   data[2] = temp >= 100 ? segs[temp / 100] : 0;
   data[3] = segs[temp / 10 % 10];
   data[4] = segs[temp % 10];
-  data[5] = 1 << this->bnum_;
+  uint8_t leds = 0x78;
+  if (this->power_led_)
+    leds |= 2;
+  if (this->lightning_led_)
+    leds |= 4;
+  if (this->wifi_led_)
+    leds |= 0x80;
+  data[5] = leds;
   data[6] = (1 << this->power_) - 1 + 0x40;
   if (this->write(data, 7) != i2c::ERROR_OK) {
     ESP_LOGE(TAG, "error writing to display");
