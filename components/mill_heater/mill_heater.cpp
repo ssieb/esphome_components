@@ -25,7 +25,7 @@ float Mill::get_setup_priority() const { return setup_priority::IO; }
 
 void Mill::setup() {
   ESP_LOGD(TAG, "Setting up Mill heater...");
-  this->update_();
+  this->climate_->add_on_state_callback([this](climate::Climate &clim) { this->update_climate_state_(clim); });
 }
 
 void Mill::loop() {
@@ -34,6 +34,7 @@ void Mill::loop() {
     ESP_LOGE(TAG, "error reading from display");
     this->status_set_warning();
   }
+  uint32_t now = millis();
   int key = -1;
   int touch = 0;
   if (data[5] >= 0x10) {
@@ -60,43 +61,50 @@ void Mill::loop() {
     this->wifi_key_->publish_state(key == 2);
   if (this->clock_key_ != nullptr)
     this->clock_key_->publish_state(key == 3);
+  if (this->dark_) {
+    if (key != -1)
+      this->wake_start_ = now;
+    else if (this->dark_override_ && (now - this->wake_start_ >= 10000))
+      this->dark_override_ = false;
+  }
+  this->update_();
 }
 
 void Mill::update_() {
-  uint8_t data[7];
-  data[0] = this->dw1_; //6;
-  data[1] = this->dw2_; //5;
-  int temp = this->temp_ * 10;
-  data[2] = temp >= 100 ? segs[temp / 100] : 0;
-  data[3] = segs[temp / 10 % 10];
-  data[4] = segs[temp % 10];
-  uint8_t leds = 0x78;
-  if (this->power_led_)
-    leds |= 2;
-  if (this->lightning_led_)
-    leds |= 4;
-  if (this->wifi_led_)
-    leds |= 0x80;
-  data[5] = leds;
-  data[6] = (1 << this->power_) - 1 + 0x40;
+  uint8_t data[7] = {6, 5, 0, 0, 0, 0, 0};
+  if (!this->dark_ || this->dark_override_) {
+    if (std::isnan(this->temp_)) {
+      data[2] = data[3] = data[4] = 0x40;
+    } else {
+      int temp = this->temp_ * 10;
+      data[2] = temp >= 100 ? segs[temp / 100] : 0;
+      data[3] = segs[temp / 10 % 10];
+      data[4] = segs[temp % 10];
+    }
+    uint8_t leds = 0x78;
+    if (this->power_led_)
+      leds |= 2;
+    if (this->lightning_led_)
+      leds |= 4;
+    if (this->wifi_led_)
+      leds |= 0x80;
+    data[5] = leds;
+    data[6] = (1 << this->power_) - 1 + 0x40;
+  }
   if (this->write(data, 7) != i2c::ERROR_OK) {
     ESP_LOGE(TAG, "error writing to display");
     this->status_set_warning();
   }
 }
 
-void Mill::set_temp(float temp) {
-  if (temp >= 100)
-    temp = 99.9;
-  this->temp_ = temp;
-  this->update_();
-}
-
 void Mill::set_power(int power) {
   if (power > 6)
     power = 6;
   this->power_ = power;
-  this->update_();
+}
+
+void Mill::update_climate_state_(climate::Climate &clim) {
+  this->temp_ = clim.current_temperature;
 }
 
 }  // namespace mill

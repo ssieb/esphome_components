@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import i2c, binary_sensor
+from esphome.components import i2c, binary_sensor, climate
 from esphome.const import (
     CONF_ID,
 )
@@ -15,6 +15,7 @@ mill_ns = cg.esphome_ns.namespace("mill")
 Mill = mill_ns.class_("Mill", i2c.I2CDevice, cg.Component)
 
 CONF_MILL_ID = "mill_id"
+CONF_CLIMATE_ID = "climate_id"
 CONF_PLUS_KEY = "plus_key"
 CONF_MINUS_KEY = "minus_key"
 CONF_WIFI_KEY = "wifi_key"
@@ -23,6 +24,7 @@ CONF_CLOCK_KEY = "clock_key"
 CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
     {
         cv.GenerateID(): cv.declare_id(Mill),
+        cv.GenerateID(CONF_CLIMATE_ID): cv.use_id(climate.Climate),
         cv.Optional(CONF_PLUS_KEY): binary_sensor.binary_sensor_schema(),
         cv.Optional(CONF_MINUS_KEY): binary_sensor.binary_sensor_schema(),
         cv.Optional(CONF_WIFI_KEY): binary_sensor.binary_sensor_schema(),
@@ -34,6 +36,8 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     await i2c.register_i2c_device(var, config)
+    clim = await cg.get_variable(config[CONF_CLIMATE_ID])
+    cg.add(var.set_climate(clim))
 
     if CONF_PLUS_KEY in config:
         sens = await binary_sensor.new_binary_sensor(config[CONF_PLUS_KEY])
