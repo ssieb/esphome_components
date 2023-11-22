@@ -24,7 +24,7 @@ void SN74HC595Display::dump_config() {
 
 void SN74HC595Display::update() {
   for (uint8_t &i : this->buffer_)
-    i = 0;
+    i = 0xff;
   if (this->writer_.has_value())
     (*this->writer_)(*this);
   this->display();
