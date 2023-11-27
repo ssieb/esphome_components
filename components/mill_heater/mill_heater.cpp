@@ -1,6 +1,7 @@
 #include "mill_heater.h"
-#include "esphome/core/log.h"
+#include "esphome/core/hal.h"
 #include "esphome/core/helpers.h"
+#include "esphome/core/log.h"
 
 namespace esphome {
 namespace mill {
@@ -35,37 +36,92 @@ void Mill::loop() {
     this->status_set_warning();
   }
   uint32_t now = millis();
-  int key = -1;
+  int key = 0;
   int touch = 0;
   if (data[5] >= 0x10) {
-    key = 0;
+    key = 1;
     touch = data[5];
   }
   if ((data[6] >= 0x10) && (data[6] > touch + 5)) {
-    key = 1;
+    key = 2;
     touch = data[6];
   }
   if ((data[3] >= 0x10) && (data[3] > touch + 5)) {
-    key = 2;
+    key = 3;
     touch = data[3];
   }
   if ((data[4] >= 0x10) && (data[4] > touch + 5)) {
-    key = 3;
+    key = 4;
     touch = data[4];
   }
-  if (this->plus_key_ != nullptr)
-    this->plus_key_->publish_state(key == 0);
-  if (this->minus_key_ != nullptr)
-    this->minus_key_->publish_state(key == 1);
-  if (this->wifi_key_ != nullptr)
-    this->wifi_key_->publish_state(key == 2);
-  if (this->clock_key_ != nullptr)
-    this->clock_key_->publish_state(key == 3);
   if (this->dark_) {
-    if (key != -1)
+    if (key > 0) {
       this->wake_start_ = now;
-    else if (this->dark_override_ && (now - this->wake_start_ >= 10000))
+      if (!this->dark_override_) {
+        this->dark_override_ = true;
+        this->update_();
+        return;
+      }
+    } else if (this->dark_override_ && (now - this->wake_start_ >= this->dark_timeout_)) {
       this->dark_override_ = false;
+      this->update_();
+      return;
+    }
+  }
+  if (key != this->current_key_) {
+    switch (this->current_key_) {
+      case 1: // plus key
+      case 2: // minus key
+        this->key_release_ = now;
+        break;
+      case 3: // wifi key
+        if (this->wifi_key_ != nullptr)
+          this->wifi_key_->publish_state(false);
+        break;
+      case 4: // clock key
+        if (this->clock_key_ != nullptr)
+          this->clock_key_->publish_state(false);
+        break;
+    }
+    switch (key) {
+      case 1: // plus key
+      case 2: // minus key
+        this->key_start_ = now;
+        this->key_release_ = 0;
+        this->key_last_repeat_ = 0;
+        if (!this->blinking_) {
+          this->blinking_ = true;
+          this->blink_on_ = true;
+          this->last_blink_ = now;
+          break;
+        }
+        this->adjust_target_temp_(key);
+        break;
+      case 3: // wifi key
+        if (this->wifi_key_ != nullptr)
+          this->wifi_key_->publish_state(true);
+        break;
+      case 4: // clock key
+        if (this->clock_key_ != nullptr)
+          this->clock_key_->publish_state(true);
+    }
+    this->current_key_ = key;
+  } else {
+    if ((key == 1) || (key == 2)) {
+      if (this->key_last_repeat_) {
+        if (now - this->key_last_repeat_ >= this->key_repeat_interval_)
+          this->adjust_target_temp_(key);
+      } else if (now - this->key_start_ >= this->key_repeat_delay_) {
+        this->key_last_repeat_ = now;
+        this->adjust_target_temp_(key);
+      }
+    }
+  }
+  if (this->blinking_) {
+    if (now - this->last_blink_ >= this->blink_interval_)
+      this->blink_on_ = !this->blink_on_;
+    if (this->key_release_ && (now - this->key_release_ >= this->set_temp_delay_))
+      this->blinking_ = false;
   }
   this->update_();
 }
@@ -73,15 +129,16 @@ void Mill::loop() {
 void Mill::update_() {
   uint8_t data[7] = {6, 5, 0, 0, 0, 0, 0};
   if (!this->dark_ || this->dark_override_) {
-    if (std::isnan(this->temp_)) {
+    float temp = this->blinking_ ? this->target_temp_ : this->temp_;
+    if (std::isnan(temp_)) {
       data[2] = data[3] = data[4] = 0x40;
-    } else {
-      int temp = this->temp_ * 10;
-      data[2] = temp >= 100 ? segs[temp / 100] : 0;
-      data[3] = segs[temp / 10 % 10];
-      data[4] = segs[temp % 10];
+    } else if (!this->blinking_ || this->blink_on_) {
+      int itemp = this->temp_ * 10;
+      data[2] = itemp >= 100 ? segs[itemp / 100] : 0;
+      data[3] = segs[itemp / 10 % 10];
+      data[4] = segs[itemp % 10];
     }
-    uint8_t leds = 0x78;
+    uint8_t leds = this->blinking_ ? 0x18 : 0x78;
     if (this->power_led_)
       leds |= 2;
     if (this->lightning_led_)
@@ -89,7 +146,8 @@ void Mill::update_() {
     if (this->wifi_led_)
       leds |= 0x80;
     data[5] = leds;
-    data[6] = (1 << this->power_) - 1 + 0x40;
+    data[6] = (1 << this->power_) - 1;
+    data[6] |= 0x40; // decimal point
   }
   if (this->write(data, 7) != i2c::ERROR_OK) {
     ESP_LOGE(TAG, "error writing to display");
@@ -105,6 +163,16 @@ void Mill::set_power(int power) {
 
 void Mill::update_climate_state_(climate::Climate &clim) {
   this->temp_ = clim.current_temperature;
+  this->target_temp_ = clim.target_temperature;
+  this->power_led_ = clim.mode != climate::CLIMATE_MODE_OFF;
+  this->lightning_led_ = clim.action != climate::CLIMATE_ACTION_OFF;
+}
+
+void Mill::adjust_target_temp_(uint8_t key) {
+  if (this->climate_ == nullptr)
+    return;
+  float target = this->target_temp_ + (key == 1 ? 0.1f : -0.1f);
+  this->climate_->make_call().set_target_temperature_low(target).perform();
 }
 
 }  // namespace mill
