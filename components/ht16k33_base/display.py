@@ -2,6 +2,7 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import display, i2c
 from esphome.const import CONF_ID, CONF_LAMBDA
+from esphome.const import __version__ as ESPHOME_VERSION
 
 DEPENDENCIES = ['i2c']
 
@@ -29,7 +30,8 @@ CONFIG_SCHEMA = display.BASIC_DISPLAY_SCHEMA.extend({
 }).extend(cv.polling_component_schema('1s')).extend(i2c.i2c_device_schema(0x70))
 
 async def base_to_code(var, config):
-    await cg.register_component(var, config)
+    if cv.Version.parse(ESPHOME_VERSION) < cv.Version.parse("2023.12.0"):
+        await cg.register_component(var, config)
     await display.register_display(var, config)
     await i2c.register_i2c_device(var, config)
 
