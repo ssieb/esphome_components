@@ -10,11 +10,19 @@
 #endif
 
 namespace esphome {
-namespace ht16k33_alpha {
+namespace ht16k33 {
 
-class HT16K33AlphaDisplay : public PollingComponent, public i2c::I2CDevice {
+// First set bit determines command, bits after that are the data.
+constexpr uint8_t DISPLAY_COMMAND_SET_DDRAM_ADDR = 0x00;
+constexpr uint8_t DISPLAY_COMMAND_SYSTEM_SETUP = 0x21;
+constexpr uint8_t DISPLAY_COMMAND_DISPLAY_OFF = 0x80;
+constexpr uint8_t DISPLAY_COMMAND_DISPLAY_ON = 0x81;
+constexpr uint8_t DISPLAY_COMMAND_DIMMING = 0xE0;
+
+class HT16K33BaseDisplay : public PollingComponent, public i2c::I2CDevice {
  public:
-  void set_writer(std::function<void(HT16K33AlphaDisplay &)> &&writer) { this->writer_ = std::move(writer); }
+  void set_writer(std::function<void(HT16K33BaseDisplay &)> &&writer) { this->writer_ = std::move(writer); }
+  void dump_config() override;
   void setup() override;
   void loop() override;
   float get_setup_priority() const override;
@@ -43,10 +51,14 @@ class HT16K33AlphaDisplay : public PollingComponent, public i2c::I2CDevice {
  protected:
   void command_(uint8_t value);
   void call_writer() { this->writer_(*this); }
-  void display_();
+
+  virtual void display_() = 0;
+  virtual uint16_t read_character_(uint8_t c) const = 0;
+  virtual uint16_t decimal_point_mask_() const = 0;
+  virtual bool supports_colon_() const =0;
 
   std::vector<i2c::I2CDevice *> displays_ {this};
-  std::function<void(HT16K33AlphaDisplay &)> writer_;
+  std::function<void(HT16K33BaseDisplay &)> writer_;
   bool scroll_ {false};
   unsigned long scroll_speed_ {250};
   unsigned long scroll_dwell_ {2000};
@@ -56,7 +68,8 @@ class HT16K33AlphaDisplay : public PollingComponent, public i2c::I2CDevice {
   int buffer_fill_ {0};
   int offset_ {0};
   uint8_t brightness_ = 16;
+  bool show_colon_ {false};
 };
 
-}  // namespace ht16k33_alpha
+}  // namespace ht16k33
 }  // namespace esphome

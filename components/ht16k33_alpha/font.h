@@ -1,6 +1,7 @@
+#pragma once
 // based on Adafruit backpack library
 
-static const uint16_t alphafonttable[] PROGMEM =  {
+static const uint16_t alphafonttable[] PROGMEM = {
 0b0000000000000000, // 0 = space
 0b0000000000000001, // 1 = seg A
 0b0000000000000010, // 2 = seg B
