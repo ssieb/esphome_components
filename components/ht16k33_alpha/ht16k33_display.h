@@ -20,6 +20,7 @@ class HT16K33AlphaDisplay : public PollingComponent, public i2c::I2CDevice {
   float get_setup_priority() const override;
   void add_secondary_display(i2c::I2CDevice *display) { this->displays_.push_back(display); }
   void set_scroll(bool scroll) { this->scroll_ = scroll; }
+  void set_continuous(bool continuous) { this->continuous_ = continuous; }
   void set_scroll_speed(unsigned long scroll_speed) { this->scroll_speed_ = scroll_speed; }
   void set_scroll_dwell(unsigned long scroll_dwell) { this->scroll_dwell_ = scroll_dwell; }
   void set_scroll_delay(unsigned long scroll_delay) { this->scroll_delay_ = scroll_delay; }
@@ -48,12 +49,12 @@ class HT16K33AlphaDisplay : public PollingComponent, public i2c::I2CDevice {
   std::vector<i2c::I2CDevice *> displays_ {this};
   std::function<void(HT16K33AlphaDisplay &)> writer_;
   bool scroll_ {false};
+  bool continuous_ {false};
   unsigned long scroll_speed_ {250};
   unsigned long scroll_dwell_ {2000};
   unsigned long scroll_delay_ {750};
   unsigned long last_scroll_ {0};
-  uint8_t buffer_[64];
-  int buffer_fill_ {0};
+  std::vector<uint8_t> buffer_;
   int offset_ {0};
   uint8_t brightness_ = 16;
 };

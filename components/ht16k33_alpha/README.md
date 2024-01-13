@@ -30,6 +30,8 @@ display:
 
 `scroll:` defaults to false
 
+`continuous:` is whether the start follows immediately after the end in a continuous loop, defaults to false
+
 `scroll_speed:` is the time between each movement, default 250ms
 
 `scroll_dwell:` is the time to wait at the end before going back to the start, default 2s
