@@ -131,6 +131,7 @@ void PedestalFan::update_speed_(float value) {
 }
 
 void PedestalFan::transmit_data_(uint16_t msg) {
+  ESP_LOGD(TAG, "transmitting code %02x", msg);
   auto transmit = this->transmitter_->transmit();
   auto *data = transmit.get_data();
 
@@ -138,9 +139,9 @@ void PedestalFan::transmit_data_(uint16_t msg) {
   data->reserve(24);
   for (int b = 0x800; b; b >> 1) {
     if (msg & b )
-      data->item(1296, -406);
+      data->item(1296, 406);
     else
-      data->item(442, -1252);
+      data->item(442, 1252);
   }
   transmit.perform();
 }
