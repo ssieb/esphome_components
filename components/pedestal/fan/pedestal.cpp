@@ -7,9 +7,11 @@ namespace pedestal {
 
 static const char *const TAG = "pedestal.fan";
 
-static const uint16_t TGL_POWER = 0b110110000001;
-static const uint16_t TGL_OSC =   0b110110000000;
-static const uint16_t SPEED =     0b110110000100;
+static const uint16_t TGL_POWER =  0b110110000001;
+static const uint16_t TGL_OSC =    0b110110000000;
+static const uint16_t SPEED_JUMP = 0b110110000100;
+static const uint16_t SPEED_UP   = 0b110110010000;
+static const uint16_t SPEED_DOWN = 0b110110100000;
 
 void PedestalFan::setup() {
   this->traits_ = fan::FanTraits(true, true, false, 12);
@@ -80,8 +82,13 @@ void PedestalFan::control(const fan::FanCall &call) {
     int new_speed = *call.get_speed();
     if (this->speed != new_speed) {
       this->changing_ = true;
-      for (int i = 0; i < new_speed - this->speed; i++)
-        this->to_send_.push_back(SPEED);
+      if (new_speed > this->speed) {
+        for (int i = 0; i < new_speed - this->speed; i++)
+          this->to_send_.push_back(SPEED_UP);
+      } else {
+        for (int i = 0; i < this->speed - new_speed ; i++)
+          this->to_send_.push_back(SPEED_DOWN);
+      }
       this->speed = new_speed;
     }
   }
