@@ -137,7 +137,7 @@ void PedestalFan::transmit_data_(uint16_t msg) {
 
   data->set_carrier_frequency(0);
   data->reserve(24);
-  for (int b = 0x800; b; b >> 1) {
+  for (int b = 0x800; b; b >>= 1) {
     if (msg & b )
       data->item(1296, 406);
     else
