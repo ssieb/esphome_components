@@ -76,15 +76,7 @@ void PedestalFan::control(const fan::FanCall &call) {
       changed = true;
     }
   }
-  if (call.get_oscillating().has_value()) {
-    bool new_osc = *call.get_oscillating();
-    if (this->oscillating != new_osc) {
-      this->oscillating = new_osc;
-      this->to_send_.push_back(TGL_OSC);
-      changed = true;
-    }
-  }
-  if (call.get_speed().has_value()) {
+  if (call.get_speed().has_value() && !changed) {
     int new_speed = *call.get_speed();
     if (this->speed != new_speed) {
       if (new_speed > this->speed) {
@@ -95,6 +87,14 @@ void PedestalFan::control(const fan::FanCall &call) {
           this->to_send_.push_back(SPEED_DOWN);
       }
       this->speed = new_speed;
+      changed = true;
+    }
+  }
+  if (call.get_oscillating().has_value()) {
+    bool new_osc = *call.get_oscillating();
+    if (this->oscillating != new_osc) {
+      this->oscillating = new_osc;
+      this->to_send_.push_back(TGL_OSC);
       changed = true;
     }
   }
