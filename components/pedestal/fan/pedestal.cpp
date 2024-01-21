@@ -8,7 +8,7 @@ namespace pedestal {
 static const char *const TAG = "pedestal.fan";
 
 static const uint16_t TGL_POWER =  0b110110000001;
-static const uint16_t TGL_OSC =    0b110110000000;
+static const uint16_t TGL_OSC =    0b110110001000;
 static const uint16_t SPEED_JUMP = 0b110110000100;
 static const uint16_t SPEED_UP   = 0b110110010000;
 static const uint16_t SPEED_DOWN = 0b110110100000;
