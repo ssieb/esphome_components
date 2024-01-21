@@ -30,12 +30,14 @@ class PedestalFan : public Component, public fan::Fan, public remote_base::Remot
  
   sensor::Sensor *pulse_sensor_;
   GPIOPin *osc_pin_;
-  int current_speed_{0};
+  int measured_speed_{0};
   bool changing_{false};
   uint32_t last_change_;
+
+  // IR queue
+  std::deque<uint16_t> to_send_;
   bool waiting_{false};
   uint32_t wait_until_{0};
-  std::deque<uint16_t> to_send_;
 };
 
 }  // namespace pedestal

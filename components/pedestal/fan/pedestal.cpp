@@ -13,6 +13,8 @@ static const uint16_t SPEED_JUMP = 0b110110000100;
 static const uint16_t SPEED_UP   = 0b110110010000;
 static const uint16_t SPEED_DOWN = 0b110110100000;
 
+static const uint8_t duty_to_speed[13] = {5, 13, 20, 28, 35, 42, 49, 56, 63, 70, 78, 90, 100};
+
 void PedestalFan::setup() {
   this->traits_ = fan::FanTraits(true, true, false, 12);
   this->pulse_sensor_->add_on_state_callback([this](float state) {
@@ -41,6 +43,7 @@ void PedestalFan::loop() {
     this->changing_ = false;
   }
   bool changed = false;
+  int speed = this->measured_speed_;
   if ((speed > 0) != this->state) {
     this->state = (speed > 0);
     changed = true;
@@ -64,11 +67,13 @@ void PedestalFan::dump_config() {
 }
 
 void PedestalFan::control(const fan::FanCall &call) {
+  bool changed = false;
   if (call.get_state().has_value()) {
     bool new_state = *call.get_state();
     if (this->state != new_state) {
       this->state = new_state;
       this->to_send_.push_back(TGL_POWER);
+      changed = true;
     }
   }
   if (call.get_oscillating().has_value()) {
@@ -76,12 +81,12 @@ void PedestalFan::control(const fan::FanCall &call) {
     if (this->oscillating != new_osc) {
       this->oscillating = new_osc;
       this->to_send_.push_back(TGL_OSC);
+      changed = true;
     }
   }
   if (call.get_speed().has_value()) {
     int new_speed = *call.get_speed();
     if (this->speed != new_speed) {
-      this->changing_ = true;
       if (new_speed > this->speed) {
         for (int i = 0; i < new_speed - this->speed; i++)
           this->to_send_.push_back(SPEED_UP);
@@ -90,42 +95,23 @@ void PedestalFan::control(const fan::FanCall &call) {
           this->to_send_.push_back(SPEED_DOWN);
       }
       this->speed = new_speed;
+      changed = true;
     }
   }
-  this->publish_state();
+  if (changed) {
+    this->changing_ = true;
+    this->last_change_ = millis();
+    this->publish_state();
+  }
 }
 
 void PedestalFan::update_speed_(float value) {
   value = clamp(value, 0.0f, 100.0f);
   int speed;
-  if (value < 5)
-    speed = 0;
-  else if (value < 13)
-    speed = 1;
-  else if (value < 20)
-    speed = 2;
-  else if (value < 28)
-    speed = 3;
-  else if (value < 35)
-    speed = 4;
-  else if (value < 42)
-    speed = 5;
-  else if (value < 49)
-    speed = 6;
-  else if (value < 56)
-    speed = 7;
-  else if (value < 63)
-    speed = 8;
-  else if (value < 70)
-    speed = 9;
-  else if (value < 78)
-    speed = 10;
-  else if (value < 90)
-    speed = 11;
-  else
-    speed = 12;
-  if (speed != this->current_speed_) {
-    this->current_speed_ = speed;
+  for (speed = 0; value > duty_to_speed[speed]; speed++);
+  ESP_LOGD(TAG, "detected speed is %d", speed);
+  if (speed != this->measured_speed_) {
+    this->measured_speed_ = speed;
     this->last_change_ = millis();
   }
 }
