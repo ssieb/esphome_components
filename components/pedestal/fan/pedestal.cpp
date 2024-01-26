@@ -21,6 +21,10 @@ void PedestalFan::setup() {
     this->update_speed_(state);
   });
   this->osc_pin_->setup();
+  this->store_.pin = this->speed_pin_->to_isr();
+  this->store_.last_level = this->pin_->digital_read();
+  this->store_.last_interrupt = micros();
+  this->pin_->attach_interrupt(DutyCycleStore::gpio_intr, &this->store_, gpio::INTERRUPT_ANY_EDGE);
 }
 
 void PedestalFan::loop() {
@@ -130,6 +134,19 @@ void PedestalFan::transmit_data_(uint16_t msg) {
       data->item(442, 1252);
   }
   transmit.perform();
+}
+
+void IRAM_ATTR DutyCycleStore::gpio_intr(DutyCycleStore *arg) {
+  const bool new_level = arg->pin.digital_read();
+  if (new_level == arg->last_level)
+    return;
+  arg->last_level = new_level;
+  const uint32_t now = micros();
+
+  if (!new_level)
+    arg->on_time += now - arg->last_interrupt;
+
+  arg->last_interrupt = now;
 }
 
 }  // namespace pedestal

@@ -13,13 +13,13 @@ PedestalFan = pedestal_ns.class_(
 )
 
 CONF_OSC_PIN = "osc_pin"
-CONF_PULSE = "pulse"
+CONF_SPEED_PIN = "speed_pin"
 
 CONFIG_SCHEMA = fan.FAN_SCHEMA.extend(
     {
         cv.GenerateID(CONF_OUTPUT_ID): cv.declare_id(PedestalFan),
-        cv.Required(CONF_PULSE): cv.use_id(sensor.Sensor),
         cv.Required(CONF_OSC_PIN): pins.gpio_input_pin_schema,
+        cv.Required(CONF_SPEED_PIN): pins.internal_gpio_input_pin_schema,
     }
 ).extend(cv.COMPONENT_SCHEMA).extend(remote_base.REMOTE_TRANSMITTABLE_SCHEMA)
 
@@ -29,7 +29,7 @@ async def to_code(config):
     await cg.register_component(var, config)
     await fan.register_fan(var, config)
     await remote_base.register_transmittable(var, config)
-    sens = await cg.get_variable(config[CONF_PULSE])
-    cg.add(var.set_pulse_sensor(sens))
     pin = await cg.gpio_pin_expression(config[CONF_OSC_PIN])
     cg.add(var.set_osc_pin(pin))
+    pin = await cg.gpio_pin_expression(config[CONF_speed_PIN])
+    cg.add(var.set_speed_pin(pin))
