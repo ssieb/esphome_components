@@ -12,5 +12,9 @@ external_components:
     components: [ component1, component2 ]
 ```
 
-## NOTE: Some components were merged to esphome :tada:
-- [keypad](https://github.com/ssieb/custom_components/tree/master/components/keypad) -> [matrix_keypad](https://esphome.io/components/matrix_keypad.html?highlight=keypad)
+## NOTE: Some components have been merged to esphome :tada:
+- keypad, matrix_keypad -> [matrix_keypad](https://esphome.io/components/matrix_keypad)
+- vbus -> [Resol VBus](https://esphome.io/components/vbus)
+- wiegand -> [Wiegand Reader](https://esphome.io/components/wiegand)
+- kuntze -> [Kuntze pool sensor](https://esphome.io/components/sensor/kuntze)
+- growatt -> [Growatt Solar](https://esphome.io/components/sensor/growatt_solar)
