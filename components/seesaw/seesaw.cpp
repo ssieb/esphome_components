@@ -9,9 +9,27 @@ namespace seesaw {
 static const char *const TAG = "seesaw";
 
 #define SEESAW_HW_ID_SAMD09 0x55
-#define SEESAW_HW_ID_TINY8X7 0x87
+#define SEESAW_HW_ID_TINY806 0x84
+#define SEESAW_HW_ID_TINY807 0x85
+#define SEESAW_HW_ID_TINY816 0x86
+#define SEESAW_HW_ID_TINY817 0x87
+#define SEESAW_HW_ID_TINY1616 0x88
+#define SEESAW_HW_ID_TINY1617 0x89
 
 float Seesaw::get_setup_priority() const { return setup_priority::IO; }
+
+static const char *cpuid_to_string(uint8_t id) {
+  switch (id) {
+   case SEESAW_HW_ID_SAMD09: return "SAMD09";
+   case SEESAW_HW_ID_TINY806: return "ATtiny806";
+   case SEESAW_HW_ID_TINY807: return "ATtiny807";
+   case SEESAW_HW_ID_TINY816: return "ATtiny816";
+   case SEESAW_HW_ID_TINY817: return "ATtiny817";
+   case SEESAW_HW_ID_TINY1616: return "ATtiny1616";
+   case SEESAW_HW_ID_TINY1617: return "ATtiny1617";
+   default: return nullptr;
+  }
+}
 
 void Seesaw::setup() {
   ESP_LOGCONFIG(TAG, "Setting up Seesaw...");
@@ -21,14 +39,51 @@ void Seesaw::setup() {
   }
   uint8_t c = 0;
   this->readbuf(SEESAW_STATUS, SEESAW_STATUS_HW_ID, &c, 1);
-  std::string cpu;
-  if (c == SEESAW_HW_ID_SAMD09)
-    cpu = "SAMD09";
-  else if (c == SEESAW_HW_ID_TINY8X7)
-    cpu = "TINY8X7";
-  else
-    cpu = "unknown";
-  ESP_LOGCONFIG(TAG, "Hardware type is %s", cpu.c_str());
+  this->cpuid_ = c;
+  uint8_t buf[4];
+  this->readbuf(SEESAW_STATUS, SEESAW_STATUS_VERSION, buf, 4);
+  this->version_ = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
+  this->readbuf(SEESAW_STATUS, SEESAW_STATUS_OPTIONS, buf, 4);
+  this->options_ = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
+}
+
+void Seesaw::loop() {
+}
+
+void Seesaw::dump_config() {
+  ESP_LOGCONFIG(TAG, "Seesaw module:");
+  const char *cpu = cpuid_to_string(this->cpuid_);
+  if (cpu != nullptr) {
+    ESP_LOGCONFIG(TAG, "  CPU: %s", cpu);
+  } else {
+    ESP_LOGCONFIG(TAG, "  CPU: unknown (%02x)", this->cpuid_);
+  }
+  ESP_LOGCONFIG(TAG, "  Version: %u", this->version_);
+  ESP_LOGCONFIG(TAG, "  Options:");
+  if (this->options_ & (1 << SEESAW_GPIO))
+    ESP_LOGCONFIG(TAG, "    GPIO");
+  if (this->options_ & (1 << SEESAW_SERCOM0))
+    ESP_LOGCONFIG(TAG, "    Serial");
+  if (this->options_ & (1 << SEESAW_TIMER))
+    ESP_LOGCONFIG(TAG, "    Timer");
+  if (this->options_ & (1 << SEESAW_ADC))
+    ESP_LOGCONFIG(TAG, "    ADC");
+  if (this->options_ & (1 << SEESAW_DAC))
+    ESP_LOGCONFIG(TAG, "    DAC");
+  if (this->options_ & (1 << SEESAW_INTERRUPT))
+    ESP_LOGCONFIG(TAG, "    Interrupt");
+  if (this->options_ & (1 << SEESAW_DAP))
+    ESP_LOGCONFIG(TAG, "    DAP");
+  if (this->options_ & (1 << SEESAW_EEPROM))
+    ESP_LOGCONFIG(TAG, "    EEPROM");
+  if (this->options_ & (1 << SEESAW_NEOPIXEL))
+    ESP_LOGCONFIG(TAG, "    NeoPixel");
+  if (this->options_ & (1 << SEESAW_TOUCH))
+    ESP_LOGCONFIG(TAG, "    Touch");
+  if (this->options_ & (1 << SEESAW_KEYPAD))
+    ESP_LOGCONFIG(TAG, "    Keypad");
+  if (this->options_ & (1 << SEESAW_ENCODER))
+    ESP_LOGCONFIG(TAG, "    Encoder");
 }
 
 void Seesaw::enable_encoder(uint8_t number) {

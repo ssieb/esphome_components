@@ -12,10 +12,12 @@ class SeesawBinarySensor : public binary_sensor::BinarySensor, public Component 
   void setup() override;
   void dump_config() override;
   void loop() override;
-  void set_parent(Seesaw *parent) { parent_ = parent; }
+  void set_parent(Seesaw *parent) { this->parent_ = parent; }
+  void set_pin(int pin) { this->pin_ = pin; }
 
  protected:
   Seesaw *parent_;
+  int pin_;
 };
 
 }  // namespace seesaw

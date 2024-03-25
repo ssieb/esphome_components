@@ -12,6 +12,7 @@ CONFIG_SCHEMA = binary_sensor.BINARY_SENSOR_SCHEMA.extend(
     {
         cv.GenerateID(): cv.declare_id(SeesawBinarySensor),
         cv.GenerateID(CONF_SEESAW): cv.use_id(Seesaw),
+        cv.Required(CONF_PIN): cv.int_range(0, 31),
     }
 ).extend(cv.COMPONENT_SCHEMA)
 
@@ -22,4 +23,5 @@ async def to_code(config):
     await binary_sensor.register_binary_sensor(var, config)
     seesaw = await cg.get_variable(config[CONF_SEESAW])
     cg.add(var.set_parent(seesaw))
+    cg.add(var.set_pin(config[CONF_PIN]))
 

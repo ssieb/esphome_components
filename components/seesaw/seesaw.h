@@ -69,6 +69,8 @@ enum : uint8_t {
 class Seesaw : public i2c::I2CDevice, public Component {
  public:
   void setup() override;
+  void loop() override;
+  void dump_config() override;
 
   float get_setup_priority() const override;
 
@@ -87,6 +89,10 @@ class Seesaw : public i2c::I2CDevice, public Component {
   i2c::ErrorCode write16(SeesawModule mod, uint8_t reg, uint16_t value);
   i2c::ErrorCode write32(SeesawModule mod, uint8_t reg, uint32_t value);
   i2c::ErrorCode readbuf(SeesawModule mod, uint8_t reg, uint8_t *buf, uint8_t len);
+
+  uint8_t cpuid_;
+  uint32_t version_;
+  uint32_t options_;
 };
 
 /*
