@@ -25,10 +25,12 @@ binary_sensor:
   - platform: seesaw
     id: button
     name: "Seesaw encoder button"
+    pin: 2
 
 light:
   - platform: seesaw
     id: pixel
     name: "Seesaw neopixel LED"
+    pin: 14
 ```
 

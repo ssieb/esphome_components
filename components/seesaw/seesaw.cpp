@@ -52,6 +52,7 @@ void Seesaw::loop() {
 
 void Seesaw::dump_config() {
   ESP_LOGCONFIG(TAG, "Seesaw module:");
+  LOG_I2C_DEVICE(this);
   const char *cpu = cpuid_to_string(this->cpuid_);
   if (cpu != nullptr) {
     ESP_LOGCONFIG(TAG, "  CPU: %s", cpu);
@@ -151,10 +152,18 @@ bool Seesaw::digital_read(uint8_t pin) {
   return ret & pins;
 }
 
-void Seesaw::setup_neopixel() {
+void Seesaw::digital_write(uint8_t pin, bool state) {
+  uint32_t pins = 1 << pin;
+  if (state)
+    this->write32(SEESAW_GPIO, SEESAW_GPIO_BULK_SET, pin);
+  else
+    this->write32(SEESAW_GPIO, SEESAW_GPIO_BULK_CLR, pin);
+}
+
+void Seesaw::setup_neopixel(int pin) {
   this->write8(SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_SPEED, 1);
   this->write16(SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_BUF_LENGTH, 3);
-  this->write8(SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_PIN, 6);
+  this->write8(SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_PIN, pin);
 }
 
 void Seesaw::color_neopixel(uint8_t r, uint8_t g, uint8_t b) {
@@ -188,17 +197,21 @@ i2c::ErrorCode Seesaw::readbuf(SeesawModule mod, uint8_t reg, uint8_t *buf, uint
   return this->read(buf, len);
 }
 
-/*
 void SeesawGPIOPin::setup() { pin_mode(flags_); }
-void SeesawGPIOPin::pin_mode(gpio::Flags flags) { this->parent_->pin_mode(this->pin_, flags); }
-bool SeesawGPIOPin::digital_read() { return this->parent_->digital_read(this->pin_) != this->inverted_; }
-void SeesawGPIOPin::digital_write(bool value) { this->parent_->digital_write(this->pin_, value != this->inverted_); }
-std::string SeesawGPIOPin::dump_summary() const {
-  char buffer[32];
-  snprintf(buffer, sizeof(buffer), "%u via SeeSaw", pin_);
-  return buffer;
+
+void SeesawGPIOPin::pin_mode(gpio::Flags flags) { this->parent_->set_pinmode(this->pin_, flags); }
+
+bool SeesawGPIOPin::digital_read() {
+  return this->parent_->digital_read(this->pin_) != this->inverted_;
 }
-*/
+
+void SeesawGPIOPin::digital_write(bool value) {
+  this->parent_->digital_write(this->pin_, value != this->inverted_);
+}
+
+std::string SeesawGPIOPin::dump_summary() const {
+  return str_sprintf("%u via SeeSaw", this->pin_);
+}
 
 }  // namespace seesaw
 }  // namespace esphome

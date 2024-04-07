@@ -1,6 +1,7 @@
 #pragma once
 
 #include "esphome/core/component.h"
+#include "esphome/core/hal.h"
 #include "esphome/components/i2c/i2c.h"
 
 namespace esphome {
@@ -80,8 +81,9 @@ class Seesaw : public i2c::I2CDevice, public Component {
   float get_temperature();
   void set_pinmode(uint8_t pin, uint8_t mode);
   bool digital_read(uint8_t pin);
+  void digital_write(uint8_t pin, bool state);
   void set_gpio_interrupt(uint32_t pin, bool enabled);
-  void setup_neopixel();
+  void setup_neopixel(int pin);
   void color_neopixel(uint8_t r, uint8_t g, uint8_t b);
 
  protected:
@@ -95,7 +97,6 @@ class Seesaw : public i2c::I2CDevice, public Component {
   uint32_t options_;
 };
 
-/*
 class SeesawGPIOPin : public GPIOPin {
  public:
   void setup() override;
@@ -108,7 +109,6 @@ class SeesawGPIOPin : public GPIOPin {
   void set_pin(uint8_t pin) { pin_ = pin; }
   void set_inverted(bool inverted) { inverted_ = inverted; }
   void set_flags(gpio::Flags flags) { flags_ = flags; }
-  void set_interrupt_mode(MCP23XXXInterruptMode interrupt_mode) { interrupt_mode_ = interrupt_mode; }
 
  protected:
   Seesaw *parent_;
@@ -116,7 +116,6 @@ class SeesawGPIOPin : public GPIOPin {
   bool inverted_;
   gpio::Flags flags_;
 };
-*/
 
 }  // namespace seesaw
 }  // namespace esphome

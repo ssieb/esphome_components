@@ -5,11 +5,9 @@ from esphome.components import i2c
 from esphome.const import (
     CONF_ID,
     CONF_INPUT,
+    CONF_INVERTED,
     CONF_NUMBER,
     CONF_MODE,
-    CONF_INVERTED,
-    CONF_INTERRUPT,
-    CONF_OPEN_DRAIN_INTERRUPT,
     CONF_OUTPUT,
     CONF_PULLUP,
 )
@@ -20,7 +18,7 @@ MULTI_CONF = True
 
 seesaw_ns = cg.esphome_ns.namespace("seesaw")
 Seesaw = seesaw_ns.class_("Seesaw", i2c.I2CDevice, cg.Component)
-#SeeSawGPIOPin = seesaw_ns.class_("SeeSawGPIOPin", cg.GPIOPin)
+SeesawGPIOPin = seesaw_ns.class_("SeesawGPIOPin", cg.GPIOPin)
 
 CONF_SEESAW = "seesaw"
 
@@ -36,19 +34,8 @@ async def to_code(config):
     await i2c.register_i2c_device(var, config)
 
 
-"""
-@coroutine
-async def register_mcp23xxx(config):
-    var = cg.new_Pvariable(config[CONF_ID])
-    await cg.register_component(var, config)
-    cg.add(var.set_open_drain_ints(config[CONF_OPEN_DRAIN_INTERRUPT]))
-    return var
-
-
 def validate_mode(value):
-    if not (value[CONF_INPUT] or value[CONF_OUTPUT]):
-        raise cv.Invalid("Mode must be either input or output")
-    if value[CONF_INPUT] and value[CONF_OUTPUT]:
+    if not (value[CONF_INPUT] ^ value[CONF_OUTPUT]):
         raise cv.Invalid("Mode must be either input or output")
     if value[CONF_PULLUP] and not value[CONF_INPUT]:
         raise cv.Invalid("Pullup only available with input")
@@ -57,8 +44,8 @@ def validate_mode(value):
 
 SEESAW_PIN_SCHEMA = cv.All(
     {
-        cv.GenerateID(): cv.declare_id(MCP23XXXGPIOPin),
-        cv.Required(CONF_SEESAW): cv.use_id(MCP23XXXBase),
+        cv.GenerateID(): cv.declare_id(SeesawGPIOPin),
+        cv.Required(CONF_SEESAW): cv.use_id(Seesaw),
         cv.Required(CONF_NUMBER): cv.int_range(min=0, max=15),
         cv.Optional(CONF_MODE, default={}): cv.All(
             {
@@ -69,9 +56,6 @@ SEESAW_PIN_SCHEMA = cv.All(
             validate_mode,
         ),
         cv.Optional(CONF_INVERTED, default=False): cv.boolean,
-        cv.Optional(CONF_INTERRUPT, default="NO_INTERRUPT"): cv.enum(
-            MCP23XXX_INTERRUPT_MODES, upper=True
-        ),
     }
 )
 
@@ -87,7 +71,5 @@ async def seesaw_pin_to_code(config):
     cg.add(var.set_pin(num))
     cg.add(var.set_inverted(config[CONF_INVERTED]))
     cg.add(var.set_flags(pins.gpio_flags_expr(config[CONF_MODE])))
-    cg.add(var.set_interrupt_mode(config[CONF_INTERRUPT]))
     return var
-"""
 
