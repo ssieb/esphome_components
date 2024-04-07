@@ -144,6 +144,12 @@ void Seesaw::set_gpio_interrupt(uint32_t pin, bool enabled) {
     this->write32(SEESAW_GPIO, SEESAW_GPIO_INTENCLR, pins);
 }
 
+uint16_t Seesaw::analog_read(uint8_t pin) {
+  uint8_t buf[2];
+  this->readbuf(SEESAW_ADC, SEESAW_ADC_CHANNEL_OFFSET + pin, buf, 2);
+  return (buf[0] << 8) + buf[1];
+}
+
 bool Seesaw::digital_read(uint8_t pin) {
   uint32_t pins = 1 << pin;
   uint8_t buf[4];

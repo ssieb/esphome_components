@@ -66,6 +66,14 @@ enum : uint8_t {
   SEESAW_TOUCH_CHANNEL_OFFSET = 0x10,
 };
 
+enum : uint8_t {
+  SEESAW_ADC_STATUS = 0x00,
+  SEESAW_ADC_INTEN = 0x02,
+  SEESAW_ADC_INTENCLR = 0x03,
+  SEESAW_ADC_WINMODE = 0x04,
+  SEESAW_ADC_WINTHRESH = 0x05,
+  SEESAW_ADC_CHANNEL_OFFSET = 0x07,
+};
 
 class Seesaw : public i2c::I2CDevice, public Component {
  public:
@@ -80,6 +88,7 @@ class Seesaw : public i2c::I2CDevice, public Component {
   int16_t get_touch_value(uint8_t channel);
   float get_temperature();
   void set_pinmode(uint8_t pin, uint8_t mode);
+  uint16_t analog_read(uint8_t pin);
   bool digital_read(uint8_t pin);
   void digital_write(uint8_t pin, bool state);
   void set_gpio_interrupt(uint32_t pin, bool enabled);
