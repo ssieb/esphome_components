@@ -12,6 +12,11 @@ void SeesawRotaryEncoder::setup() {
   this->publish_state(0);
 }
 
+void SeesawBinarySensor::dump_config() {
+  LOG_BINARY_SENSOR("", "Seesaw Encoder Sensor", this);
+  ESP_LOGCONFIG(TAG, "  Pin: %d", this->pin_);
+}
+
 void SeesawRotaryEncoder::loop() {
   int32_t new_value = this->parent_->get_encoder_position(this->number_);
   if (new_value < this->min_value_)
