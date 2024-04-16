@@ -13,7 +13,7 @@ void SeesawRotaryEncoder::setup() {
 }
 
 void SeesawBinarySensor::dump_config() {
-  LOG_BINARY_SENSOR("", "Seesaw Encoder Sensor", this);
+  ESP_LOGCONFIG("", "Seesaw Encoder Sensor", this);
   ESP_LOGCONFIG(TAG, "  Pin: %d", this->pin_);
 }
 
