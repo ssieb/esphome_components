@@ -7,7 +7,7 @@ namespace seesaw {
 static const char *const TAG = "seesaw.encoder";
 
 void SeesawRotaryEncoder::setup() {
-  ESP_LOGCONFIG(TAG, "Setting up Seesaw rotary encoder...");
+  ESP_LOGCONFIG(TAG, "Setting up Seesaw rotary encoder %d ...", this->number_);
   this->parent_->enable_encoder(this->number_);
   this->publish_state(0);
 }
