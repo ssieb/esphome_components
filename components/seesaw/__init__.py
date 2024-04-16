@@ -7,6 +7,7 @@ from esphome.const import (
     CONF_INPUT,
     CONF_INVERTED,
     CONF_NUMBER,
+    CONF_PIN,
     CONF_MODE,
     CONF_OUTPUT,
     CONF_PULLUP,
@@ -49,6 +50,7 @@ SEESAW_PIN_SCHEMA = cv.All(
         cv.Required(CONF_NUMBER): cv.int_range(min=0, max=15),
         cv.Optional(CONF_MODE, default={}): cv.All(
             {
+                cv.Optional(CONF_PIN): cv.int_,
                 cv.Optional(CONF_INPUT, default=False): cv.boolean,
                 cv.Optional(CONF_PULLUP, default=False): cv.boolean,
                 cv.Optional(CONF_OUTPUT, default=False): cv.boolean,
