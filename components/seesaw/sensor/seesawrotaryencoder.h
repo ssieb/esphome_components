@@ -10,6 +10,7 @@ namespace seesaw {
 class SeesawRotaryEncoder : public sensor::Sensor, public Component {
  public:
   void setup() override;
+  void dump_config() override;
   void loop() override;
 
   void set_parent(Seesaw *parent) { parent_ = parent; }
