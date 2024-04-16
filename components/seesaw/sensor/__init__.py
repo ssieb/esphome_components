@@ -94,7 +94,7 @@ async def to_code(config):
     elif config[CONF_TYPE] == CONF_ENCODER:
         cg.add(var.set_number(config[CONF_NUMBER]))
         if CONF_PIN in config:
-            cg.add(var.set_min_value(config[CONF_PIN]))
+            cg.add(var.set_pin(config[CONF_PIN]))
         if CONF_MIN_VALUE in config:
             cg.add(var.set_min_value(config[CONF_MIN_VALUE]))
         if CONF_MAX_VALUE in config:
