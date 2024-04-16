@@ -51,6 +51,7 @@ CONFIG_SCHEMA = cv.typed_schema(
         ).extend(
             {
                 cv.GenerateID(CONF_SEESAW): cv.use_id(Seesaw),
+                cv.Optional(CONF_PIN): cv.int_,
                 cv.Optional(CONF_NUMBER, default=0): cv.int_,
                 cv.Optional(CONF_MIN_VALUE): cv.int_,
                 cv.Optional(CONF_MAX_VALUE): cv.int_,
