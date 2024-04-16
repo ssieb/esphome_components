@@ -20,6 +20,7 @@ class SeesawRotaryEncoder : public sensor::Sensor, public Component {
 
  protected:
   Seesaw *parent_;
+  int pin_;
   uint8_t number_{0};
   int32_t value_{0};
   int32_t min_value_{INT32_MIN};
