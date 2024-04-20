@@ -6,34 +6,6 @@ namespace puroair {
 
 static const char *const TAG = "puroair";
 
-static int segs_to_num(uint8_t segments) {
-  switch (segments & 0x7f) {
-   case 0x3f:
-    return 0;
-   case 0x06:
-    return 1;
-   case 0x5b:
-    return 2;
-   case 0x4f:
-    return 3;
-   case 0x67:
-    return 4;
-   case 0x6d:
-    return 5;
-   case 0x7d:
-    return 6;
-   case 0x07:
-    return 7;
-   case 0x7f:
-    return 8;
-   case 0x6f:
-    return 9;
-   default:
-    ESP_LOGV(TAG, "unknown digit: %02f", segments & 0x7f);
-  }
-  return -1;
-}
-
 static void log_state(uint32_t state) {
   switch(state) {
    case 0x080008:
@@ -133,7 +105,7 @@ void PuroAir::loop() {
   }
   this->sending_ = true;
   uint8_t button = this->buttons_[0];
-  this->buttons_.erase(this->control_buffer_.begin());
+  this->buttons_.erase(this->buttons_.begin());
   buf[1] += button;
   buf[2] = 0xd2 + buf[1];
   this->control_uart_->write_array(buf, 3);
