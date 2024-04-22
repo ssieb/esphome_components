@@ -92,8 +92,8 @@ class Seesaw : public i2c::I2CDevice, public Component {
   bool digital_read(uint8_t pin);
   void digital_write(uint8_t pin, bool state);
   void set_gpio_interrupt(uint32_t pin, bool enabled);
-  void setup_neopixel(int pin);
-  void color_neopixel(uint8_t r, uint8_t g, uint8_t b);
+  void setup_neopixel(int pin, uint16_t n);
+  void color_neopixel(uint16_t n, uint8_t r, uint8_t g, uint8_t b);
 
  protected:
   i2c::ErrorCode write8(SeesawModule mod, uint8_t reg, uint8_t value);
