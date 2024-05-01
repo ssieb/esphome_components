@@ -13,22 +13,47 @@ static const uint16_t SPEED_JUMP = 0b110110000100;
 static const uint16_t SPEED_UP   = 0b110110010000;
 static const uint16_t SPEED_DOWN = 0b110110100000;
 
-static const uint8_t duty_to_speed[13] = {5, 13, 20, 28, 35, 42, 49, 56, 63, 70, 78, 90, 100};
+static const uint8_t duty_to_speed[13] = {5, 20, 28, 35, 42, 49, 56, 63, 70, 78, 87, 95, 100};
 
 void PedestalFan::setup() {
   this->traits_ = fan::FanTraits(true, true, false, 12);
-  this->pulse_sensor_->add_on_state_callback([this](float state) {
-    this->update_speed_(state);
-  });
   this->osc_pin_->setup();
   this->store_.pin = this->speed_pin_->to_isr();
-  this->store_.last_level = this->pin_->digital_read();
-  this->store_.last_interrupt = micros();
-  this->pin_->attach_interrupt(DutyCycleStore::gpio_intr, &this->store_, gpio::INTERRUPT_ANY_EDGE);
+  this->store_.last_level = this->speed_pin_->digital_read();
+  this->speed_pin_->attach_interrupt(DutyCycleStore::gpio_intr, &this->store_, gpio::INTERRUPT_ANY_EDGE);
 }
 
 void PedestalFan::loop() {
   uint32_t now = millis();
+  if (this->last_speed_check_ == 0) {
+    this->last_speed_check_ = now;
+  } else if (now - this->last_speed_check_ > 15) {
+    this->last_speed_check_ = now;
+    uint32_t count, total_on_time, total_time;
+    {
+      InterruptLock lock;
+      count = this->store_.count;
+      if (count == 0)
+        this->store_.stopped = true;
+      this->store_.count = 0;
+      total_on_time = this->store_.total_on_time;
+      total_time = this->store_.total_time;
+    }
+    if (count == 0) {
+      this->measured_speed_ = this->speed_pin_->digital_read() ? 12 : 0;
+    } else {
+      int value = total_on_time * 100 / total_time;
+      int speed = 0;
+      while (value > duty_to_speed[speed])
+        speed++;
+      if (speed != this->measured_speed_) {
+        ESP_LOGD(TAG, "detected speed is %d", speed);
+        this->measured_speed_ = speed;
+        this->last_change_ = millis();
+      }
+    }
+  }
+
   if (this->waiting_) {
     if (now < this->wait_until_)
       return;
@@ -109,17 +134,6 @@ void PedestalFan::control(const fan::FanCall &call) {
   }
 }
 
-void PedestalFan::update_speed_(float value) {
-  value = clamp(value, 0.0f, 100.0f);
-  int speed;
-  for (speed = 0; value > duty_to_speed[speed]; speed++);
-  ESP_LOGD(TAG, "detected speed is %d", speed);
-  if (speed != this->measured_speed_) {
-    this->measured_speed_ = speed;
-    this->last_change_ = millis();
-  }
-}
-
 void PedestalFan::transmit_data_(uint16_t msg) {
   ESP_LOGD(TAG, "transmitting code %02x", msg);
   auto transmit = this->transmitter_->transmit();
@@ -143,10 +157,26 @@ void IRAM_ATTR DutyCycleStore::gpio_intr(DutyCycleStore *arg) {
   arg->last_level = new_level;
   const uint32_t now = micros();
 
-  if (!new_level)
-    arg->on_time += now - arg->last_interrupt;
+  if (arg->stopped) {
+    arg->start_time = 0;
+    arg->on_time = 0;
+    arg->total_time = 0;
+    arg->total_on_time = 0;
+    arg->stopped = false;
+  }
 
-  arg->last_interrupt = now;
+  if (new_level) {
+    if (arg->on_time > 0) {
+      arg->total_on_time += arg->on_time;
+      arg->on_time = 0;
+      arg->total_time += now - arg->start_time;
+      arg->count++;
+    }
+    arg->start_time = now;
+  } else {
+    if (arg->start_time > 0)
+      arg->on_time = now - arg->start_time;
+  }
 }
 
 }  // namespace pedestal

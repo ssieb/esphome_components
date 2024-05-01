@@ -31,5 +31,5 @@ async def to_code(config):
     await remote_base.register_transmittable(var, config)
     pin = await cg.gpio_pin_expression(config[CONF_OSC_PIN])
     cg.add(var.set_osc_pin(pin))
-    pin = await cg.gpio_pin_expression(config[CONF_speed_PIN])
+    pin = await cg.gpio_pin_expression(config[CONF_SPEED_PIN])
     cg.add(var.set_speed_pin(pin))

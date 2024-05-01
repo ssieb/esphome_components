@@ -4,7 +4,6 @@
 #include "esphome/core/hal.h"
 #include "esphome/components/fan/fan.h"
 #include "esphome/components/remote_transmitter/remote_transmitter.h"
-#include "esphome/components/sensor/sensor.h"
 
 #include <deque>
 
@@ -12,9 +11,13 @@ namespace esphome {
 namespace pedestal {
 
 struct DutyCycleStore {
-  volatile uint32_t last_interrupt{0};
-  volatile uint32_t on_time{0};
-  volatile bool last_level{false};
+  uint32_t start_time{0};
+  uint32_t on_time{0};
+  uint32_t total_on_time{0};
+  uint32_t total_time{0};
+  uint32_t count{0};
+  bool last_level{false};
+  bool stopped{true};
   ISRInternalGPIOPin pin;
 
   static void gpio_intr(DutyCycleStore *arg);
@@ -36,10 +39,10 @@ class PedestalFan : public Component, public fan::Fan, public remote_base::Remot
 
   fan::FanTraits traits_;
  
-  sensor::Sensor *pulse_sensor_;
   GPIOPin *osc_pin_;
   InternalGPIOPin *speed_pin_;
   DutyCycleStore store_{};
+  uint32_t last_speed_check_{0};
   int measured_speed_{0};
   bool changing_{false};
   uint32_t last_change_;
