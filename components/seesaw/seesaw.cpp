@@ -33,10 +33,12 @@ static const char *cpuid_to_string(uint8_t id) {
 
 void Seesaw::setup() {
   ESP_LOGCONFIG(TAG, "Setting up Seesaw...");
+  /*
   if (this->write8(SEESAW_STATUS, SEESAW_STATUS_SWRST, 0xff) != i2c::ERROR_OK) {
     this->mark_failed();
     return;
   }
+  */
   uint8_t c = 0;
   this->readbuf(SEESAW_STATUS, SEESAW_STATUS_HW_ID, &c, 1);
   this->cpuid_ = c;
@@ -59,8 +61,10 @@ void Seesaw::dump_config() {
   } else {
     ESP_LOGCONFIG(TAG, "  CPU: unknown (%02x)", this->cpuid_);
   }
-  ESP_LOGCONFIG(TAG, "  Version: %u", this->version_);
-  ESP_LOGCONFIG(TAG, "  Options:");
+  uint32_t v = this->version_;
+  ESP_LOGCONFIG(TAG, "  Version: %d-%02d-%02d %u", v & 0x3f, (v >> 7) & 0xf, (v >> 11) & 0x1f, v >> 16);
+  ESP_LOGCONFIG(TAG, "  Options: %08x", this->options_);
+  /*
   if (this->options_ & (1 << SEESAW_GPIO))
     ESP_LOGCONFIG(TAG, "    GPIO");
   if (this->options_ & (1 << SEESAW_SERCOM0))
@@ -85,6 +89,7 @@ void Seesaw::dump_config() {
     ESP_LOGCONFIG(TAG, "    Keypad");
   if (this->options_ & (1 << SEESAW_ENCODER))
     ESP_LOGCONFIG(TAG, "    Encoder");
+  */
 }
 
 void Seesaw::enable_encoder(uint8_t number) {
