@@ -32,7 +32,7 @@ void Desky::setup() {
 
 void Desky::loop() {
   static int state = 0;
-  static uint8_t high_byte;
+  static uint8_t protocol = 0;
 
   while (this->available()) {
     uint8_t c;
@@ -40,21 +40,29 @@ void Desky::loop() {
     this->read_byte(&c);
     switch (state) {
      case 0:
-      if (c == 1)
+      if ((c == 1) || (c == 242)) {
 	state = 1;
+	protocol = c;
+      }
       break;
      case 1:
-      if (c == 1)
+      if (c == protocol)
 	state = 2;
       else
 	state = 0;
+      this->rx_data_.clear();
       break;
      case 2:
-      high_byte = c;
-      state = 3;
-      break;
-     case 3:
-      value = (high_byte << 8) + c;
+      this->rx_data_.push_back(c);
+      if (protocol == 1) {
+        if (this->rx_data_.size() < 2)
+          continue;
+        value = (this->rx_data_[0] << 8) + c;
+      } else {
+        if (this->rx_data_.size() < 7)
+          continue;
+        value = (this->rx_data_[2] << 8) + this->rx_data_[3];
+      }
       if (this->current_pos_ != value) {
         this->current_pos_ = value;
         if (this->height_sensor_ != nullptr)
