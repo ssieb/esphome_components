@@ -36,7 +36,7 @@ void Desky::loop() {
 
   while (this->available()) {
     uint8_t c;
-    int value;
+    float value;
     this->read_byte(&c);
     switch (state) {
      case 0:
@@ -59,11 +59,24 @@ void Desky::loop() {
           continue;
         value = (this->rx_data_[0] << 8) + c;
       } else {
-        if (this->rx_data_.size() < 7)
+        int len = this->rx_data_.size();
+        if ((len < 4) || (len < this->rx_data_[3] + 4))
           continue;
-        value = (this->rx_data_[2] << 8) + this->rx_data_[3];
+        uint8_t csum = 0;
+        for (int i = 0; i < len - 2; i++)
+          csum += this->rx_data_[i];
+        value = NAN;
+        if (csum != this->rx_data_[len - 2]) {
+          ESP_LOGW(TAG, "checksum mismatch: %02x != %02x", csum, this->rx_data_[len - 2]);
+        } else if (this->rx_data_[len - 1] != 0x7e) {
+          ESP_LOGW(TAG, "invalid EOM");
+        } else if (this->rx_data_[0] != 1) {
+          ESP_LOGD(TAG, "unexpected message type %02x", this->rx_data_[0]);
+        } else {
+          value = (this->rx_data_[2] << 8) + this->rx_data_[3];
+        }
       }
-      if (this->current_pos_ != value) {
+      if (!std::isnan(value) && (this->current_pos_ != value)) {
         this->current_pos_ = value;
         if (this->height_sensor_ != nullptr)
           this->height_sensor_->publish_state(value);
