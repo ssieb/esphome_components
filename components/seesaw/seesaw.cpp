@@ -171,14 +171,15 @@ void Seesaw::digital_write(uint8_t pin, bool state) {
     this->write32(SEESAW_GPIO, SEESAW_GPIO_BULK_CLR, pin);
 }
 
-void Seesaw::setup_neopixel(int pin) {
+void Seesaw::setup_neopixel(int pin, uint16_t n) {
   this->write8(SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_SPEED, 1);
-  this->write16(SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_BUF_LENGTH, 3);
+  this->write16(SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_BUF_LENGTH, n * 3);
   this->write8(SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_PIN, pin);
 }
 
-void Seesaw::color_neopixel(uint8_t r, uint8_t g, uint8_t b) {
-  uint8_t buf[7] = {SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_BUF, 0, 0, g, r, b};
+void Seesaw::color_neopixel(uint16_t n, uint8_t r, uint8_t g, uint8_t b) {
+  uint16_t offset = n * 3;
+  uint8_t buf[7] = {SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_BUF, (offset >> 8), offset, g, r, b};
   this->write(buf, 7);
   buf[1] = SEESAW_NEOPIXEL_SHOW;
   this->write(buf, 2);
