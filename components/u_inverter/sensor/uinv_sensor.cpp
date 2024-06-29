@@ -33,19 +33,19 @@ void UInverterSensor::handle_message(UInverterCmd cmd, std::string &data) {
       this->fault_code_sensor_->publish_state(parse_number<int>(data.substr(0, 2)).value());
   } else if (cmd == CMD_HGRID) {
     if (this->mains_voltage_sensor_ != nullptr)
-      this->mains_voltage_sensor_->publish_state(parse_number<int>(data.substr(0, 5)).value());
+      this->mains_voltage_sensor_->publish_state(parse_number<float>(data.substr(0, 5)).value());
     if (this->mains_frequency_sensor_ != nullptr)
-      this->mains_frequency_sensor_->publish_state(parse_number<int>(data.substr(6, 4)).value());
+      this->mains_frequency_sensor_->publish_state(parse_number<float>(data.substr(6, 4)).value());
     if (this->mains_lossv_high_sensor_ != nullptr)
-      this->mains_lossv_high_sensor_->publish_state(parse_number<int>(data.substr(11, 3)).value());
+      this->mains_lossv_high_sensor_->publish_state(parse_number<float>(data.substr(11, 3)).value());
     if (this->mains_lossv_low_sensor_ != nullptr)
-      this->mains_lossv_low_sensor_->publish_state(parse_number<int>(data.substr(15, 3)).value());
+      this->mains_lossv_low_sensor_->publish_state(parse_number<float>(data.substr(15, 3)).value());
     if (this->mains_lossf_high_sensor_ != nullptr)
-      this->mains_lossf_high_sensor_->publish_state(parse_number<int>(data.substr(19, 3)).value());
+      this->mains_lossf_high_sensor_->publish_state(parse_number<float>(data.substr(19, 3)).value());
     if (this->mains_lossf_low_sensor_ != nullptr)
-      this->mains_lossf_low_sensor_->publish_state(parse_number<int>(data.substr(22, 3)).value());
+      this->mains_lossf_low_sensor_->publish_state(parse_number<float>(data.substr(22, 3)).value());
     if (this->mains_power_sensor_ != nullptr)
-      this->mains_power_sensor_->publish_state(parse_number<int>(data.substr(25, 5)).value());
+      this->mains_power_sensor_->publish_state(parse_number<float>(data.substr(25, 5)).value());
   }
 }
 
