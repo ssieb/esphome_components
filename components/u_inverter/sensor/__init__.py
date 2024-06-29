@@ -1,0 +1,116 @@
+import esphome.codegen as cg
+import esphome.config_validation as cv
+from esphome.components import sensor
+from esphome.const import (
+    CONF_ID,
+    DEVICE_CLASS_POWER,
+    DEVICE_CLASS_VOLTAGE,
+    ICON_FLASH,
+    ICON_CURRENT_AC,
+    ICON_THERMOMETER,
+    STATE_CLASS_MEASUREMENT,
+    UNIT_CELSIUS,
+    UNIT_HERTZ,
+    UNIT_VOLT,
+    UNIT_WATT,
+)
+from .. import (
+    u_inverter_ns,
+    UInverter,
+    CONF_U_INVERTER_ID,
+)
+
+UInverterSensor = u_inverter_ns.class_("UInverterSensor", cg.Component)
+
+CONF_FAULT_CODE = "fault_code"
+CONF_MAINS_VOLTAGE = "mains_voltage"
+CONF_MAINS_FREQUENCY = "mains_frequency"
+CONF_MAINS_LOSSV_HIGH = "mains_lossv_high"
+CONF_MAINS_LOSSV_LOW = "mains_lossv_low"
+CONF_MAINS_LOSSF_HIGH = "mains_lossf_high"
+CONF_MAINS_LOSSF_LOW = "mains_lossf_low"
+CONF_MAINS_POWER = "mains_power"
+
+CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
+    {
+        cv.GenerateID(): cv.declare_id(UInverterSensor),
+        cv.GenerateID(CONF_U_INVERTER_ID): cv.use_id(UInverter),
+        cv.Optional(CONF_FAULT_CODE): sensor.sensor_schema(
+            accuracy_decimals=0,
+        ),
+        cv.Optional(CONF_MAINS_VOLTAGE): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            icon=ICON_FLASH,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_VOLTAGE,
+        ),
+        cv.Optional(CONF_MAINS_FREQUENCY): sensor.sensor_schema(
+            unit_of_measurement=UNIT_HERTZ,
+            icon=ICON_CURRENT_AC,
+            accuracy_decimals=1,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_MAINS_LOSSV_HIGH): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            icon=ICON_FLASH,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_VOLTAGE,
+        ),
+        cv.Optional(CONF_MAINS_LOSSV_LOW): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            icon=ICON_FLASH,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_VOLTAGE,
+        ),
+        cv.Optional(CONF_MAINS_LOSSF_HIGH): sensor.sensor_schema(
+            unit_of_measurement=UNIT_HERTZ,
+            icon=ICON_CURRENT_AC,
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_MAINS_LOSSF_LOW): sensor.sensor_schema(
+            unit_of_measurement=UNIT_HERTZ,
+            icon=ICON_CURRENT_AC,
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_MAINS_POWER): sensor.sensor_schema(
+            unit_of_measurement=UNIT_WATT,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_POWER,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+    }
+)
+
+
+async def to_code(config):
+    var = cg.new_Pvariable(config[CONF_ID])
+    await cg.register_component(var, config)
+    parent = await cg.get_variable(config[CONF_U_INVERTER_ID])
+    cg.add(parent.register_listener(var))
+
+    if conf := config.get(CONF_FAULT_CODE):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_fault_code_sensor(sens))
+    if conf := config.get(CONF_MAINS_VOLTAGE):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_mains_voltage_sensor(sens))
+    if conf := config.get(CONF_MAINS_FREQUENCY):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_mains_frequency_sensor(sens))
+    if conf := config.get(CONF_MAINS_LOSSV_HIGH):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_mains_lossv_high_sensor(sens))
+    if conf := config.get(CONF_MAINS_LOSSV_LOW):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_mains_lossv_low_sensor(sens))
+    if conf := config.get(CONF_MAINS_LOSSF_HIGH):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_mains_lossf_high_sensor(sens))
+    if conf := config.get(CONF_MAINS_LOSSF_LOW):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_mains_lossf_low_sensor(sens))
+    if conf := config.get(CONF_MAINS_POWER):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_mains_power_sensor(sens))
