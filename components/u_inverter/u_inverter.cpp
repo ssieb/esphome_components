@@ -21,6 +21,9 @@ void UInverter::setup() {
 void UInverter::update() {
   this->send_command(CMD_HSTS);
   this->send_command(CMD_HGRID);
+  this->send_command(CMD_HOP);
+  this->send_command(CMD_HBAT);
+  this->send_command(CMD_HPV);
 }
 
 void UInverter::send_command(UInverterCmd cmd) {
