@@ -6,10 +6,17 @@
 namespace esphome {
 namespace analog_keypad {
 
-class AnalogKeypadBinarySensor : public AnalogKeypadListener, public binary_sensor::BinarySensor {
+class AnalogKeypadBinarySensor : public AnalogKeypadListener, public binary_sensor::BinarySensorInitiallyOff {
  public:
-  AnalogKeypadBinarySensor(const char *key) : has_key_(true), key_((uint8_t) key[0]){};
-  AnalogKeypadBinarySensor(uint8_t index) : has_key_(false), index_(index){};
+  void set_key(uint8_t key) {
+    this->has_key_ = true;
+    this->key_ = key;
+  }
+
+  void set_index(uint8_t index) {
+    this->has_key_ = false;
+    this->index_ = index;
+  }
 
   void key_pressed(uint8_t key) override {
     if (!this->has_key_)
