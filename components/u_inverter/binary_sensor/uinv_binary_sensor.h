@@ -9,6 +9,8 @@ namespace u_inverter {
 class UInverterBSensor : public UInverterListener, public Component {
  public:
   void dump_config() override;
+
+  // HSTS
   void set_load_energy_bsensor(binary_sensor::BinarySensor *bsensor) { this->load_energy_bsensor_ = bsensor; }
   void set_has_output_bsensor(binary_sensor::BinarySensor *bsensor) { this->has_output_bsensor_ = bsensor; }
   void set_low_battery_bsensor(binary_sensor::BinarySensor *bsensor) { this->low_battery_bsensor_ = bsensor; }
@@ -19,6 +21,11 @@ class UInverterBSensor : public UInverterListener, public Component {
   void set_input_too_high_bsensor(binary_sensor::BinarySensor *bsensor) { this->input_too_high_bsensor_ = bsensor; }
   void set_battery_too_high_bsensor(binary_sensor::BinarySensor *bsensor) { this->battery_too_high_bsensor_ = bsensor; }
   void set_fan_speed_error_bsensor(binary_sensor::BinarySensor *bsensor) { this->fan_speed_error_bsensor_ = bsensor; }
+
+  // HBAT
+  void set_allow_battery_charging_bsensor(binary_sensor::BinarySensor *bsensor) { this->allow_battery_charging_bsensor_ = bsensor; }
+  void set_solar_battery_charging_bsensor(binary_sensor::BinarySensor *bsensor) { this->solar_battery_charging_bsensor_ = bsensor; }
+  void set_grid_battery_charging_bsensor(binary_sensor::BinarySensor *bsensor) { this->grid_battery_charging_bsensor_ = bsensor; }
 
  protected:
   binary_sensor::BinarySensor *load_energy_bsensor_{nullptr};
@@ -31,6 +38,10 @@ class UInverterBSensor : public UInverterListener, public Component {
   binary_sensor::BinarySensor *input_too_high_bsensor_{nullptr};
   binary_sensor::BinarySensor *battery_too_high_bsensor_{nullptr};
   binary_sensor::BinarySensor *fan_speed_error_bsensor_{nullptr};
+
+  binary_sensor::BinarySensor *allow_battery_charging_bsensor_{nullptr};
+  binary_sensor::BinarySensor *solar_battery_charging_bsensor_{nullptr};
+  binary_sensor::BinarySensor *grid_battery_charging_bsensor_{nullptr};
 
   void handle_message(UInverterCmd cmd, std::string &data) override;
 };

@@ -19,6 +19,9 @@ void UInverterBSensor::dump_config() {
   LOG_BINARY_SENSOR("  ", "Input Too High", this->input_too_high_bsensor_);
   LOG_BINARY_SENSOR("  ", "Battery Too High", this->battery_too_high_bsensor_);
   LOG_BINARY_SENSOR("  ", "Fan Speed Error", this->fan_speed_error_bsensor_);
+  LOG_BINARY_SENSOR("  ", "Allow Battery Charging", this->allow_battery_charging_bsensor_);
+  LOG_BINARY_SENSOR("  ", "Solar Battery Charging", this->solar_battery_charging_bsensor_);
+  LOG_BINARY_SENSOR("  ", "Grid Battery Charging", this->grid_battery_charging_bsensor_);
 }
 
 void UInverterBSensor::handle_message(UInverterCmd cmd, std::string &data) {
@@ -43,6 +46,13 @@ void UInverterBSensor::handle_message(UInverterCmd cmd, std::string &data) {
       this->battery_too_high_bsensor_->publish_state(data[14] != '0');
     if (this->fan_speed_error_bsensor_ != nullptr)
       this->fan_speed_error_bsensor_->publish_state(data[15] != '0');
+  } else if (cmd == CMD_HBAT) {
+    if (this->allow_battery_charging_bsensor_ != nullptr)
+      this->allow_battery_charging_bsensor_->publish_state(data[27] != '0');
+    if (this->solar_battery_charging_bsensor_ != nullptr)
+      this->solar_battery_charging_bsensor_->publish_state(data[28] != '0');
+    if (this->grid_battery_charging_bsensor_ != nullptr)
+      this->grid_battery_charging_bsensor_->publish_state(data[29] != '0');
   }
 }
 

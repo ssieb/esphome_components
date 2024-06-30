@@ -25,6 +25,10 @@ CONF_INPUT_TOO_HIGH = "input_too_high"
 CONF_BATTERY_TOO_HIGH = "battery_too_high"
 CONF_FAN_SPEED_ERROR = "fan_speed_error"
 
+CONF_ALLOW_BATTERY_CHARGING = "allow_battery_charging"
+CONF_SOLAR_BATTERY_CHARGING = "solar_battery_charging"
+CONF_GRID_BATTERY_CHARGING = "grid_battery_charging"
+
 CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
     {
         cv.GenerateID(): cv.declare_id(UInverterBSensor),
@@ -60,6 +64,10 @@ CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
             device_class=DEVICE_CLASS_PROBLEM,
             entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
+
+        cv.Optional(CONF_ALLOW_BATTERY_CHARGING): binary_sensor.binary_sensor_schema(),
+        cv.Optional(CONF_SOLAR_BATTERY_CHARGING): binary_sensor.binary_sensor_schema(),
+        cv.Optional(CONF_GRID_BATTERY_CHARGING): binary_sensor.binary_sensor_schema(),
     }
 )
 
@@ -100,3 +108,12 @@ async def to_code(config):
     if conf := config.get(CONF_FAN_SPEED_ERROR):
         sens = await binary_sensor.new_binary_sensor(conf)
         cg.add(var.set_fan_speed_error_bsensor(sens))
+    if conf := config.get(CONF_ALLOW_BATTERY_CHARGING):
+        sens = await binary_sensor.new_binary_sensor(conf)
+        cg.add(var.set_allow_battery_charging_bsensor(sens))
+    if conf := config.get(CONF_SOLAR_BATTERY_CHARGING):
+        sens = await binary_sensor.new_binary_sensor(conf)
+        cg.add(var.set_solar_battery_charging_bsensor(sens))
+    if conf := config.get(CONF_GRID_BATTERY_CHARGING):
+        sens = await binary_sensor.new_binary_sensor(conf)
+        cg.add(var.set_grid_battery_charging_bsensor(sens))
