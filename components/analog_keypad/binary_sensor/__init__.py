@@ -25,9 +25,11 @@ CONFIG_SCHEMA = cv.All(
 
 async def to_code(config):
     if CONF_KEY in config:
-        var = cg.new_Pvariable(config[CONF_ID], config[CONF_KEY][0])
+        var = cg.new_Pvariable(config[CONF_ID])
+        cg.add(var.set_key(ord(config[CONF_KEY][0])))
     else:
-        var = cg.new_Pvariable(config[CONF_ID], config[CONF_INDEX])
+        var = cg.new_Pvariable(config[CONF_ID])
+        cg.add(var.set_index(config[CONF_INDEX]))
     await binary_sensor.register_binary_sensor(var, config)
     analog_keypad = await cg.get_variable(config[CONF_KEYPAD_ID])
     cg.add(analog_keypad.register_listener(var))
