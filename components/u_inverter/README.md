@@ -83,4 +83,18 @@ binary_sensor:
       name: Solar Battery Charging
     grid_battery_charging:
       name: Grid Battery Charging
+
+text_sensor:
+  - platform: u_inverter
+    operating_mode:
+      name: Operating Mode
+      filters:
+        - map:
+            - P -> Power On
+            - S -> Standby
+            - L -> On Grid
+            - B -> On Battery
+            - F -> System Fault
+            - D -> Shutdown
+            - X -> Test
 ```
