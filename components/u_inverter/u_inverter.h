@@ -14,6 +14,7 @@ enum UInverterCmd : uint8_t {
   CMD_HOP,
   CMD_HBAT,
   CMD_HPV,
+  CMD_HPVB,
   CMD_HTEMP,
   CMD_HEEP,
   CMD_HBMS,

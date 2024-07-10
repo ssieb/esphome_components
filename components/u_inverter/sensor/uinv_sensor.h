@@ -33,6 +33,22 @@ class UInverterSensor : public UInverterListener, public Component {
   void set_battery_discharge_current_sensor(sensor::Sensor *sensor) { this->battery_discharge_current_sensor_ = sensor; }
   void set_inv_bus_voltage_sensor(sensor::Sensor *sensor) { this->inv_bus_voltage_sensor_ = sensor; }
 
+  void set_pv_voltage_sensor(sensor::Sensor *sensor) { this->pv_voltage_sensor_ = sensor; }
+  void set_pv_current_sensor(sensor::Sensor *sensor) { this->pv_current_sensor_ = sensor; }
+  void set_pv_power_sensor(sensor::Sensor *sensor) { this->pv_power_sensor_ = sensor; }
+
+  void set_pvb_voltage_sensor(sensor::Sensor *sensor) { this->pvb_voltage_sensor_ = sensor; }
+  void set_pvb_current_sensor(sensor::Sensor *sensor) { this->pvb_current_sensor_ = sensor; }
+  void set_pvb_power_sensor(sensor::Sensor *sensor) { this->pvb_power_sensor_ = sensor; }
+
+  void set_pv_input_temp_sensor(sensor::Sensor *sensor) { this->pv_input_temp_sensor_ = sensor; }
+  void set_inverter_temp_sensor(sensor::Sensor *sensor) { this->inverter_temp_sensor_ = sensor; }
+  void set_boost_temp_sensor(sensor::Sensor *sensor) { this->boost_temp_sensor_ = sensor; }
+  void set_transformer_temp_sensor(sensor::Sensor *sensor) { this->transformer_temp_sensor_ = sensor; }
+  void set_hotspot_temp_sensor(sensor::Sensor *sensor) { this->hotspot_temp_sensor_ = sensor; }
+  void set_fan1_speed_sensor(sensor::Sensor *sensor) { this->fan1_speed_sensor_ = sensor; }
+  void set_fan2_speed_sensor(sensor::Sensor *sensor) { this->fan2_speed_sensor_ = sensor; }
+
  protected:
   sensor::Sensor *fault_code_sensor_{nullptr};
 
@@ -57,6 +73,22 @@ class UInverterSensor : public UInverterListener, public Component {
   sensor::Sensor *battery_charge_current_sensor_{nullptr};
   sensor::Sensor *battery_discharge_current_sensor_{nullptr};
   sensor::Sensor *inv_bus_voltage_sensor_{nullptr};
+
+  sensor::Sensor *pv_voltage_sensor_{nullptr};
+  sensor::Sensor *pv_current_sensor_{nullptr};
+  sensor::Sensor *pv_power_sensor_{nullptr};
+
+  sensor::Sensor *pvb_voltage_sensor_{nullptr};
+  sensor::Sensor *pvb_current_sensor_{nullptr};
+  sensor::Sensor *pvb_power_sensor_{nullptr};
+
+  sensor::Sensor *pv_input_temp_sensor_{nullptr};
+  sensor::Sensor *inverter_temp_sensor_{nullptr};
+  sensor::Sensor *boost_temp_sensor_{nullptr};
+  sensor::Sensor *transformer_temp_sensor_{nullptr};
+  sensor::Sensor *hotspot_temp_sensor_{nullptr};
+  sensor::Sensor *fan1_speed_sensor_{nullptr};
+  sensor::Sensor *fan2_speed_sensor_{nullptr};
 
   void handle_message(UInverterCmd cmd, std::string &data) override;
 };

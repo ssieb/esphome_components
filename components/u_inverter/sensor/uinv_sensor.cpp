@@ -84,7 +84,37 @@ void UInverterSensor::handle_message(UInverterCmd cmd, std::string &data) {
       this->battery_discharge_current_sensor_->publish_state(parse_number<float>(data.substr(17, 5)).value());
     if (this->inv_bus_voltage_sensor_ != nullptr)
       this->inv_bus_voltage_sensor_->publish_state(parse_number<float>(data.substr(23, 3)).value());
+  } else if (cmd == CMD_HPV) {
+    if (this->pv_voltage_sensor_ != nullptr)
+      this->pv_voltage_sensor_->publish_state(parse_number<float>(data.substr(0, 5)).value());
+    if (this->pv_current_sensor_ != nullptr)
+      this->pv_current_sensor_->publish_state(parse_number<float>(data.substr(6, 4)).value());
+    if (this->pv_power_sensor_ != nullptr)
+      this->pv_power_sensor_->publish_state(parse_number<float>(data.substr(11, 5)).value());
+  } else if (cmd == CMD_HPVB) {
+    if (this->pvb_voltage_sensor_ != nullptr)
+      this->pvb_voltage_sensor_->publish_state(parse_number<float>(data.substr(0, 5)).value());
+    if (this->pvb_current_sensor_ != nullptr)
+      this->pvb_current_sensor_->publish_state(parse_number<float>(data.substr(6, 4)).value());
+    if (this->pvb_power_sensor_ != nullptr)
+      this->pvb_power_sensor_->publish_state(parse_number<float>(data.substr(11, 5)).value());
+  } else if (cmd == CMD_HTEMP) {
+    if (this->pv_input_temp_sensor_ != nullptr)
+      this->pv_input_temp_sensor_->publish_state(parse_number<float>(data.substr(0, 3)).value());
+    if (this->inverter_temp_sensor_ != nullptr)
+      this->inverter_temp_sensor_->publish_state(parse_number<float>(data.substr(4, 3)).value());
+    if (this->boost_temp_sensor_ != nullptr)
+      this->boost_temp_sensor_->publish_state(parse_number<float>(data.substr(8, 3)).value());
+    if (this->transformer_temp_sensor_ != nullptr)
+      this->transformer_temp_sensor_->publish_state(parse_number<float>(data.substr(12, 3)).value());
+    if (this->hotspot_temp_sensor_ != nullptr)
+      this->hotspot_temp_sensor_->publish_state(parse_number<float>(data.substr(16, 3)).value());
+    if (this->fan1_speed_sensor_ != nullptr)
+      this->fan1_speed_sensor_->publish_state(parse_number<float>(data.substr(20, 3)).value());
+    if (this->fan2_speed_sensor_ != nullptr)
+      this->fan2_speed_sensor_->publish_state(parse_number<float>(data.substr(24, 3)).value());
   }
+
 }
 
 }  // namespace u_inverter

@@ -53,7 +53,35 @@ sensor:
     inv_bus_voltage:
       name: Inverter Bus Voltage
 
-      
+    pv_voltage:
+      name: PV Voltage
+    pv_current:
+      name: PV Current
+    pv_power:
+      name: PV Power
+
+    pvb_voltage:
+      name: PV 2 Voltage
+    pvb_current:
+      name: PV 2 Current
+    pvb_power:
+      name: PV 2 Power
+
+    pv_input_temp:
+      name: PV DC Input Temperature
+    inverter_temp:
+      name: Inverter Temperature
+    boost_temp:
+      name: Boost Temperature
+    transformer_temp:
+      name: Transformer Temperature
+    hotspot_temp:
+      name: Hot Spot Temperature
+    fan1_speed:
+      name: Fan 1 Speed Percentage
+    fan2_speed:
+      name: Fan 2 Speed Percentage
+
 binary_sensor:
   - platform: u_inverter
     load_energy:
@@ -83,6 +111,11 @@ binary_sensor:
       name: Solar Battery Charging
     grid_battery_charging:
       name: Grid Battery Charging
+
+    fan1_on:
+      name: Fan 1 On
+    fan2_on:
+      name: Fan 2 On
 
 text_sensor:
   - platform: u_inverter

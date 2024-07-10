@@ -5,6 +5,7 @@ from esphome.const import (
     CONF_ID,
     DEVICE_CLASS_CURRENT,
     DEVICE_CLASS_POWER,
+    DEVICE_CLASS_TEMPERATURE,
     DEVICE_CLASS_VOLTAGE,
     ICON_FLASH,
     ICON_CURRENT_AC,
@@ -49,6 +50,22 @@ CONF_BATTERY_CAPACITY = "battery_capacity"
 CONF_BATTERY_CHARGE_CURRENT = "battery_charge_current"
 CONF_BATTERY_DISCHARGE_CURRENT = "battery_discharge_current"
 CONF_INV_BUS_VOLTAGE = "inv_bus_voltage"
+
+CONF_PV_VOLTAGE = "pv_voltage"
+CONF_PV_CURRENT = "pv_current"
+CONF_PV_POWER = "pv_power"
+
+CONF_PVB_VOLTAGE = "pvb_voltage"
+CONF_PVB_CURRENT = "pvb_current"
+CONF_PVB_POWER = "pvb_power"
+
+CONF_PV_INPUT_TEMP = "pv_input_temp"
+CONF_INVERTER_TEMP = "inverter_temp"
+CONF_BOOST_TEMP = "boost_temp"
+CONF_TRANSFORMER_TEMP = "transformer_temp"
+CONF_HOTSPOT_TEMP = "hotspot_temp"
+CONF_FAN1_SPEED = "fan1_speed"
+CONF_FAN2_SPEED = "fan2_speed"
 
 CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
     {
@@ -178,6 +195,97 @@ CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
             device_class=DEVICE_CLASS_VOLTAGE,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
+
+        cv.Optional(CONF_PV_VOLTAGE): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            icon=ICON_FLASH,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_PV_CURRENT): sensor.sensor_schema(
+            unit_of_measurement=UNIT_AMPERE,
+            icon=ICON_CURRENT_AC,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_CURRENT,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_PV_POWER): sensor.sensor_schema(
+            unit_of_measurement=UNIT_WATT,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_POWER,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+
+        cv.Optional(CONF_PVB_VOLTAGE): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            icon=ICON_FLASH,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_PVB_CURRENT): sensor.sensor_schema(
+            unit_of_measurement=UNIT_AMPERE,
+            icon=ICON_CURRENT_AC,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_CURRENT,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_PVB_POWER): sensor.sensor_schema(
+            unit_of_measurement=UNIT_WATT,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_POWER,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+
+        cv.Optional(CONF_PV_INPUT_TEMP): sensor.sensor_schema(
+            unit_of_measurement=UNIT_CELSIUS,
+            icon=ICON_THERMOMETER,
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_MEASUREMENT,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+        ),
+        cv.Optional(CONF_INVERTER_TEMP): sensor.sensor_schema(
+            unit_of_measurement=UNIT_CELSIUS,
+            icon=ICON_THERMOMETER,
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_MEASUREMENT,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+        ),
+        cv.Optional(CONF_BOOST_TEMP): sensor.sensor_schema(
+            unit_of_measurement=UNIT_CELSIUS,
+            icon=ICON_THERMOMETER,
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_MEASUREMENT,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+        ),
+        cv.Optional(CONF_TRANSFORMER_TEMP): sensor.sensor_schema(
+            unit_of_measurement=UNIT_CELSIUS,
+            icon=ICON_THERMOMETER,
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_MEASUREMENT,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+        ),
+        cv.Optional(CONF_HOTSPOT_TEMP): sensor.sensor_schema(
+            unit_of_measurement=UNIT_CELSIUS,
+            icon=ICON_THERMOMETER,
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_MEASUREMENT,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+        ),
+        cv.Optional(CONF_FAN1_SPEED): sensor.sensor_schema(
+            unit_of_measurement=UNIT_PERCENT,
+            icon=ICON_PERCENT,
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_FAN2_SPEED): sensor.sensor_schema(
+            unit_of_measurement=UNIT_PERCENT,
+            icon=ICON_PERCENT,
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+
     }
 )
 
@@ -251,3 +359,45 @@ async def to_code(config):
     if conf := config.get(CONF_INV_BUS_VOLTAGE):
         sens = await sensor.new_sensor(conf)
         cg.add(var.set_inv_bus_voltage_sensor(sens))
+
+    if conf := config.get(CONF_PV_VOLTAGE):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_pv_voltage_sensor(sens))
+    if conf := config.get(CONF_PV_CURRENT):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_pv_current_sensor(sens))
+    if conf := config.get(CONF_PV_POWER):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_pv_power_sensor(sens))
+
+    if conf := config.get(CONF_PVB_VOLTAGE):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_pvb_voltage_sensor(sens))
+    if conf := config.get(CONF_PVB_CURRENT):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_pvb_current_sensor(sens))
+    if conf := config.get(CONF_PVB_POWER):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_pvb_power_sensor(sens))
+
+    if conf := config.get(CONF_PV_INPUT_TEMP):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_pv_input_temp_sensor(sens))
+    if conf := config.get(CONF_INVERTER_TEMP):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_inverter_temp_sensor(sens))
+    if conf := config.get(CONF_BOOST_TEMP):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_boost_temp_sensor(sens))
+    if conf := config.get(CONF_TRANSFORMER_TEMP):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_transformer_temp_sensor(sens))
+    if conf := config.get(CONF_HOTSPOT_TEMP):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_hotspot_temp_sensor(sens))
+    if conf := config.get(CONF_FAN1_SPEED):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_fan1_speed_sensor(sens))
+    if conf := config.get(CONF_FAN2_SPEED):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_fan2_speed_sensor(sens))

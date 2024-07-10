@@ -27,6 +27,10 @@ class UInverterBSensor : public UInverterListener, public Component {
   void set_solar_battery_charging_bsensor(binary_sensor::BinarySensor *bsensor) { this->solar_battery_charging_bsensor_ = bsensor; }
   void set_grid_battery_charging_bsensor(binary_sensor::BinarySensor *bsensor) { this->grid_battery_charging_bsensor_ = bsensor; }
 
+  // HTEMP
+  void set_fan1_on_bsensor(binary_sensor::BinarySensor *bsensor) { this->fan1_on_bsensor_ = bsensor; }
+  void set_fan2_on_bsensor(binary_sensor::BinarySensor *bsensor) { this->fan2_on_bsensor_ = bsensor; }
+
  protected:
   binary_sensor::BinarySensor *load_energy_bsensor_{nullptr};
   binary_sensor::BinarySensor *has_output_bsensor_{nullptr};
@@ -42,6 +46,9 @@ class UInverterBSensor : public UInverterListener, public Component {
   binary_sensor::BinarySensor *allow_battery_charging_bsensor_{nullptr};
   binary_sensor::BinarySensor *solar_battery_charging_bsensor_{nullptr};
   binary_sensor::BinarySensor *grid_battery_charging_bsensor_{nullptr};
+
+  binary_sensor::BinarySensor *fan1_on_bsensor_{nullptr};
+  binary_sensor::BinarySensor *fan2_on_bsensor_{nullptr};
 
   void handle_message(UInverterCmd cmd, std::string &data) override;
 };

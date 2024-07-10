@@ -29,6 +29,9 @@ CONF_ALLOW_BATTERY_CHARGING = "allow_battery_charging"
 CONF_SOLAR_BATTERY_CHARGING = "solar_battery_charging"
 CONF_GRID_BATTERY_CHARGING = "grid_battery_charging"
 
+CONF_FAN1_ON = "fan1_on"
+CONF_FAN2_ON = "fan2_on"
+
 CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
     {
         cv.GenerateID(): cv.declare_id(UInverterBSensor),
@@ -68,6 +71,10 @@ CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
         cv.Optional(CONF_ALLOW_BATTERY_CHARGING): binary_sensor.binary_sensor_schema(),
         cv.Optional(CONF_SOLAR_BATTERY_CHARGING): binary_sensor.binary_sensor_schema(),
         cv.Optional(CONF_GRID_BATTERY_CHARGING): binary_sensor.binary_sensor_schema(),
+
+        cv.Optional(CONF_FAN1_ON): binary_sensor.binary_sensor_schema(),
+        cv.Optional(CONF_FAN2_ON): binary_sensor.binary_sensor_schema(),
+
     }
 )
 
@@ -108,6 +115,7 @@ async def to_code(config):
     if conf := config.get(CONF_FAN_SPEED_ERROR):
         sens = await binary_sensor.new_binary_sensor(conf)
         cg.add(var.set_fan_speed_error_bsensor(sens))
+
     if conf := config.get(CONF_ALLOW_BATTERY_CHARGING):
         sens = await binary_sensor.new_binary_sensor(conf)
         cg.add(var.set_allow_battery_charging_bsensor(sens))
@@ -117,3 +125,10 @@ async def to_code(config):
     if conf := config.get(CONF_GRID_BATTERY_CHARGING):
         sens = await binary_sensor.new_binary_sensor(conf)
         cg.add(var.set_grid_battery_charging_bsensor(sens))
+
+    if conf := config.get(CONF_FAN1_ON):
+        sens = await binary_sensor.new_binary_sensor(conf)
+        cg.add(var.set_fan1_on_bsensor(sens))
+    if conf := config.get(CONF_FAN2_ON):
+        sens = await binary_sensor.new_binary_sensor(conf)
+        cg.add(var.set_fan2_on_bsensor(sens))

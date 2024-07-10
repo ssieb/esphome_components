@@ -53,6 +53,11 @@ void UInverterBSensor::handle_message(UInverterCmd cmd, std::string &data) {
       this->solar_battery_charging_bsensor_->publish_state(data[28] != '0');
     if (this->grid_battery_charging_bsensor_ != nullptr)
       this->grid_battery_charging_bsensor_->publish_state(data[29] != '0');
+  } else if (cmd == CMD_HTEMP) {
+    if (this->fan1_on_bsensor_ != nullptr)
+      this->fan1_on_bsensor_->publish_state(data[28] != '0');
+    if (this->fan2_on_bsensor_ != nullptr)
+      this->fan2_on_bsensor_->publish_state(data[29] != '0');
   }
 }
 
