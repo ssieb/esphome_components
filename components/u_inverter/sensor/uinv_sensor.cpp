@@ -24,7 +24,6 @@ void UInverterSensor::dump_config() {
   LOG_SENSOR("  ", "Mains Loss Voltage Low", this->mains_lossv_low_sensor_);
   LOG_SENSOR("  ", "Mains Loss Frequency High", this->mains_lossf_high_sensor_);
   LOG_SENSOR("  ", "Mains Loss Frequency Low", this->mains_lossf_low_sensor_);
-  LOG_SENSOR("  ", "Mains Power", this->mains_power_sensor_);
   LOG_SENSOR("  ", "Output Voltage", this->output_voltage_sensor_);
   LOG_SENSOR("  ", "Output Frequency", this->output_frequency_sensor_);
   LOG_SENSOR("  ", "Output Reactive Power", this->output_reactive_power_sensor_);
@@ -53,11 +52,9 @@ void UInverterSensor::handle_message(UInverterCmd cmd, std::string &data) {
     if (this->mains_lossv_low_sensor_ != nullptr)
       this->mains_lossv_low_sensor_->publish_state(parse_number<float>(data.substr(15, 3)).value());
     if (this->mains_lossf_high_sensor_ != nullptr)
-      this->mains_lossf_high_sensor_->publish_state(parse_number<float>(data.substr(19, 3)).value());
+      this->mains_lossf_high_sensor_->publish_state(parse_number<float>(data.substr(19, 2)).value());
     if (this->mains_lossf_low_sensor_ != nullptr)
-      this->mains_lossf_low_sensor_->publish_state(parse_number<float>(data.substr(22, 3)).value());
-    if (this->mains_power_sensor_ != nullptr)
-      this->mains_power_sensor_->publish_state(parse_number<float>(data.substr(25, 5)).value());
+      this->mains_lossf_low_sensor_->publish_state(parse_number<float>(data.substr(22, 2)).value());
   } else if (cmd == CMD_HOP) {
     if (this->output_voltage_sensor_ != nullptr)
       this->output_voltage_sensor_->publish_state(parse_number<float>(data.substr(0, 5)).value());

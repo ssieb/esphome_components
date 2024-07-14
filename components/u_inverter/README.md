@@ -24,8 +24,6 @@ sensor:
       name: Mains Loss Frequency High
     mains_lossf_low:
       name: Mains Loss Frequency Low
-    mains_power:
-      name: Mains Power
 
     output_voltage:
       name: Output Voltage

@@ -17,7 +17,6 @@ class UInverterSensor : public UInverterListener, public Component {
   void set_mains_lossv_low_sensor(sensor::Sensor *sensor) { this->mains_lossv_low_sensor_ = sensor; }
   void set_mains_lossf_high_sensor(sensor::Sensor *sensor) { this->mains_lossf_high_sensor_ = sensor; }
   void set_mains_lossf_low_sensor(sensor::Sensor *sensor) { this->mains_lossf_low_sensor_ = sensor; }
-  void set_mains_power_sensor(sensor::Sensor *sensor) { this->mains_power_sensor_ = sensor; }
 
   void set_output_voltage_sensor(sensor::Sensor *sensor) { this->output_voltage_sensor_ = sensor; }
   void set_output_frequency_sensor(sensor::Sensor *sensor) { this->output_frequency_sensor_ = sensor; }
@@ -58,7 +57,6 @@ class UInverterSensor : public UInverterListener, public Component {
   sensor::Sensor *mains_lossv_low_sensor_{nullptr};
   sensor::Sensor *mains_lossf_high_sensor_{nullptr};
   sensor::Sensor *mains_lossf_low_sensor_{nullptr};
-  sensor::Sensor *mains_power_sensor_{nullptr};
 
   sensor::Sensor *output_voltage_sensor_{nullptr};
   sensor::Sensor *output_frequency_sensor_{nullptr};

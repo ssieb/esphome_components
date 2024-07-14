@@ -35,7 +35,6 @@ CONF_MAINS_LOSSV_HIGH = "mains_lossv_high"
 CONF_MAINS_LOSSV_LOW = "mains_lossv_low"
 CONF_MAINS_LOSSF_HIGH = "mains_lossf_high"
 CONF_MAINS_LOSSF_LOW = "mains_lossf_low"
-CONF_MAINS_POWER = "mains_power"
 
 CONF_OUTPUT_VOLTAGE = "output_voltage"
 CONF_OUTPUT_FREQUENCY = "output_frequency"
@@ -113,12 +112,6 @@ CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
             unit_of_measurement=UNIT_HERTZ,
             icon=ICON_CURRENT_AC,
             accuracy_decimals=0,
-            state_class=STATE_CLASS_MEASUREMENT,
-        ),
-        cv.Optional(CONF_MAINS_POWER): sensor.sensor_schema(
-            unit_of_measurement=UNIT_WATT,
-            accuracy_decimals=0,
-            device_class=DEVICE_CLASS_POWER,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
 
@@ -318,9 +311,6 @@ async def to_code(config):
     if conf := config.get(CONF_MAINS_LOSSF_LOW):
         sens = await sensor.new_sensor(conf)
         cg.add(var.set_mains_lossf_low_sensor(sens))
-    if conf := config.get(CONF_MAINS_POWER):
-        sens = await sensor.new_sensor(conf)
-        cg.add(var.set_mains_power_sensor(sens))
 
     if conf := config.get(CONF_OUTPUT_VOLTAGE):
         sens = await sensor.new_sensor(conf)
