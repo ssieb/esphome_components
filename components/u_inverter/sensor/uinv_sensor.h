@@ -48,6 +48,18 @@ class UInverterSensor : public UInverterListener, public Component {
   void set_fan1_speed_sensor(sensor::Sensor *sensor) { this->fan1_speed_sensor_ = sensor; }
   void set_fan2_speed_sensor(sensor::Sensor *sensor) { this->fan2_speed_sensor_ = sensor; }
 
+  void set_max_total_charging_current_sensor(sensor::Sensor *sensor) { this->max_total_charging_current_sensor_ = sensor; }
+  void set_max_grid_charging_current_sensor(sensor::Sensor *sensor) { this->max_grid_charging_current_sensor_ = sensor; }
+  void set_output_set_voltage_sensor(sensor::Sensor *sensor) { this->output_set_voltage_sensor_ = sensor; }
+  void set_target_charging_voltage_sensor(sensor::Sensor *sensor) { this->target_charging_voltage_sensor_ = sensor; }
+  void set_battery_float_voltage_sensor(sensor::Sensor *sensor) { this->battery_float_voltage_sensor_ = sensor; }
+  void set_battery_power_off_voltage_sensor(sensor::Sensor *sensor) { this->battery_power_off_voltage_sensor_ = sensor; }
+
+  void set_daily_energy_sensor(sensor::Sensor *sensor) { this->daily_energy_sensor_ = sensor; }
+  void set_monthly_energy_sensor(sensor::Sensor *sensor) { this->monthly_energy_sensor_ = sensor; }
+  void set_annual_energy_sensor(sensor::Sensor *sensor) { this->annual_energy_sensor_ = sensor; }
+  void set_total_energy_sensor(sensor::Sensor *sensor) { this->total_energy_sensor_ = sensor; }
+
  protected:
   sensor::Sensor *fault_code_sensor_{nullptr};
 
@@ -87,6 +99,18 @@ class UInverterSensor : public UInverterListener, public Component {
   sensor::Sensor *hotspot_temp_sensor_{nullptr};
   sensor::Sensor *fan1_speed_sensor_{nullptr};
   sensor::Sensor *fan2_speed_sensor_{nullptr};
+
+  sensor::Sensor *max_total_charging_current_sensor_{nullptr};
+  sensor::Sensor *max_grid_charging_current_sensor_{nullptr};
+  sensor::Sensor *output_set_voltage_sensor_{nullptr};
+  sensor::Sensor *target_charging_voltage_sensor_{nullptr};
+  sensor::Sensor *battery_float_voltage_sensor_{nullptr};
+  sensor::Sensor *battery_power_off_voltage_sensor_{nullptr};
+
+  sensor::Sensor *daily_energy_sensor_{nullptr};
+  sensor::Sensor *monthly_energy_sensor_{nullptr};
+  sensor::Sensor *annual_energy_sensor_{nullptr};
+  sensor::Sensor *total_energy_sensor_{nullptr};
 
   void handle_message(UInverterCmd cmd, std::string &data) override;
 };

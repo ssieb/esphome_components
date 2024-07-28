@@ -80,6 +80,28 @@ sensor:
     fan2_speed:
       name: Fan 2 Speed Percentage
 
+    max_total_charging_current:
+      name: Maximum Total Charging Current
+    max_grid_charging_current:
+      name: Maximum Grid Charging Current
+    output_set_voltage:
+      name: Output Set Voltage
+    target_charging_voltage:
+      name: Target Charging Voltage
+    battery_float_voltage:
+      name: Battery Float Voltage
+    battery_power_off_voltage:
+      name: Battery Power-Off Voltage
+
+    daily_energy:
+      name: Daily Energy
+    monthly_energy:
+      name: Monthly Energy
+    annual_energy:
+      name: Annual Energy
+    total_energy:
+      name: Total Energy
+
 binary_sensor:
   - platform: u_inverter
     load_energy:
@@ -128,4 +150,28 @@ text_sensor:
             - F -> System Fault
             - D -> Shutdown
             - X -> Test
+
+    working_mode:
+      name: Working Mode
+      filters:
+        - map:
+            - 0 -> UTI
+            - 1 -> SUB
+            - 2 -> SBU
+    grid_voltage_range:
+      name: Grid Voltage Range
+      filters:
+        - map:
+            - 0 -> APL
+            - 1 -> UPS
+    battery_type:
+      name: Battery Type
+      filters:
+        - map:
+            - 0 -> AGM
+            - 1 -> FLD
+            - 2 -> USE
+
+    system_time:
+      name: System Time
 ```

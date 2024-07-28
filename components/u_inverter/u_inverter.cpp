@@ -26,6 +26,8 @@ void UInverter::update() {
   this->send_command(CMD_HPV);
   this->send_command(CMD_HPVB);
   this->send_command(CMD_HTEMP);
+  this->send_command(CMD_HEEP1);
+  this->send_command(CMD_HGEN);
 }
 
 void UInverter::send_command(UInverterCmd cmd) {
@@ -48,7 +50,7 @@ static const char *cmd_to_str(UInverterCmd cmd) {
     case CMD_HPV: return "HPV";
     case CMD_HPVB: return "HPVB";
     case CMD_HTEMP: return "HTEMP";
-    case CMD_HEEP: return "HEEP";
+    case CMD_HEEP1: return "HEEP1";
     case CMD_HBMS: return "HBMS";
     case CMD_HGEN: return "HGEN";
   }

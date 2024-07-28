@@ -16,7 +16,7 @@ static inline int16_t get_i16(std::vector<uint8_t> &message, int start) {
 }
 
 void UInverterSensor::dump_config() {
-  ESP_LOGCONFIG(TAG, "Unknown Inverter:");
+  ESP_LOGCONFIG(TAG, "Unknown Inverter Sensor:");
   LOG_SENSOR("  ", "Fault Code", this->fault_code_sensor_);
   LOG_SENSOR("  ", "Mains Voltage", this->mains_voltage_sensor_);
   LOG_SENSOR("  ", "Mains Frequency", this->mains_frequency_sensor_);
@@ -36,6 +36,16 @@ void UInverterSensor::dump_config() {
   LOG_SENSOR("  ", "Battery Charge Current", this->battery_charge_current_sensor_);
   LOG_SENSOR("  ", "Battery Discharge Current", this->battery_discharge_current_sensor_);
   LOG_SENSOR("  ", "Inverter Bus Voltage", this->inv_bus_voltage_sensor_);
+  LOG_SENSOR("  ", "Maximum Total Charging Current", this->max_total_charging_current_sensor_);
+  LOG_SENSOR("  ", "Maximum Grid Charging Current", this->max_grid_charging_current_sensor_);
+  LOG_SENSOR("  ", "Output Set Voltage", this->output_set_voltage_sensor_);
+  LOG_SENSOR("  ", "Target Charging Voltage", this->target_charging_voltage_sensor_);
+  LOG_SENSOR("  ", "Battery Float Voltage", this->battery_float_voltage_sensor_);
+  LOG_SENSOR("  ", "Battery Power Off Voltage", this->battery_power_off_voltage_sensor_);
+  LOG_SENSOR("  ", "Daily Energy Generation", this->daily_energy_sensor_);
+  LOG_SENSOR("  ", "Monthly Energy Generation", this->monthly_energy_sensor_);
+  LOG_SENSOR("  ", "Annual Energy Generation", this->annual_energy_sensor_);
+  LOG_SENSOR("  ", "Total Energy Generation", this->total_energy_sensor_);
 }
 
 void UInverterSensor::handle_message(UInverterCmd cmd, std::string &data) {
@@ -110,6 +120,28 @@ void UInverterSensor::handle_message(UInverterCmd cmd, std::string &data) {
       this->fan1_speed_sensor_->publish_state(parse_number<float>(data.substr(20, 3)).value());
     if (this->fan2_speed_sensor_ != nullptr)
       this->fan2_speed_sensor_->publish_state(parse_number<float>(data.substr(24, 3)).value());
+  } else if (cmd == CMD_HEEP1) {
+    if (this->max_total_charging_current_sensor_ != nullptr)
+      this->max_total_charging_current_sensor_->publish_state(parse_number<float>(data.substr(2, 3)).value());
+    if (this->max_grid_charging_current_sensor_ != nullptr)
+      this->max_grid_charging_current_sensor_->publish_state(parse_number<float>(data.substr(6, 3)).value());
+    if (this->output_set_voltage_sensor_ != nullptr)
+      this->output_set_voltage_sensor_->publish_state(parse_number<float>(data.substr(18, 3)).value());
+    if (this->target_charging_voltage_sensor_ != nullptr)
+      this->target_charging_voltage_sensor_->publish_state(parse_number<float>(data.substr(52, 5)).value());
+    if (this->battery_float_voltage_sensor_ != nullptr)
+      this->battery_float_voltage_sensor_->publish_state(parse_number<float>(data.substr(58, 5)).value());
+    if (this->battery_power_off_voltage_sensor_ != nullptr)
+      this->battery_power_off_voltage_sensor_->publish_state(parse_number<float>(data.substr(64, 5)).value());
+  } else if (cmd == CMD_HGEN) {
+    if (this->daily_energy_sensor_ != nullptr)
+      this->daily_energy_sensor_->publish_state(parse_number<float>(data.substr(13, 6)).value());
+    if (this->monthly_energy_sensor_ != nullptr)
+      this->monthly_energy_sensor_->publish_state(parse_number<float>(data.substr(20, 6)).value());
+    if (this->annual_energy_sensor_ != nullptr)
+      this->annual_energy_sensor_->publish_state(parse_number<float>(data.substr(27, 6)).value());
+    if (this->total_energy_sensor_ != nullptr)
+      this->total_energy_sensor_->publish_state(parse_number<float>(data.substr(34, 11)).value());
   }
 
 }

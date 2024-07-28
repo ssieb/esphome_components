@@ -4,6 +4,7 @@ from esphome.components import sensor
 from esphome.const import (
     CONF_ID,
     DEVICE_CLASS_CURRENT,
+    DEVICE_CLASS_ENERGY,
     DEVICE_CLASS_POWER,
     DEVICE_CLASS_TEMPERATURE,
     DEVICE_CLASS_VOLTAGE,
@@ -15,6 +16,7 @@ from esphome.const import (
     UNIT_AMPERE,
     UNIT_CELSIUS,
     UNIT_HERTZ,
+    UNIT_KILOWATT_HOURS,
     UNIT_PERCENT,
     UNIT_VOLT,
     UNIT_VOLT_AMPS,
@@ -27,6 +29,8 @@ from .. import (
 )
 
 UInverterSensor = u_inverter_ns.class_("UInverterSensor", cg.Component)
+
+UNIT_MEGAWATT_HOURS = "MWh"
 
 CONF_FAULT_CODE = "fault_code"
 CONF_MAINS_VOLTAGE = "mains_voltage"
@@ -65,6 +69,18 @@ CONF_TRANSFORMER_TEMP = "transformer_temp"
 CONF_HOTSPOT_TEMP = "hotspot_temp"
 CONF_FAN1_SPEED = "fan1_speed"
 CONF_FAN2_SPEED = "fan2_speed"
+
+CONF_MAX_TOTAL_CHARGING_CURRENT = "max_total_charging_current"
+CONF_MAX_GRID_CHARGING_CURRENT = "max_grid_charging_current"
+CONF_OUTPUT_SET_VOLTAGE = "output_set_voltage"
+CONF_TARGET_CHARGING_VOLTAGE = "target_charging_voltage"
+CONF_BATTERY_FLOAT_VOLTAGE = "battery_float_voltage"
+CONF_BATTERY_POWER_OFF_VOLTAGE = "battery_power_off_voltage"
+
+CONF_DAILY_ENERGY = "daily_energy"
+CONF_MONTHLY_ENERGY = "monthly_energy"
+CONF_ANNUAL_ENERGY = "annual_energy"
+CONF_TOTAL_ENERGY = "total_energy"
 
 CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
     {
@@ -279,6 +295,74 @@ CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
             state_class=STATE_CLASS_MEASUREMENT,
         ),
 
+        cv.Optional(CONF_MAX_TOTAL_CHARGING_CURRENT): sensor.sensor_schema(
+            unit_of_measurement=UNIT_AMPERE,
+            icon=ICON_CURRENT_AC,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_CURRENT,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_MAX_GRID_CHARGING_CURRENT): sensor.sensor_schema(
+            unit_of_measurement=UNIT_AMPERE,
+            icon=ICON_CURRENT_AC,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_CURRENT,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_OUTPUT_SET_VOLTAGE): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            icon=ICON_FLASH,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_TARGET_CHARGING_VOLTAGE): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            icon=ICON_FLASH,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_BATTERY_FLOAT_VOLTAGE): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            icon=ICON_FLASH,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_BATTERY_POWER_OFF_VOLTAGE): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            icon=ICON_FLASH,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+
+        cv.Optional(CONF_DAILY_ENERGY): sensor.sensor_schema(
+            unit_of_measurement=UNIT_KILOWATT_HOURS,
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_ENERGY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_MONTHLY_ENERGY): sensor.sensor_schema(
+            unit_of_measurement=UNIT_KILOWATT_HOURS,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_ENERGY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_ANNUAL_ENERGY): sensor.sensor_schema(
+            unit_of_measurement=UNIT_MEGAWATT_HOURS,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_ENERGY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_TOTAL_ENERGY): sensor.sensor_schema(
+            unit_of_measurement=UNIT_MEGAWATT_HOURS,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_ENERGY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+
     }
 )
 
@@ -391,3 +475,35 @@ async def to_code(config):
     if conf := config.get(CONF_FAN2_SPEED):
         sens = await sensor.new_sensor(conf)
         cg.add(var.set_fan2_speed_sensor(sens))
+
+    if conf := config.get(CONF_MAX_TOTAL_CHARGING_CURRENT):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_max_total_charging_current_sensor(sens))
+    if conf := config.get(CONF_MAX_GRID_CHARGING_CURRENT):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_max_grid_charging_current_sensor(sens))
+    if conf := config.get(CONF_OUTPUT_SET_VOLTAGE):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_output_set_voltage_sensor(sens))
+    if conf := config.get(CONF_TARGET_CHARGING_VOLTAGE):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_target_charging_voltage_sensor(sens))
+    if conf := config.get(CONF_BATTERY_FLOAT_VOLTAGE):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_battery_float_voltage_sensor(sens))
+    if conf := config.get(CONF_BATTERY_POWER_OFF_VOLTAGE):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_battery_power_off_voltage_sensor(sens))
+
+    if conf := config.get(CONF_DAILY_ENERGY):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_daily_energy_sensor(sens))
+    if conf := config.get(CONF_MONTHLY_ENERGY):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_monthly_energy_sensor(sens))
+    if conf := config.get(CONF_ANNUAL_ENERGY):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_annual_energy_sensor(sens))
+    if conf := config.get(CONF_TOTAL_ENERGY):
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_total_energy_sensor(sens))
