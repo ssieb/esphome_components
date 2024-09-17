@@ -1,12 +1,12 @@
-# demo component to show how to include various other components
+# demo component to show how to include various other components in a top-level component.  This method is not recommended.
 
 A configured uart is required.
 
 Example:
 ```yaml
-uart_demo:
+uart_demo2:
   - id: demo
-    uart_id: uart2
+    uart_id: demo_uart
     the_text:
       id: the_text
     the_sensor:
