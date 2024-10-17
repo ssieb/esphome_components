@@ -117,8 +117,6 @@ void JSDrive::loop() {
   if (this->remote_uart_ != nullptr) {
     while (this->remote_uart_->available()) {
       this->remote_uart_->read_byte(&c);
-      if (!this->moving_ && this->desk_uart_ != nullptr)
-        this->desk_uart_->write_byte(c);
       if (!this->rem_rx_) {
         if (c != 0xa5)
           continue;
@@ -137,6 +135,7 @@ void JSDrive::loop() {
         continue;
       }
       buttons = d[1];
+      have_data = true;
       this->rem_buffer_.clear();
     }
     if (have_data) {
@@ -150,6 +149,10 @@ void JSDrive::loop() {
         this->memory2_bsensor_->publish_state(buttons & 4);
       if (this->memory3_bsensor_ != nullptr)
         this->memory3_bsensor_->publish_state(buttons & 8);
+      if (!this->moving_ && this->desk_uart_ != nullptr) {
+        static uint8_t buf[] = {0xa5, 0, buttons, 0xff - buttons, 0xff};
+        this->desk_uart_->write_array(buf, 5);
+      }
     }
   }
 }
