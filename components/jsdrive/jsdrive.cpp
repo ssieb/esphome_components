@@ -57,9 +57,8 @@ void JSDrive::loop() {
       if (this->remote_uart_ != nullptr)
         this->remote_uart_->write_byte(c);
       if (!this->desk_rx_) {
-        if (c != 0x5a)
-          continue;
-        this->desk_rx_ = true;
+        if (c == 0x5a)
+          this->desk_rx_ = true;
         continue;
       }
       this->desk_buffer_.push_back(c);
@@ -76,30 +75,29 @@ void JSDrive::loop() {
         this->desk_buffer_.clear();
         continue;
       }
-      if (this->height_sensor_ != nullptr) {
-        do {
-          if ((this->message_length_ == 6) && (d[3] != 1)) {
-            ESP_LOGV(TAG, "unknown message type %02x", d[3]);
-            break;
-          }
-          if ((d[0] | d[1] | d[2]) == 0)
-            break;
-          int d0 = segs_to_num(d[0]);
-          int d1 = segs_to_num(d[1]);
-          int d2 = segs_to_num(d[2]);
-          if (d0 < 0 || d1 < 0 || d2 < 0)
-            break;
-          num = segs_to_num(d[0]) * 100 + segs_to_num(d[1]) * 10 + segs_to_num(d[2]);
-          have_data = true;
-          if (d[1] & 0x80)
-            num /= 10.0;
-          this->current_pos_ = num;
-        } while (false);
-      }
+      do {
+        if ((this->message_length_ == 6) && (d[3] != 1)) {
+          ESP_LOGV(TAG, "unknown message type %02x", d[3]);
+          break;
+        }
+        if ((d[0] | d[1] | d[2]) == 0)
+          break;
+        int d0 = segs_to_num(d[0]);
+        int d1 = segs_to_num(d[1]);
+        int d2 = segs_to_num(d[2]);
+        if (d0 < 0 || d1 < 0 || d2 < 0)
+          break;
+        num = segs_to_num(d[0]) * 100 + segs_to_num(d[1]) * 10 + segs_to_num(d[2]);
+        have_data = true;
+        if (d[1] & 0x80)
+          num /= 10.0;
+      } while (false);
       this->desk_buffer_.clear();
     }
-    if (have_data && (!this->height_sensor_->has_state() || (this->height_sensor_->state != num)))
+    if (have_data && (this->height_sensor_ != nullptr) && (this->current_pos_ != num)) {
       this->height_sensor_->publish_state(num);
+      this->current_pos_ = num;
+    }
   }
   if (this->moving_) {
     if ((this->move_dir_ && (this->current_pos_ >= this->target_pos_)) ||
@@ -118,9 +116,8 @@ void JSDrive::loop() {
     while (this->remote_uart_->available()) {
       this->remote_uart_->read_byte(&c);
       if (!this->rem_rx_) {
-        if (c != 0xa5)
-          continue;
-        this->rem_rx_ = true;
+        if (c == 0xa5)
+          this->rem_rx_ = true;
         continue;
       }
       this->rem_buffer_.push_back(c);
