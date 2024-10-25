@@ -13,6 +13,7 @@ sensor:
     id: encoder
     type: encoder
     name: "Seesaw encoder"
+    number: 1  # optional, defaults to 0
   - platform: seesaw
     id: temp
     type: temperature
