@@ -20,11 +20,16 @@ const char *desky_operation_to_str(DeskyOperation op) {
 }
 
 void Desky::setup() {
-  if (this->up_pin_ != nullptr)
+  if (this->up_pin_ != nullptr) {
+    this->up_pin_->setup();
     this->up_pin_->digital_write(false);
-  if (this->down_pin_ != nullptr)
+  }
+  if (this->down_pin_ != nullptr) {
+    this->down_pin_->setup();
     this->down_pin_->digital_write(false);
+  }
   if (this->request_pin_ != nullptr) {
+    this->request_pin_->setup();
     this->request_pin_->digital_write(true);
     this->request_time_ = millis();
   }
