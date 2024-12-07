@@ -22,47 +22,60 @@ const char *desky_operation_to_str(DeskyOperation op) {
 void Desky::setup() {
   if (this->up_pin_ != nullptr) {
     this->up_pin_->setup();
-    this->up_pin_->digital_write(false);
+    this->up_pin_->digital_write(true);
   }
   if (this->down_pin_ != nullptr) {
     this->down_pin_->setup();
-    this->down_pin_->digital_write(false);
+    this->down_pin_->digital_write(true);
   }
   if (this->request_pin_ != nullptr) {
     this->request_pin_->setup();
-    this->request_pin_->digital_write(true);
+    this->request_pin_->digital_write(false);
     this->request_time_ = millis();
   }
+  if (this->up_in_pin_ != nullptr)
+    this->up_pin_->setup();
+  if (this->down_in_pin_ != nullptr)
+    this->down_pin_->setup();
 }
 
 void Desky::loop() {
-  static int state = 0;
-  static uint8_t protocol = 0;
-
+  uint32_t now = millis();
   while (this->available()) {
     uint8_t c;
     float value;
     this->read_byte(&c);
-    switch (state) {
+    switch (this->state_) {
      case 0:
       if ((c == 1) || (c == 242)) {
-	state = 1;
-	protocol = c;
+        this->state_ = 1;
+        this->protocol_ = c;
       }
       break;
      case 1:
-      if (c == protocol)
-	state = 2;
-      else
-	state = 0;
-      this->rx_data_.clear();
+      if (c == this->protocol_) {
+        this->state_ = 2;
+        this->error_ = false;
+      } else if (c == 4) {
+        this->state_ = 2;
+        if (!this->error_) {
+          ESP_LOGE(TAG, "desk error detected, attempting to clear");
+          this->error_ = true;
+          this->error_time_ = now;
+          this->stop();
+        }
+      } else {
+        this->state_ = 0;
+      }
       break;
      case 2:
       this->rx_data_.push_back(c);
-      if (protocol == 1) {
+      if (this->protocol_ == 1) {
         if (this->rx_data_.size() < 2)
           continue;
         value = (this->rx_data_[0] << 8) + c;
+        uint8_t buf[4] = {1, 1, rx_data_[0], c};
+        this->write_array(buf, 4);
       } else {
         int len = this->rx_data_.size();
         if ((len < 4) || (len < this->rx_data_[3] + 4))
@@ -81,14 +94,35 @@ void Desky::loop() {
           value = (this->rx_data_[2] << 8) + this->rx_data_[3];
         }
       }
-      if (!std::isnan(value) && (this->current_pos_ != value)) {
+      if (!std::isnan(value) && (this->current_pos_ != value) && !this->error_) {
         this->current_pos_ = value;
         if (this->height_sensor_ != nullptr)
           this->height_sensor_->publish_state(value);
       }
-      state = 0;
+      this->rx_data_.clear();
+      this->state_ = 0;
       break;
     }
+  }
+
+  if ((this->request_time_ > 0) && (millis() - this->request_time_ >= 100)) {
+    this->request_pin_->digital_write(true);
+    this->request_time_ = 0;
+  }
+
+  if (this->error_) {
+    if (this->error_time_) {
+      if (now - this->error_time_ > 1000) {
+        if (this->down_pin_ != nullptr)
+          this->down_pin_->digital_write(true);
+        ESP_LOGE(TAG, "can't clear error");
+        this->error_time_ = 0;
+      } else {
+        if (this->down_pin_ != nullptr)
+          this->down_pin_->digital_write(false);
+      }
+    }
+    return;
   }
 
   if (this->target_pos_ >= 0) {
@@ -98,9 +132,11 @@ void Desky::loop() {
       this->stop();
   }
 
-  if ((this->request_time_ > 0) && (millis() - this->request_time_ >= 100)) {
-    this->request_pin_->digital_write(false);
-    this->request_time_ = 0;
+  if ((this->current_operation == DESKY_OPERATION_IDLE) && !this->intercept_) {
+    if ((this->up_pin_ != nullptr) && (this->up_in_pin_ != nullptr))
+      this->up_pin_->digital_write(this->up_in_pin_->digital_read());
+    if ((this->down_pin_ != nullptr) && (this->down_in_pin_ != nullptr))
+      this->down_pin_->digital_write(this->down_in_pin_->digital_read());
   }
 }
 
@@ -110,6 +146,8 @@ void Desky::dump_config() {
   LOG_PIN("Up pin: ", this->up_pin_);
   LOG_PIN("Down pin: ", this->down_pin_);
   LOG_PIN("Request pin: ", this->request_pin_);
+  LOG_PIN("Up in pin: ", this->up_in_pin_);
+  LOG_PIN("Down in pin: ", this->down_in_pin_);
 }
 
 void Desky::move_to(int target_pos) {
@@ -118,12 +156,16 @@ void Desky::move_to(int target_pos) {
   if (target_pos > this->current_pos_) {
     if (this->up_pin_ == nullptr)
       return;
-    this->up_pin_->digital_write(true);
+    if (this->down_pin_ != nullptr)
+      this->down_pin_->digital_write(true);
+    this->up_pin_->digital_write(false);
     this->current_operation = DESKY_OPERATION_RAISING;
   } else {
     if (this->down_pin_ == nullptr)
       return;
-    this->down_pin_->digital_write(true);
+    if (this->up_pin_ != nullptr)
+      this->up_pin_->digital_write(true);
+    this->down_pin_->digital_write(false);
     this->current_operation = DESKY_OPERATION_LOWERING;
   }
   this->target_pos_ = target_pos;

@@ -7,7 +7,8 @@ Example:
 uart:
   - id: desk_uart
     baud_rate: 9600
-    rx_pin: 3
+    rx_pin: 14
+    tx_pin: 13  # if you want to passthrough to the display
 
 desky:
   #uart_id: desk_uart  (optional, unless multiple uarts are defined)
@@ -15,17 +16,14 @@ desky:
   height:  # optional sensor publishing the current height
     name: Desk Height
     # any other sensor options
-  up:    # optional <pin> config
-    number: 4
-    inverted: true  # probably needed
-  down:  # optional <pin> config
-    number: 5
-    inverted: true  # probably needed
-  request:  # optional <pin> config to request height updates at boot
-    number: 12
-    inverted: true  # probably needed
+  up_pin: 4  # optional <pin> config
+  down_pin: 5 # optional <pin> config
+  request_pin: 12  # optional <pin> config to request height updates at boot
+  up_in_pin: 16  # optional <pin> config to read the up button from the display
+  down_in_pin: 17  # optional <pin> config to read the down button from the display
   stopping_distance: 15  # optional distance from target to turn off moving, default 15
   timeout: 15s  # optional time limit for moving, default is none
+  intercept: true  # option, default to false.  If false, will pass the display button states to the desk if not currently moving
 
 on_...:
   then:
