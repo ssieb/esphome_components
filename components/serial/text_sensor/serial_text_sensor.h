@@ -15,7 +15,9 @@ class SerialTextSensor : public Component,  public text_sensor::TextSensor, publ
 
  protected:
   void handle_char_(uint8_t c);
+  void publish_();
   std::vector<uint8_t> rx_message_;
+  bool have_return_{false};
 };
 
 }  // namespace serial
