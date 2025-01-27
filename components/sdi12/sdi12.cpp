@@ -112,7 +112,7 @@ void SDI12::loop() {
       this->phase_++;
     }
 
-    uint8_t buf[4] = { addr2chr(this->address_), 'D', '!', '0' };
+    uint8_t buf[4] = { addr2chr(this->address_), 'D', '0', '!' };
     if (this->phase_ == 2) {
       this->send_command(buf, 4);
       this->phase_++;
@@ -130,7 +130,7 @@ void SDI12::loop() {
         this->values_.push_back(parse_number<float>(num).value());
       }
       if (this->values_.size() < this->mexpect_) {
-        buf[3] += ++this->dataset_;
+        buf[2] += ++this->dataset_;
         this->send_command(buf, 4);
         continue;
       }
