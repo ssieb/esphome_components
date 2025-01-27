@@ -127,7 +127,14 @@ void SDI12::loop() {
         while (*data && (*data != '+') && (*data != '-'))
           *dest++ = *data++;
         *dest = 0;
-        this->values_.push_back(parse_number<float>(num).value());
+        auto value = parse_number<float>(num);
+        if (!value.has_value()) {
+          ESP_LOGD(TAG, "Unknown value: '%s'", num);
+          this->values_.push_back(NAN);
+        } else {
+          ESP_LOGD(TAG, "Value: '%s' = %f", num, value.value());
+          this->values_.push_back(value.value());
+        }
       }
       if (this->values_.size() < this->mexpect_) {
         buf[2] += ++this->dataset_;
