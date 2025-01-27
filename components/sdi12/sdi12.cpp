@@ -9,7 +9,7 @@ static const char *const TAG = "sdi12";
 
 void SDI12::dump_config() {
   ESP_LOGCONFIG(TAG, "SDI12:");
-  check_uart_settings(1200);
+  //check_uart_settings(1200);
 }
 
 static uint8_t addr2chr(uint8_t addr) {
@@ -33,7 +33,10 @@ static uint8_t chr2addr(uint8_t chr) {
 }
 
 void SDI12::setup() {
-  this->scanning_ = false;
+}
+
+void SDI12::scan() {
+  this->scanning_ = true;
   this->cur_addr_ = 0;
 }
 
@@ -44,6 +47,7 @@ void SDI12::loop() {
       if (now - this->start_ < this->timeout_)
         return;
       this->waiting_ = false;
+      ESP_LOGD(TAG, "timeout waiting for response");
     }
     if (this->scanning_) {
       if (++this->tries_ >= 2) {
@@ -53,13 +57,11 @@ void SDI12::loop() {
           return;
         }
       }
-      this->start_ = now;
-      this->timeout_ = 30;
       this->buffer_.clear();
       uint8_t cmd[2];
       cmd[0] = addr2chr(this->cur_addr_);
       cmd[1] = '!';
-      this->write_array(cmd, 2);
+      this->send_command(cmd, 2);
     }
     return;
   }
@@ -112,7 +114,7 @@ void SDI12::loop() {
 
     uint8_t buf[4] = { addr2chr(this->address_), 'D', '!', '0' };
     if (this->phase_ == 2) {
-      this->write_array(buf, 4);
+      this->send_command(buf, 4);
       this->phase_++;
       continue;
     }
@@ -129,7 +131,7 @@ void SDI12::loop() {
       }
       if (this->values_.size() < this->mexpect_) {
         buf[3] += ++this->dataset_;
-        this->write_array(buf, 4);
+        this->send_command(buf, 4);
         continue;
       }
       for (auto &listener : this->listeners_)
@@ -138,12 +140,25 @@ void SDI12::loop() {
   }
 }
 
+void SDI12::send_command(uint8_t *buf, int len) {
+  this->parent_->send_break(12);
+  delay(10);
+  this->write_array(buf, len);
+  this->start_ = millis();
+  this->timeout_ = 150;
+  this->waiting_ = true;
+}
+
 void SDI12::start_measurement(uint8_t address) {
+  if (this->scanning_) {
+    ESP_LOGD(TAG, "can't measure while scanning");
+    return;
+  }
   this->phase_ = 0;
   this->state_ = 0;
   this->buffer_.clear();
   uint8_t buf[3] = { addr2chr(address), 'M', '!' };
-  this->write_array(buf, 3);
+  this->send_command(buf, 3);
 }
 
 void SDI12Listener::on_values(uint8_t address, std::vector<float> &values) {

@@ -29,6 +29,8 @@ class SDI12 : public uart::UARTDevice, public Component {
 
   void register_listener(SDI12Listener *listener) { this->listeners_.push_back(listener); }
 
+  void scan();
+  void send_command(uint8_t *buf, int len);
   void start_measurement(uint8_t address);
 
  protected:
