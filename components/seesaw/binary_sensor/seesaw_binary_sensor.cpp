@@ -18,7 +18,7 @@ void SeesawBinarySensor::dump_config() {
   ESP_LOGCONFIG(TAG, "  Pin: %d", this->pin_);
 }
 
-void SeesawBinarySensor::loop() { this->publish_state(this->parent_->digital_read(this->pin_)); }
+void SeesawBinarySensor::loop() { this->publish_state(!this->parent_->digital_read(this->pin_)); }
 
 }  // namespace seesaw
 }  // namespace esphome
