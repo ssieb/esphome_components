@@ -73,11 +73,9 @@ void GPSTime::handle_message_() {
   }
   do {
     end = data.find(',', start);
-    if (end != std::string::npos) {
-      int len = end - start;
-      start = end + 1;
-    }
-    terms.push_back(data.substr(start, end));
+    int len = end != std::string::npos ? end - start : end;
+    terms.push_back(data.substr(start, len));
+    start = end + 1;
   } while (end != std::string::npos);
   ESP_LOGD(TAG, "message: %s", terms[0].c_str());
   if (terms[0] != "GPRMC")
