@@ -62,6 +62,7 @@ void GPSTime::handle_message_() {
     }
     uint8_t csum = 0;
     parse_hex(data.c_str() + csum_pos + 1, &csum, 1);
+    data.resize(csum_pos);
     uint8_t ccsum = 0;
     for (auto c : data)
       ccsum ^= c;
@@ -69,7 +70,6 @@ void GPSTime::handle_message_() {
       ESP_LOGE(TAG, "checksum failed: %02x != %02x", csum, ccsum);
       return;
     }
-    data.resize(csum_pos);
   }
   do {
     end = data.find(',', start);
