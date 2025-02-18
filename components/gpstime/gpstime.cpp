@@ -51,7 +51,7 @@ void GPSTime::loop() {
 void GPSTime::handle_message_() {
   std::vector<std::string> terms;
   std::string data(this->rx_buffer_.begin(), this->rx_buffer_.end());
-  ESP_LOGV(TAG, "received: %s", data.c_str());
+  ESP_LOGD(TAG, "received: %s", data.c_str());
   int start = 0;
   int end;
   int csum_pos = data.find('*');
@@ -79,12 +79,15 @@ void GPSTime::handle_message_() {
     }
     terms.push_back(data.substr(start, end));
   } while (end != std::string::npos);
+  ESP_LOGD(TAG, "message: %s", terms[0].c_str());
   if (terms[0] != "GPRMC")
     return;
+  ESP_LOGD(TAG, "time: '%s', date: '%s'", terms[1].c_str(), terms[9].c_str());
   if ((terms[1].size() < 6) || (terms[9].size() < 6))
     return;
   uint32_t timeinfo = int(parse_number<float>(terms[1]).value());
   uint32_t dateinfo = int(parse_number<uint32_t>(terms[9]).value());
+  ESP_LOGD(TAG, "processing %d %d", timeinfo, dateinfo);
   ESPTime now{};
   now.year = dateinfo % 100 + 2000;
   now.month = dateinfo / 100 % 100;
