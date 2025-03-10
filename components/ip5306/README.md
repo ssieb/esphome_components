@@ -25,4 +25,14 @@ ip5306:
     on_release:
       then:
         - lambda: ESP_LOGD("TEST", "still charging");
+  charger_active:  # binary_sensor
+    id: charger_active
+  power_boost_on: false  # default: false
+  power_boost_set: false  # default: false
+  power_vin:  false # default: false
+  power_btn: false  # default: false
+  power_boost_keep_on: false  # default: false
+  auto_boot_on_load: false  # default: false
+  enable_power_btn: false  # default: false
+  low_power_shutdown_time: false  # default: 64
 ```
