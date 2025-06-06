@@ -26,29 +26,24 @@ void HT16K33AlphaDisplay::setup() {
     display->write_bytes(DISPLAY_COMMAND_DISPLAY_ON, nullptr, 0);
   }
   this->set_brightness(1);
-  memset(this->buffer_, 0, 64);
 }
 
 void HT16K33AlphaDisplay::loop() {
   unsigned long now = millis();
   int numc = this->displays_.size() * 8;
-  // check if the buffer has shrunk past the current position since last update
-  if (this->offset_ + numc > this->buffer_fill_) {
-    this->offset_ = std::max(this->buffer_fill_ - numc, 0);
-    this->display_();
-  }
-  if (!this->scroll_ || (this->buffer_fill_ <= numc))
+  int len = this->buffer_.size();
+  if (!this->scroll_ || (len <= numc))
     return;
   if ((this->offset_ == 0) && (now - this->last_scroll_ < this->scroll_delay_))
     return;
-  if (this->offset_ + numc >= this->buffer_fill_) {
-    if (now - this->last_scroll_ >= this->scroll_dwell_) {
+  if ((!this->continuous_ && (this->offset_ + numc >= len)) ||
+      (this->continuous_ && (this->offset_ > len - 2))) {
+    if (this->continuous_ || (now - this->last_scroll_ >= this->scroll_dwell_)) {
       this->offset_ = 0;
       this->last_scroll_ = now;
       this->display_();
     }
-  } else
-  if (now - this->last_scroll_ >= this->scroll_speed_) {
+  } else if (now - this->last_scroll_ >= this->scroll_speed_) {
     this->offset_ += 2;
     this->last_scroll_ = now;
     this->display_();
@@ -58,19 +53,33 @@ void HT16K33AlphaDisplay::loop() {
 float HT16K33AlphaDisplay::get_setup_priority() const { return setup_priority::PROCESSOR; }
 
 void HT16K33AlphaDisplay::display_() {
-  int offset = this->offset_;
+  int numc = this->displays_.size() * 8;
+  int len = this->buffer_.size();
+  uint8_t data[numc];
+  memset(data, 0, numc);
+  int pos = this->offset_;
+  for (int i = 0; i < numc; i++, pos++) {
+    if (pos >= len) {
+      if (!this->continuous_)
+        break;
+      pos %= len;
+    }
+    data[i] = this->buffer_[pos];
+  }
+  pos = 0;
   for (auto *display : this->displays_) {
-    display->write_bytes(DISPLAY_COMMAND_SET_DDRAM_ADDR, this->buffer_ + offset, 8);
-    offset += 8;
+    display->write_bytes(DISPLAY_COMMAND_SET_DDRAM_ADDR, data + pos, 8);
+    pos += 8;
   }
 }
 
 void HT16K33AlphaDisplay::update() {
-  memset(this->buffer_, 0, 64);
-  int prev_fill = this->buffer_fill_;
-  this->buffer_fill_ = 0;
+  int prev_fill = this->buffer_.size();
+  this->buffer_.clear();
   this->call_writer();
-  if (this->scroll_ && (prev_fill != this->buffer_fill_)) {
+  int numc = this->displays_.size() * 8;
+  int len = this->buffer_.size();
+  if ((this->scroll_ && (prev_fill != len) && !this->continuous_) || (len <= numc)) {
     this->last_scroll_ = millis();
     this->offset_ = 0;
   }
@@ -99,14 +108,8 @@ float HT16K33AlphaDisplay::get_brightness() {
 }
 
 void HT16K33AlphaDisplay::print(const char *str) {
-  uint8_t pos = this->buffer_fill_;
   uint16_t fontc = 0;
   while (*str != '\0') {
-    if (pos >= 64) {
-      ESP_LOGW(TAG, "output buffer full!");
-      break;
-    }
-
     uint8_t c = *reinterpret_cast<const uint8_t *>(str++);
     if (c > 127)
       fontc = 0;
@@ -117,10 +120,9 @@ void HT16K33AlphaDisplay::print(const char *str) {
       fontc |= 0x4000;
       str++;
     }
-    this->buffer_[pos++] = fontc & 0xff;
-    this->buffer_[pos++] = fontc >> 8;
+    this->buffer_.push_back(fontc & 0xff);
+    this->buffer_.push_back(fontc >> 8);
   }
-  this->buffer_fill_ = pos;
 }
 
 void HT16K33AlphaDisplay::print(const std::string &str) { this->print(str.c_str()); }
@@ -136,7 +138,7 @@ void HT16K33AlphaDisplay::printf(const char *format, ...) {
 }
 
 #ifdef USE_TIME
-void HT16K33AlphaDisplay::strftime(const char *format, time::ESPTime time) {
+void HT16K33AlphaDisplay::strftime(const char *format, ESPTime time) {
   char buffer[64];
   size_t ret = time.strftime(buffer, sizeof(buffer), format);
   if (ret > 0)

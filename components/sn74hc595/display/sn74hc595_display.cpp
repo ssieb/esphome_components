@@ -24,7 +24,7 @@ void SN74HC595Display::dump_config() {
 
 void SN74HC595Display::update() {
   for (uint8_t &i : this->buffer_)
-    i = 0;
+    i = 0xff;
   if (this->writer_.has_value())
     (*this->writer_)(*this);
   this->display();
@@ -34,8 +34,7 @@ float SN74HC595Display::get_setup_priority() const { return setup_priority::PROC
 
 void SN74HC595Display::display() {
   ESP_LOGVV(TAG, "Display %02X%02X%02X%02X", buffer_[0], buffer_[1], buffer_[2], buffer_[3]);
-  uint32_t bits = buffer_[0] | (buffer_[1] << 8) | (buffer_[2] << 16) | (buffer_[3] << 24);
-  this->parent_->set_output_bits(bits);
+  this->parent_->set_bytes(this->buffer_);
 }
 
 uint8_t SN74HC595Display::print(uint8_t start_pos, const char *str) {

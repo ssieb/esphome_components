@@ -32,32 +32,55 @@ void Desky::setup() {
 
 void Desky::loop() {
   static int state = 0;
-  static uint8_t high_byte;
+  static uint8_t protocol = 0;
 
   while (this->available()) {
     uint8_t c;
-    int value;
+    float value;
     this->read_byte(&c);
     switch (state) {
      case 0:
-      if (c == 1)
+      if ((c == 1) || (c == 242)) {
 	state = 1;
+	protocol = c;
+      }
       break;
      case 1:
-      if (c == 1)
+      if (c == protocol)
 	state = 2;
       else
 	state = 0;
+      this->rx_data_.clear();
       break;
      case 2:
-      high_byte = c;
-      state = 3;
-      break;
-     case 3:
-      value = (high_byte << 8) + c;
-      this->current_pos_ = value;
-      if (this->height_sensor_ != nullptr)
-        this->height_sensor_->publish_state(value);
+      this->rx_data_.push_back(c);
+      if (protocol == 1) {
+        if (this->rx_data_.size() < 2)
+          continue;
+        value = (this->rx_data_[0] << 8) + c;
+      } else {
+        int len = this->rx_data_.size();
+        if ((len < 4) || (len < this->rx_data_[3] + 4))
+          continue;
+        uint8_t csum = 0;
+        for (int i = 0; i < len - 2; i++)
+          csum += this->rx_data_[i];
+        value = NAN;
+        if (csum != this->rx_data_[len - 2]) {
+          ESP_LOGW(TAG, "checksum mismatch: %02x != %02x", csum, this->rx_data_[len - 2]);
+        } else if (this->rx_data_[len - 1] != 0x7e) {
+          ESP_LOGW(TAG, "invalid EOM");
+        } else if (this->rx_data_[0] != 1) {
+          ESP_LOGD(TAG, "unexpected message type %02x", this->rx_data_[0]);
+        } else {
+          value = (this->rx_data_[2] << 8) + this->rx_data_[3];
+        }
+      }
+      if (!std::isnan(value) && (this->current_pos_ != value)) {
+        this->current_pos_ = value;
+        if (this->height_sensor_ != nullptr)
+          this->height_sensor_->publish_state(value);
+      }
       state = 0;
       break;
     }

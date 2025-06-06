@@ -6,6 +6,6 @@ switch:
   - platform: tri-state
     name: My Switch
     pin: 12
-    on_state: true   # required.  This defines the output state when the switch is on.
+    on_state: true   # required.  This defines the output state when the switch is on. Set as true for high (VCC) or false for low (GND)
 ```
 

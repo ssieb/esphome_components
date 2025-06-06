@@ -46,6 +46,7 @@ class Desky : public Component,  public sensor::Sensor, public uart::UARTDevice 
   int timeout_{-1};
   uint64_t start_time_;
   uint64_t request_time_{0};
+  std::vector<uint8_t> rx_data_;
 };
 
 }  // namespace desky

@@ -8,6 +8,7 @@ DEPENDENCIES = ['i2c']
 ht16k33_alpha_ns = cg.esphome_ns.namespace('ht16k33_alpha')
 HT16K33AlphaDisplay = ht16k33_alpha_ns.class_('HT16K33AlphaDisplay', cg.PollingComponent, i2c.I2CDevice)
 
+CONF_CONTINUOUS = "continuous"
 CONF_SCROLL = "scroll"
 CONF_SCROLL_SPEED = "scroll_speed"
 CONF_SCROLL_DWELL = "scroll_dwell"
@@ -20,6 +21,7 @@ CONFIG_SECONDARY = cv.Schema({
 
 CONFIG_SCHEMA = display.BASIC_DISPLAY_SCHEMA.extend({
     cv.GenerateID(): cv.declare_id(HT16K33AlphaDisplay),
+    cv.Optional(CONF_CONTINUOUS, default=False): cv.boolean,
     cv.Optional(CONF_SCROLL, default=False): cv.boolean,
     cv.Optional(CONF_SCROLL_SPEED, default='250ms'): cv.positive_time_period_milliseconds,
     cv.Optional(CONF_SCROLL_DWELL, default='2s'): cv.positive_time_period_milliseconds,
@@ -29,7 +31,6 @@ CONFIG_SCHEMA = display.BASIC_DISPLAY_SCHEMA.extend({
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    await cg.register_component(var, config)
     await display.register_display(var, config)
     await i2c.register_i2c_device(var, config)
 
@@ -40,6 +41,7 @@ async def to_code(config):
         cg.add(var.set_writer(lambda_))
     if config[CONF_SCROLL]:
         cg.add(var.set_scroll(True))
+        cg.add(var.set_continuous(config[CONF_CONTINUOUS]))
         cg.add(var.set_scroll_speed(config[CONF_SCROLL_SPEED]))
         cg.add(var.set_scroll_dwell(config[CONF_SCROLL_DWELL]))
         cg.add(var.set_scroll_delay(int(config[CONF_SCROLL_DELAY] * config[CONF_SCROLL_SPEED].total_milliseconds)))

@@ -1,4 +1,4 @@
-# text_sensor that reads lines for a uart
+# text_sensor that reads lines for a uart. Also, a sensor that reads single values from the uart.
 
 A configured uart is required.
 
@@ -8,5 +8,10 @@ text_sensor:
   - platform: serial
     uart_id: my_uart   # optional
     name: My Serial data
+
+sensor:
+  - platform: serial
+    uart_id: my_uart   # optional
+    name: My Serial number
 ```
 
