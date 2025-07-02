@@ -7,7 +7,7 @@ namespace seesaw {
 static const char *const TAG = "seesaw.neopixel";
 
 void SeesawNeopixel::setup() {
-  this->parent_->setup_neopixel();
+  this->parent_->setup_neopixel(this->pin_);
 }
 
 light::LightTraits SeesawNeopixel::get_traits() {

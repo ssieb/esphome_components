@@ -1,6 +1,7 @@
 #pragma once
 
 #include "esphome/core/component.h"
+#include "esphome/core/hal.h"
 #include "esphome/components/i2c/i2c.h"
 
 namespace esphome {
@@ -65,10 +66,20 @@ enum : uint8_t {
   SEESAW_TOUCH_CHANNEL_OFFSET = 0x10,
 };
 
+enum : uint8_t {
+  SEESAW_ADC_STATUS = 0x00,
+  SEESAW_ADC_INTEN = 0x02,
+  SEESAW_ADC_INTENCLR = 0x03,
+  SEESAW_ADC_WINMODE = 0x04,
+  SEESAW_ADC_WINTHRESH = 0x05,
+  SEESAW_ADC_CHANNEL_OFFSET = 0x07,
+};
 
 class Seesaw : public i2c::I2CDevice, public Component {
  public:
   void setup() override;
+  void loop() override;
+  void dump_config() override;
 
   float get_setup_priority() const override;
 
@@ -77,9 +88,11 @@ class Seesaw : public i2c::I2CDevice, public Component {
   int16_t get_touch_value(uint8_t channel);
   float get_temperature();
   void set_pinmode(uint8_t pin, uint8_t mode);
+  uint16_t analog_read(uint8_t pin);
   bool digital_read(uint8_t pin);
+  void digital_write(uint8_t pin, bool state);
   void set_gpio_interrupt(uint32_t pin, bool enabled);
-  void setup_neopixel();
+  void setup_neopixel(int pin);
   void color_neopixel(uint8_t r, uint8_t g, uint8_t b);
 
  protected:
@@ -87,9 +100,12 @@ class Seesaw : public i2c::I2CDevice, public Component {
   i2c::ErrorCode write16(SeesawModule mod, uint8_t reg, uint16_t value);
   i2c::ErrorCode write32(SeesawModule mod, uint8_t reg, uint32_t value);
   i2c::ErrorCode readbuf(SeesawModule mod, uint8_t reg, uint8_t *buf, uint8_t len);
+
+  uint8_t cpuid_;
+  uint32_t version_;
+  uint32_t options_;
 };
 
-/*
 class SeesawGPIOPin : public GPIOPin {
  public:
   void setup() override;
@@ -102,7 +118,6 @@ class SeesawGPIOPin : public GPIOPin {
   void set_pin(uint8_t pin) { pin_ = pin; }
   void set_inverted(bool inverted) { inverted_ = inverted; }
   void set_flags(gpio::Flags flags) { flags_ = flags; }
-  void set_interrupt_mode(MCP23XXXInterruptMode interrupt_mode) { interrupt_mode_ = interrupt_mode; }
 
  protected:
   Seesaw *parent_;
@@ -110,7 +125,6 @@ class SeesawGPIOPin : public GPIOPin {
   bool inverted_;
   gpio::Flags flags_;
 };
-*/
 
 }  // namespace seesaw
 }  // namespace esphome

@@ -13,6 +13,7 @@ sensor:
     id: encoder
     type: encoder
     name: "Seesaw encoder"
+    number: 1  # optional, defaults to 0
   - platform: seesaw
     id: temp
     type: temperature
@@ -25,10 +26,12 @@ binary_sensor:
   - platform: seesaw
     id: button
     name: "Seesaw encoder button"
+    pin: 2
 
 light:
   - platform: seesaw
     id: pixel
     name: "Seesaw neopixel LED"
+    pin: 14
 ```
 

@@ -17,7 +17,7 @@ class SeesawTouch : public sensor::Sensor, public PollingComponent {
 
  protected:
   Seesaw *parent_;
-  uint8_t channel_{0};
+  uint8_t channel_;
 };
 
 }  // namespace seesaw

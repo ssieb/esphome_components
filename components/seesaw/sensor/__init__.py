@@ -8,6 +8,7 @@ from esphome.const import (
     CONF_MAX_VALUE,
     CONF_MIN_VALUE,
     CONF_NUMBER,
+    CONF_PIN,
     CONF_TEMPERATURE,
     CONF_TYPE,
     DEVICE_CLASS_TEMPERATURE,
@@ -19,24 +20,36 @@ from esphome.const import (
     ICON_THERMOMETER,
 )
 
+SeesawADC = seesaw_ns.class_("SeesawADC", sensor.Sensor, cg.PollingComponent)
 SeesawRotaryEncoder = seesaw_ns.class_("SeesawRotaryEncoder", sensor.Sensor, cg.Component)
 SeesawTemperature = seesaw_ns.class_("SeesawTemperature", sensor.Sensor, cg.PollingComponent)
 SeesawTouch = seesaw_ns.class_("SeesawTouch", sensor.Sensor, cg.PollingComponent)
 
+CONF_ADC = "adc"
 CONF_ENCODER = "encoder"
 CONF_TEMP = "temperature"
 CONF_TOUCH = "touch"
 
 CONFIG_SCHEMA = cv.typed_schema(
     {
+        CONF_ADC: sensor.sensor_schema(
+            SeesawADC,
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_NONE,
+        ).extend(
+            {
+                cv.GenerateID(CONF_SEESAW): cv.use_id(Seesaw),
+                cv.Required(CONF_PIN): cv.int_,
+            }
+        ).extend(cv.polling_component_schema('60s')),
         CONF_ENCODER: sensor.sensor_schema(
+            SeesawRotaryEncoder,
             unit_of_measurement=UNIT_STEPS,
             icon=ICON_ROTATE_RIGHT,
             accuracy_decimals=0,
             state_class=STATE_CLASS_NONE,
         ).extend(
             {
-                cv.GenerateID(): cv.declare_id(SeesawRotaryEncoder),
                 cv.GenerateID(CONF_SEESAW): cv.use_id(Seesaw),
                 cv.Optional(CONF_NUMBER, default=0): cv.int_,
                 cv.Optional(CONF_MIN_VALUE): cv.int_,
@@ -44,6 +57,7 @@ CONFIG_SCHEMA = cv.typed_schema(
             }
         ).extend(cv.COMPONENT_SCHEMA),
         CONF_TEMP: sensor.sensor_schema(
+            SeesawTemperature,
             unit_of_measurement=UNIT_CELSIUS,
             icon=ICON_THERMOMETER,
             accuracy_decimals=1,
@@ -51,16 +65,15 @@ CONFIG_SCHEMA = cv.typed_schema(
             state_class=STATE_CLASS_MEASUREMENT,
         ).extend(
             {
-                cv.GenerateID(): cv.declare_id(SeesawTemperature),
                 cv.GenerateID(CONF_SEESAW): cv.use_id(Seesaw),
             }
         ).extend(cv.polling_component_schema('60s')),
         CONF_TOUCH: sensor.sensor_schema(
+            SeesawTouch,
             accuracy_decimals=0,
             state_class=STATE_CLASS_NONE,
         ).extend(
             {
-                cv.GenerateID(): cv.declare_id(SeesawTouch),
                 cv.GenerateID(CONF_SEESAW): cv.use_id(Seesaw),
                 cv.Required(CONF_CHANNEL): cv.int_,
             }
@@ -75,7 +88,9 @@ async def to_code(config):
     await sensor.register_sensor(var, config)
     seesaw = await cg.get_variable(config[CONF_SEESAW])
     cg.add(var.set_parent(seesaw))
-    if config[CONF_TYPE] == CONF_ENCODER:
+    if config[CONF_TYPE] == CONF_ADC:
+        cg.add(var.set_pin(config[CONF_PIN]))
+    elif config[CONF_TYPE] == CONF_ENCODER:
         cg.add(var.set_number(config[CONF_NUMBER]))
         if CONF_MIN_VALUE in config:
             cg.add(var.set_min_value(config[CONF_MIN_VALUE]))
