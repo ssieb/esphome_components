@@ -12,9 +12,7 @@ serial_ns = cg.esphome_ns.namespace('serial')
 SerialTextSensor = serial_ns.class_('SerialTextSensor', cg.Component,
                                     text_sensor.TextSensor, uart.UARTDevice)
 
-CONFIG_SCHEMA = text_sensor.TEXT_SENSOR_SCHEMA.extend({
-    cv.GenerateID(): cv.declare_id(SerialTextSensor),
-}).extend(uart.UART_DEVICE_SCHEMA)
+CONFIG_SCHEMA = text_sensor.text_sensor_schema(SerialTextSensor).extend(uart.UART_DEVICE_SCHEMA)
 
 
 async def to_code(config):

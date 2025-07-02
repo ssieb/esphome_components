@@ -18,7 +18,7 @@ CONFIG_SCHEMA = uart.UART_DEVICE_SCHEMA.extend(
     {
         cv.GenerateID(): cv.declare_id(SerialCSV),
         cv.Required(CONF_SENSORS): cv.ensure_list(
-            sensor.SENSOR_SCHEMA.extend(
+            sensor.sensor_schema().extend(
                 {
                     cv.Required(CONF_INDEX): cv.positive_int,
                 }

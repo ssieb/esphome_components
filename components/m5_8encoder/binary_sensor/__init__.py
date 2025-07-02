@@ -8,9 +8,8 @@ M5_8encoderToggle = m5_8encoder_ns.class_(
     "M5_8encoderToggle", binary_sensor.BinarySensor, cg.Component
 )
 
-CONFIG_SCHEMA = binary_sensor.BINARY_SENSOR_SCHEMA.extend(
+CONFIG_SCHEMA = binary_sensor.binary_sensor_schema(M5_8encoderToggle).extend(
     {
-        cv.GenerateID(): cv.declare_id(M5_8encoderToggle),
         cv.GenerateID(CONF_M5_8ENCODER): cv.use_id(M5_8encoder),
     }
 ).extend(cv.COMPONENT_SCHEMA)

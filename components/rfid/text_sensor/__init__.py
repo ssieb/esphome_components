@@ -12,9 +12,7 @@ rfid_ns = cg.esphome_ns.namespace('rfid')
 RFIDTextSensor = rfid_ns.class_('RFIDTextSensor', cg.Component,
                                 text_sensor.TextSensor, uart.UARTDevice)
 
-CONFIG_SCHEMA = text_sensor.TEXT_SENSOR_SCHEMA.extend({
-    cv.GenerateID(): cv.declare_id(RFIDTextSensor),
-}).extend(uart.UART_DEVICE_SCHEMA)
+CONFIG_SCHEMA = text_sensor.text_sensor_schema(RFIDTextSensor).extend(uart.UART_DEVICE_SCHEMA)
 
 
 async def to_code(config):

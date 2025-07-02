@@ -108,11 +108,11 @@ CONFIG_SCHEMA = cv.Schema({
         accuracy_decimals=0,
         device_class=DEVICE_CLASS_EMPTY
     ),
-    cv.Optional(CONF_CHARGER_TEXT): text_sensor.TEXT_SENSOR_SCHEMA.extend({cv.GenerateID(): cv.declare_id(text_sensor.TextSensor)}),
-    cv.Optional(CONF_ERROR_TEXT): text_sensor.TEXT_SENSOR_SCHEMA.extend({cv.GenerateID(): cv.declare_id(text_sensor.TextSensor)}),
-    cv.Optional(CONF_TRACKER_TEXT): text_sensor.TEXT_SENSOR_SCHEMA.extend({cv.GenerateID(): cv.declare_id(text_sensor.TextSensor)}),
-    cv.Optional(CONF_FW_VERSION): text_sensor.TEXT_SENSOR_SCHEMA.extend({cv.GenerateID(): cv.declare_id(text_sensor.TextSensor)}),
-    cv.Optional(CONF_PID): text_sensor.TEXT_SENSOR_SCHEMA.extend({cv.GenerateID(): cv.declare_id(text_sensor.TextSensor)}),
+    cv.Optional(CONF_CHARGER_TEXT): text_sensor.text_sensor_schema(),
+    cv.Optional(CONF_ERROR_TEXT): text_sensor.text_sensor_schema(),
+    cv.Optional(CONF_TRACKER_TEXT): text_sensor.text_sensor_schema(),
+    cv.Optional(CONF_FW_VERSION): text_sensor.text_sensor_schema(),
+    cv.Optional(CONF_PID): text_sensor.text_sensor_schema(),
 })
 
 async def to_code(config):

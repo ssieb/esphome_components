@@ -6,9 +6,8 @@ from .. import M5_8encoder, m5_8encoder_ns, CONF_M5_8ENCODER
 
 M5_8encoderLED = m5_8encoder_ns.class_("M5_8encoderLED", light.LightOutput, cg.Component)
 
-CONFIG_SCHEMA = light.RGB_LIGHT_SCHEMA.extend(
+CONFIG_SCHEMA = light.light_schema(M5_8encoderLED, light.LightType.RGB).extend(
     {
-        cv.GenerateID(CONF_OUTPUT_ID): cv.declare_id(M5_8encoderLED),
         cv.GenerateID(CONF_M5_8ENCODER): cv.use_id(M5_8encoder),
         cv.Required(CONF_NUMBER): cv.int_range(0, 8),
     }

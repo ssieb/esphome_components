@@ -36,8 +36,8 @@ CONFIG_SCHEMA = cv.Schema({
     cv.Optional(CONF_THE_BIN_OUTPUT): output.BINARY_OUTPUT_SCHEMA.extend({cv.GenerateID(): cv.declare_id(UARTDemoBOutput)}),
     cv.Optional(CONF_THE_FLT_OUTPUT): output.FLOAT_OUTPUT_SCHEMA.extend({cv.GenerateID(): cv.declare_id(UARTDemoFOutput)}),
     cv.Optional(CONF_THE_BINSENSOR): binary_sensor.binary_sensor_schema(),
-    cv.Optional(CONF_THE_SWITCH): switch.SWITCH_SCHEMA.extend({cv.GenerateID(): cv.declare_id(UARTDemoSwitch)}),
-    cv.Optional(CONF_THE_BUTTON): button.BUTTON_SCHEMA.extend({cv.GenerateID(): cv.declare_id(UARTDemoButton)}),
+    cv.Optional(CONF_THE_SWITCH): switch.switch_schema(UARTDemoSwitch),
+    cv.Optional(CONF_THE_BUTTON): button.button_schema(UARTDemoButton),
 }).extend(uart.UART_DEVICE_SCHEMA)
 
 

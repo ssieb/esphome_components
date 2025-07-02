@@ -6,9 +6,8 @@ from .. import seesaw_ns, Seesaw, CONF_SEESAW
 
 SeesawNeopixel = seesaw_ns.class_("SeesawNeopixel", light.LightOutput, cg.Component)
 
-CONFIG_SCHEMA = light.RGB_LIGHT_SCHEMA.extend(
+CONFIG_SCHEMA = light.light_schema(SeesawNeopixel, light.LightType.RGB).extend(
     {
-        cv.GenerateID(CONF_OUTPUT_ID): cv.declare_id(SeesawNeopixel),
         cv.GenerateID(CONF_SEESAW): cv.use_id(Seesaw),
         cv.Required(CONF_PIN): cv.int_range(0, 31),
     }

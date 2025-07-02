@@ -18,9 +18,8 @@ def key(value):
         raise cv.Invalid("Number must be between 1 and 255")
     raise cv.Invalid("Must be a string with one character or a number")
 
-CONFIG_SCHEMA = binary_sensor.BINARY_SENSOR_SCHEMA.extend(
+CONFIG_SCHEMA = binary_sensor.binary_sensor_schema(CardKBBinarySensor).extend(
     {
-        cv.GenerateID(): cv.declare_id(CardKBBinarySensor),
         cv.GenerateID(CONF_CARDKB_ID): cv.use_id(CardKB),
         cv.Required(CONF_KEY): key,
     }

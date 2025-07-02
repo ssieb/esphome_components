@@ -7,9 +7,8 @@ from esphome.const import CONF_ID, CONF_ON_STATE, CONF_PIN
 tri_state_ns = cg.esphome_ns.namespace("tri_state")
 TriStateSwitch = tri_state_ns.class_("TriStateSwitch", switch.Switch, cg.Component)
 
-CONFIG_SCHEMA = switch.SWITCH_SCHEMA.extend(
+CONFIG_SCHEMA = switch.switch_schema(TriStateSwitch).extend(
     {
-        cv.GenerateID(): cv.declare_id(TriStateSwitch),
         cv.Required(CONF_PIN): pins.gpio_output_pin_schema,
         cv.Required(CONF_ON_STATE): cv.boolean,
     }

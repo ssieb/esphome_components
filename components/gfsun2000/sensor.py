@@ -18,7 +18,7 @@ CONF_TOTAL_ENERGY = "total_energy"
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(GFSun2000),
-    cv.Optional(CONF_DEVICE_ID): text_sensor.TEXT_SENSOR_SCHEMA.extend({cv.GenerateID(): cv.declare_id(text_sensor.TextSensor)}),
+    cv.Optional(CONF_DEVICE_ID): text_sensor.text_sensor_schema(),
     cv.Optional(CONF_AC_VOLTAGE): sensor.sensor_schema(
         unit_of_measurement=UNIT_VOLT,
         icon=ICON_FLASH,

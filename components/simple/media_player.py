@@ -9,9 +9,8 @@ CODEOWNERS = ["@ssieb"]
 simple_ns = cg.esphome_ns.namespace("simple")
 SimpleMedia = simple_ns.class_("SimpleMedia", cg.Component, media_player.MediaPlayer)
 
-CONFIG_SCHEMA = media_player.MEDIA_PLAYER_SCHEMA.extend(
+CONFIG_SCHEMA = media_player.media_player_schema(SimpleMedia).extend(
     {
-        cv.GenerateID(): cv.declare_id(SimpleMedia),
     }
 )
 
