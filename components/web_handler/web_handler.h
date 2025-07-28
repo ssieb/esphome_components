@@ -18,9 +18,9 @@ class WebHandler : public Component, public AsyncWebHandler {
   void set_path(std::string path) { path_ = path; };
   void set_mime_type(std::string mime_type) { mime_type_ = mime_type; };
   void set_request_handler(RequestHandler *handler) { handler_ = handler; };
-  bool canHandle(AsyncWebServerRequest *request) override;
+  bool canHandle(AsyncWebServerRequest *request) const override;
   void handleRequest(AsyncWebServerRequest *request) override;
-  bool isRequestHandlerTrivial() override;
+  bool isRequestHandlerTrivial() const override;
 
  protected:
   web_server_base::WebServerBase *base_;

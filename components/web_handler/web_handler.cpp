@@ -15,7 +15,7 @@ void WebHandler::dump_config() {
   ESP_LOGCONFIG(TAG, "Listening on path '%s'", path_.c_str());
 }
 
-bool WebHandler::canHandle(AsyncWebServerRequest *request) {
+bool WebHandler::canHandle(AsyncWebServerRequest *request) const {
   return (std::string(request->url().c_str()) == path_);
 }
 
@@ -25,7 +25,7 @@ void WebHandler::handleRequest(AsyncWebServerRequest *request) {
   request->send(stream);
 }
 
-bool WebHandler::isRequestHandlerTrivial() { return false; }
+bool WebHandler::isRequestHandlerTrivial() const { return false; }
 
 RequestHandler::RequestHandler(WebHandler *parent) {
   parent->set_request_handler(this);
