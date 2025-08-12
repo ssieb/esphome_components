@@ -30,7 +30,7 @@ void HT16K33AlphaDisplay::setup() {
 
 void HT16K33AlphaDisplay::loop() {
   unsigned long now = millis();
-  int numc = this->displays_.size() * 8;
+  int numc = this->displays_.size() * 12;
   int len = this->buffer_.size();
   if (!this->scroll_ || (len <= numc))
     return;
