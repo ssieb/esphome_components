@@ -24,6 +24,7 @@ class HT16K33AlphaDisplay : public PollingComponent, public i2c::I2CDevice {
   void set_scroll_speed(unsigned long scroll_speed) { this->scroll_speed_ = scroll_speed; }
   void set_scroll_dwell(unsigned long scroll_dwell) { this->scroll_dwell_ = scroll_dwell; }
   void set_scroll_delay(unsigned long scroll_delay) { this->scroll_delay_ = scroll_delay; }
+  void set_size(unsigned long size) { this->size_ = size; }
   void update() override;
   //// Clear display
   void set_brightness(float level);
@@ -54,6 +55,7 @@ class HT16K33AlphaDisplay : public PollingComponent, public i2c::I2CDevice {
   unsigned long scroll_dwell_ {2000};
   unsigned long scroll_delay_ {750};
   unsigned long last_scroll_ {0};
+  unsigned long size_ {4};
   std::vector<uint8_t> buffer_;
   int offset_ {0};
   uint8_t brightness_ = 16;
