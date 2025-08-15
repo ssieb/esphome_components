@@ -107,7 +107,7 @@ float HT16K33AlphaDisplay::get_brightness() {
   return this->brightness_ / 16.0;
 }
 
-uint16_t swapBits(uint16_t n, uint p1, uint p2) {
+uint16_t HT16K33AlphaDisplay::swapBits(uint16_t n, uint p1, uint p2) {
     // Extract the bit at position p1
     unsigned int bit1 = (n >> p1) & 1;
 
@@ -140,7 +140,7 @@ void HT16K33AlphaDisplay::print(const char *str) {
       fontc |= 0x4000;
       str++;
     }
-    fontc = swapBits(fontc, 11, 13);
+    fontc = this->swapBits(fontc, 11, 13);
     this->buffer_.push_back(fontc & 0xff);
     this->buffer_.push_back(fontc >> 8);
   }
