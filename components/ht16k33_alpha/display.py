@@ -12,6 +12,7 @@ CONF_CONTINUOUS = "continuous"
 CONF_SCROLL = "scroll"
 CONF_SCROLL_SPEED = "scroll_speed"
 CONF_SCROLL_DWELL = "scroll_dwell"
+CONF_SWAP_BITS = "swap_bits"
 CONF_SCROLL_DELAY = "scroll_delay"
 CONF_SECONDARY_DISPLAYS = "secondary_displays"
 CONF_SIZE = "size"
@@ -24,6 +25,7 @@ CONFIG_SCHEMA = display.BASIC_DISPLAY_SCHEMA.extend({
     cv.GenerateID(): cv.declare_id(HT16K33AlphaDisplay),
     cv.Optional(CONF_CONTINUOUS, default=False): cv.boolean,
     cv.Optional(CONF_SCROLL, default=False): cv.boolean,
+    cv.Optional(CONF_SWAP_BITS, default=False): cv.boolean,
     cv.Optional(CONF_SCROLL_SPEED, default='250ms'): cv.positive_time_period_milliseconds,
     cv.Optional(CONF_SCROLL_DWELL, default='2s'): cv.positive_time_period_milliseconds,
     cv.Optional(CONF_SCROLL_DELAY, default='3'): cv.float_range(min=1),
@@ -44,6 +46,7 @@ async def to_code(config):
     if config[CONF_SCROLL]:
         cg.add(var.set_scroll(True))
         cg.add(var.set_continuous(config[CONF_CONTINUOUS]))
+        cg.add(var.set_swap_bits(config[CONF_SWAP_BITS]))
         cg.add(var.set_scroll_speed(config[CONF_SCROLL_SPEED]))
         cg.add(var.set_scroll_dwell(config[CONF_SCROLL_DWELL]))
         cg.add(var.set_size(config[CONF_SIZE]))
