@@ -140,7 +140,9 @@ void HT16K33AlphaDisplay::print(const char *str) {
       fontc |= 0x4000;
       str++;
     }
-    fontc = this->swapBits(fontc, 11, 13);
+    if(this->swap_bits_) {
+      fontc = this->swapBits(fontc, 11, 13);
+    }
     this->buffer_.push_back(fontc & 0xff);
     this->buffer_.push_back(fontc >> 8);
   }
