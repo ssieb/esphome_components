@@ -46,7 +46,7 @@ class HT16K33AlphaDisplay : public PollingComponent, public i2c::I2CDevice {
   void command_(uint8_t value);
   void call_writer() { this->writer_(*this); }
   void display_();
-  uint16_t swapBits(uint16_t n, uint p1, uint p2)
+  uint16_t swapBits(uint16_t n, uint p1, uint p2);
 
   std::vector<i2c::I2CDevice *> displays_ {this};
   std::function<void(HT16K33AlphaDisplay &)> writer_;
