@@ -31,7 +31,7 @@ class SDI12 : public uart::UARTDevice, public Component {
 
   void scan();
   void send_command(uint8_t *buf, int len);
-  void start_measurement(uint8_t address);
+  bool start_measurement(uint8_t address);
 
  protected:
   int state_{0};
@@ -43,10 +43,12 @@ class SDI12 : public uart::UARTDevice, public Component {
   std::vector<float> values_;
   bool scanning_{false};
   bool waiting_{false};
+  bool delay_{false};
   uint8_t cur_addr_;
   uint8_t tries_{0};
   uint32_t start_;
   uint32_t timeout_;
+  uint32_t delay_start_;
   std::vector<uint8_t> found_;
 
   std::vector<SDI12Listener *> listeners_{};

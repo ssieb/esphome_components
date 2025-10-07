@@ -15,8 +15,20 @@ void SDI12Sensor::dump_config() {
     LOG_SENSOR("  ", "-", is.sensor);
 }
 
+void SDI12Sensor::loop() {
+  if (this->want_update_ && this->parent_->start_measurement(this->address_)) {
+    this->want_update_ = false;
+    this->disable_loop();
+  }
+}
+
 void SDI12Sensor::update() {
-  this->parent_->start_measurement(this->address_);
+  if (this->want_update_) {
+    ESP_LOGW(TAG, "still waiting for previous update");
+  } else {
+    this->want_update_ = true;
+    this->enable_loop();
+  }
 }
 
 void SDI12Sensor::handle_values(std::vector<float> &values) {

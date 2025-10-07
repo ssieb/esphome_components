@@ -14,6 +14,7 @@ struct index_sensor {
 class SDI12Sensor : public SDI12Listener, public PollingComponent {
  public:
   void dump_config() override;
+  void loop() override;
   void update() override;
   void set_parent(SDI12 *parent) { this->parent_ = parent; }
   void add_sensor(int index, sensor::Sensor *sensor) { this->sensors_.push_back({index, sensor}); }
@@ -22,6 +23,7 @@ class SDI12Sensor : public SDI12Listener, public PollingComponent {
   SDI12 *parent_;
   std::vector<struct index_sensor> sensors_;
   void handle_values(std::vector<float> &values) override;
+  bool want_update_ = false;
 };
 
 }  // namespace sdi12

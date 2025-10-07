@@ -63,6 +63,8 @@ void SDI12::loop() {
       cmd[1] = '!';
       this->send_command(cmd, 2);
     }
+    if (this->delay_ && (now - this->start_ >= 100))
+      this->delay_ = false;
     return;
   }
 
@@ -143,6 +145,8 @@ void SDI12::loop() {
       }
       for (auto &listener : this->listeners_)
         listener->on_values(this->address_, this->values_);
+      this->delay_ = true;
+      this->start_ = now;
     }
   }
 }
@@ -156,16 +160,19 @@ void SDI12::send_command(uint8_t *buf, int len) {
   this->waiting_ = true;
 }
 
-void SDI12::start_measurement(uint8_t address) {
+bool SDI12::start_measurement(uint8_t address) {
   if (this->scanning_) {
     ESP_LOGD(TAG, "can't measure while scanning");
-    return;
+    return false;
   }
+  if (this->waiting_ || this->delay_)
+    return false;
   this->phase_ = 0;
   this->state_ = 0;
   this->buffer_.clear();
   uint8_t buf[3] = { addr2chr(address), 'M', '!' };
   this->send_command(buf, 3);
+  return true;
 }
 
 void SDI12Listener::on_values(uint8_t address, std::vector<float> &values) {
