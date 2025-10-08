@@ -156,7 +156,7 @@ void SDI12::send_command(uint8_t *buf, int len) {
   delay(10);
   this->write_array(buf, len);
   this->start_ = millis();
-  this->timeout_ = 150;
+  this->timeout_ = 250;
   this->waiting_ = true;
 }
 
