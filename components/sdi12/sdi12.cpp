@@ -103,6 +103,7 @@ void SDI12::loop() {
       this->phase_++;
       this->dataset_ = 0;
       this->values_.clear();
+      this->start_ = now;
       if (delay > 0)
         continue;
       this->phase_++;
@@ -148,6 +149,7 @@ void SDI12::loop() {
       this->delay_ = true;
       this->start_ = now;
     }
+    this->waiting_ = false;
   }
 }
 
