@@ -8,9 +8,8 @@ SeesawBinarySensor = seesaw_ns.class_(
     "SeesawBinarySensor", binary_sensor.BinarySensor, cg.Component
 )
 
-CONFIG_SCHEMA = binary_sensor.BINARY_SENSOR_SCHEMA.extend(
+CONFIG_SCHEMA = binary_sensor.binary_sensor_schema(SeesawBinarySensor).extend(
     {
-        cv.GenerateID(): cv.declare_id(SeesawBinarySensor),
         cv.GenerateID(CONF_SEESAW): cv.use_id(Seesaw),
         cv.Required(CONF_PIN): cv.int_range(0, 31),
     }
