@@ -16,11 +16,14 @@ CONFIG_SCHEMA = switch.switch_schema(TriStateSwitch).extend(
 
 
 async def to_code(config):
+    on_state = config[CONF_ON_STATE]
+    config.pop(CONF_ON_STATE)
+
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     await switch.register_switch(var, config)
 
     pin = await cg.gpio_pin_expression(config[CONF_PIN])
     cg.add(var.set_pin(pin))
-    cg.add(var.set_on_state(config[CONF_ON_STATE]))
+    cg.add(var.set_on_state(on_state))
 
