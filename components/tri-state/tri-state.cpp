@@ -16,7 +16,7 @@ void TriStateSwitch::setup() {
 void TriStateSwitch::dump_config() {
   LOG_SWITCH("", "GPIO Switch", this);
   LOG_PIN("  Pin: ", this->pin_);
-  ESP_LOGCONFIG(TAG, "  Active state: %s", ONOFF(this->active_state_));
+  ESP_LOGCONFIG(TAG, "  Active state: %s", this->active_state_ ? "HIGH" : "LOW");
 }
 
 void TriStateSwitch::write_state(bool state) {
