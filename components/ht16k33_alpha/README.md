@@ -20,6 +20,7 @@ display:
     scroll_speed: 250ms
     scroll_dwell: 2s
     scroll_delay: 3
+    size: 4
     lambda: |-
       it.print("ABCD");
     secondary_displays:
@@ -39,4 +40,6 @@ display:
 `scroll_delay:` is the number (float, minimum 1) of `scroll_speed` cycles to wait at the beginning before starting to scroll, default 3
 
 `secondary_display:` is a list of i2c devices where `address:` is required and `i2c_id:` is optional unless there is more than one i2c bus.
+
+`size:` number of characters in module, default is 4.
 
