@@ -10,6 +10,7 @@ void MagicSwitch::setup() {
   this->pin_->setup();
   this->isr_pin_ = this->pin_->to_isr();
   this->pin_->attach_interrupt(MagicSwitch::edge_intr, this, gpio::INTERRUPT_ANY_EDGE);
+  this->last_state_ = isr_pin_.digital_read();
 }
 
 void MagicSwitch::loop() {
@@ -29,15 +30,21 @@ void MagicSwitch::dump_config() {
 }
 
 void IRAM_ATTR HOT MagicSwitch::edge_intr(MagicSwitch *comp) {
-  uint32_t now = micros();
   bool state = comp->isr_pin_.digital_read();
-  if (state) {
-    comp->pulse_start_ = now;
-  } else if (comp->pulse_start_) {
-    uint32_t diff = now - comp->pulse_start_;
-    if (diff > comp->timeout_)
-      comp->pulse_ = diff;
+  if (state xor comp->last_state_) {
+    //only triggered at EDGE
+    uint32_t now = micros();
+    if (state) {
+      //Rising Edge
+      comp->pulse_start_ = now;
+    }else {
+      //Falling Edge
+      uint32_t diff = now - comp->pulse_start_;
+      if (diff > comp->timeout_)
+        comp->pulse_ = diff;
+    }
   }
+  comp->last_state_ = state;
 }
 
 }  // namespace magic_switch

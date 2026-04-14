@@ -29,6 +29,7 @@ class MagicSwitch : public Component {
 
   ISRInternalGPIOPin isr_pin_;
   uint32_t pulse_start_{0};
+  volatile bool last_state_ = false;
 };
 
 }  // namespace magic_switch
