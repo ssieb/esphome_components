@@ -31,20 +31,20 @@ void MagicSwitch::dump_config() {
 
 void IRAM_ATTR HOT MagicSwitch::edge_intr(MagicSwitch *comp) {
   bool state = comp->isr_pin_.digital_read();
-  if (state xor comp->last_state_) {
+  if (state != comp->last_state_) {
+    comp->last_state_ = state;
     //only triggered at EDGE
     uint32_t now = micros();
     if (state) {
       //Rising Edge
       comp->pulse_start_ = now;
-    }else {
+    } else {
       //Falling Edge
       uint32_t diff = now - comp->pulse_start_;
       if (diff > comp->timeout_)
         comp->pulse_ = diff;
     }
   }
-  comp->last_state_ = state;
 }
 
 }  // namespace magic_switch
