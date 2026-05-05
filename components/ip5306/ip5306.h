@@ -8,10 +8,11 @@
 namespace esphome {
 namespace ip5306 {
 
-class IP5306 : public i2c::I2CDevice, public Component {
+class IP5306 : public i2c::I2CDevice, public PollingComponent {
  public:
+  IP5306() : PollingComponent(60000) {}
   void setup() override;
-  void loop() override;
+  void update() override;
 
   float get_setup_priority() const override;
 
