@@ -2,6 +2,7 @@
 #include "esphome/core/hal.h"
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h"
+#include <cstdio>
 
 namespace esphome {
 namespace seesaw {
@@ -220,8 +221,8 @@ void SeesawGPIOPin::digital_write(bool value) {
   this->parent_->digital_write(this->pin_, value != this->inverted_);
 }
 
-std::string SeesawGPIOPin::dump_summary() const {
-  return str_sprintf("%u via SeeSaw", this->pin_);
+size_t SeesawGPIOPin::dump_summary(char *buffer, size_t len) const {
+  return snprintf(buffer, len, "%u via SeeSaw", this->pin_);
 }
 
 }  // namespace seesaw
