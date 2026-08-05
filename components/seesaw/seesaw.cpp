@@ -1,4 +1,5 @@
 #include "seesaw.h"
+#include <cstring>
 #include "esphome/core/hal.h"
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h"
@@ -171,18 +172,29 @@ void Seesaw::digital_write(uint8_t pin, bool state) {
     this->write32(SEESAW_GPIO, SEESAW_GPIO_BULK_CLR, pin);
 }
 
-void Seesaw::setup_neopixel(int pin) {
+void Seesaw::setup_neopixel(uint8_t pin, uint8_t num_leds) {
   this->write8(SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_SPEED, 1);
-  this->write16(SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_BUF_LENGTH, 3);
+  this->write16(SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_BUF_LENGTH, uint16_t(num_leds) * 3);
   this->write8(SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_PIN, pin);
 }
 
-void Seesaw::color_neopixel(uint8_t r, uint8_t g, uint8_t b) {
-  uint8_t buf[7] = {SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_BUF, 0, 0, g, r, b};
-  this->write(buf, 7);
-  buf[1] = SEESAW_NEOPIXEL_SHOW;
-  this->write(buf, 2);
+void Seesaw::write_neopixel_buffer(const uint8_t *buf, uint16_t len) {
+  if (len > SEESAW_NEOPIXEL_MAX_FRAME - 4) {
+    ESP_LOGE(TAG, "NeoPixel buffer too large (%u bytes)", len);
+    return;
+  }
+  // [module, register, pixel offset hi, pixel offset lo, data...] -- offset is always 0 since we
+  // always write the whole pixel buffer in one shot.
+  uint8_t frame[SEESAW_NEOPIXEL_MAX_FRAME];
+  frame[0] = SEESAW_NEOPIXEL;
+  frame[1] = SEESAW_NEOPIXEL_BUF;
+  frame[2] = 0;
+  frame[3] = 0;
+  memcpy(frame + 4, buf, len);
+  this->write(frame, len + 4);
 }
+
+void Seesaw::show_neopixel() { this->write8(SEESAW_NEOPIXEL, SEESAW_NEOPIXEL_SHOW, 0); }
 
 i2c::ErrorCode Seesaw::write8(SeesawModule mod, uint8_t reg, uint8_t value) {
   uint8_t buf[3] = {mod, reg, value};
@@ -220,8 +232,8 @@ void SeesawGPIOPin::digital_write(bool value) {
   this->parent_->digital_write(this->pin_, value != this->inverted_);
 }
 
-std::string SeesawGPIOPin::dump_summary() const {
-  return str_sprintf("%u via SeeSaw", this->pin_);
+size_t SeesawGPIOPin::dump_summary(char *buffer, size_t len) const {
+  return buf_append_printf(buffer, len, 0, "%u via SeeSaw", this->pin_);
 }
 
 }  // namespace seesaw
