@@ -30,7 +30,7 @@ void HT16K33AlphaDisplay::setup() {
 
 void HT16K33AlphaDisplay::loop() {
   unsigned long now = millis();
-  int numc = this->displays_.size() * 8;
+  int numc = this->displays_.size() * this->size_ * 2;
   int len = this->buffer_.size();
   if (!this->scroll_ || (len <= numc))
     return;
@@ -53,7 +53,7 @@ void HT16K33AlphaDisplay::loop() {
 float HT16K33AlphaDisplay::get_setup_priority() const { return setup_priority::PROCESSOR; }
 
 void HT16K33AlphaDisplay::display_() {
-  int numc = this->displays_.size() * 8;
+  int numc = this->displays_.size() * this->size_ * 2;
   int len = this->buffer_.size();
   uint8_t data[numc];
   memset(data, 0, numc);
@@ -68,7 +68,7 @@ void HT16K33AlphaDisplay::display_() {
   }
   pos = 0;
   for (auto *display : this->displays_) {
-    display->write_bytes(DISPLAY_COMMAND_SET_DDRAM_ADDR, data + pos, 8);
+    display->write_bytes(DISPLAY_COMMAND_SET_DDRAM_ADDR, data + pos, this->size_ * 2);
     pos += 8;
   }
 }
@@ -107,6 +107,26 @@ float HT16K33AlphaDisplay::get_brightness() {
   return this->brightness_ / 16.0;
 }
 
+uint16_t HT16K33AlphaDisplay::swapBits(uint16_t n, uint p1, uint p2) {
+    // Extract the bit at position p1
+    unsigned int bit1 = (n >> p1) & 1;
+
+    // Extract the bit at position p2
+    unsigned int bit2 = (n >> p2) & 1;
+
+    // If the bits are different, perform the swap
+    if (bit1 != bit2) {
+        // Create a mask to toggle the bits at p1 and p2
+        // If bit1 is 0 and bit2 is 1, set bit at p1 and clear bit at p2
+        // If bit1 is 1 and bit2 is 0, clear bit at p1 and set bit at p2
+        unsigned int xor_mask = (1U << p1) | (1U << p2);
+
+        // XOR the number with the mask to swap the bits
+        n ^= xor_mask;
+    }
+    return n;
+}
+
 void HT16K33AlphaDisplay::print(const char *str) {
   uint16_t fontc = 0;
   while (*str != '\0') {
@@ -119,6 +139,9 @@ void HT16K33AlphaDisplay::print(const char *str) {
     if (c == '.') {
       fontc |= 0x4000;
       str++;
+    }
+    if(this->swap_bits_) {
+      fontc = this->swapBits(fontc, 11, 13);
     }
     this->buffer_.push_back(fontc & 0xff);
     this->buffer_.push_back(fontc >> 8);
