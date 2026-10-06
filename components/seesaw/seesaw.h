@@ -62,6 +62,10 @@ enum : uint8_t {
   SEESAW_NEOPIXEL_SHOW = 0x05,
 };
 
+// mod + reg + 2-byte pixel offset + up to 64 RGB pixels -- comfortably covers every
+// NeoPixel-equipped Seesaw board Adafruit currently sells.
+static constexpr size_t SEESAW_NEOPIXEL_MAX_FRAME = 4 + 64 * 3;
+
 enum : uint8_t {
   SEESAW_TOUCH_CHANNEL_OFFSET = 0x10,
 };
@@ -92,8 +96,9 @@ class Seesaw : public i2c::I2CDevice, public Component {
   bool digital_read(uint8_t pin);
   void digital_write(uint8_t pin, bool state);
   void set_gpio_interrupt(uint32_t pin, bool enabled);
-  void setup_neopixel(int pin);
-  void color_neopixel(uint8_t r, uint8_t g, uint8_t b);
+  void setup_neopixel(uint8_t pin, uint8_t num_leds);
+  void write_neopixel_buffer(const uint8_t *buf, uint16_t len);
+  void show_neopixel();
 
  protected:
   i2c::ErrorCode write8(SeesawModule mod, uint8_t reg, uint8_t value);
@@ -112,7 +117,7 @@ class SeesawGPIOPin : public GPIOPin {
   void pin_mode(gpio::Flags flags) override;
   bool digital_read() override;
   void digital_write(bool value) override;
-  std::string dump_summary() const override;
+  size_t dump_summary(char *buffer, size_t len) const override;
 
   void set_parent(Seesaw *parent) { parent_ = parent; }
   void set_pin(uint8_t pin) { pin_ = pin; }

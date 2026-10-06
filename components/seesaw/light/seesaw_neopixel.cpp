@@ -7,20 +7,37 @@ namespace seesaw {
 static const char *const TAG = "seesaw.neopixel";
 
 void SeesawNeopixel::setup() {
-  this->parent_->setup_neopixel(this->pin_);
+  RAMAllocator<uint8_t> allocator;
+  this->buf_ = allocator.allocate(this->num_leds_ * 3);
+  if (this->buf_ == nullptr) {
+    ESP_LOGE(TAG, "Failed to allocate buffer of size %u", this->num_leds_ * 3);
+    this->mark_failed();
+    return;
+  }
+  memset(this->buf_, 0x00, this->num_leds_ * 3);
+
+  this->effect_data_ = allocator.allocate(this->num_leds_);
+  if (this->effect_data_ == nullptr) {
+    ESP_LOGE(TAG, "Failed to allocate effect data of size %u", this->num_leds_);
+    this->mark_failed();
+    return;
+  }
+  memset(this->effect_data_, 0x00, this->num_leds_);
+
+  this->parent_->setup_neopixel(this->pin_, this->num_leds_);
 }
 
-light::LightTraits SeesawNeopixel::get_traits() {
-  auto traits = light::LightTraits();
-  traits.set_supported_color_modes({light::ColorMode::RGB});
-  return traits;
-}
 void SeesawNeopixel::write_state(light::LightState *state) {
-  float red, green, blue;
-  state->current_values_as_rgb(&red, &green, &blue);
-  this->parent_->color_neopixel(red * 255, green * 255, blue * 255);
+  this->parent_->write_neopixel_buffer(this->buf_, this->num_leds_ * 3);
+  this->parent_->show_neopixel();
+}
+
+light::ESPColorView SeesawNeopixel::get_view_internal(int32_t index) const {
+  size_t pos = index * 3;
+  // red, green, blue, white, effect_data, color_correction -- buffer is laid out G, R, B per pixel.
+  return {this->buf_ + pos + 1, this->buf_ + pos,       this->buf_ + pos + 2,
+          nullptr,              this->effect_data_ + index, &this->correction_};
 }
 
 }  // namespace seesaw
 }  // namespace esphome
-
