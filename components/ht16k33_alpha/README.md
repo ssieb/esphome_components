@@ -1,5 +1,14 @@
 # HT16K33 4 character alphanumeric display
 
+This component supports the 4 character 14 segment alphanumeric display.
+
+> :warning: If using this component as an external component, you need to include both `ht16k33_alpha` **and** `ht16k33_base` components.
+```yaml
+external_components:
+  source: github://ssieb/custom_components/
+  components: [ ht16k33_base, ht16k33_alpha ]
+```
+
 There are no print functions for addressing rows and columns.  With such a small display I didn't see any point.
 All the print functions without the row and column parameters are available.
 A "." will get added to the previous character as the decimal point.
@@ -9,7 +18,7 @@ You can extend the display across multiple units.
 
 Example:
 ```yaml
-i2c:    
+i2c:
   sda: D0
   scl: D1
 
@@ -25,7 +34,6 @@ display:
     secondary_displays:
       - address: 0x71
 ```
-
 # Optional parameters
 
 `scroll:` defaults to false
