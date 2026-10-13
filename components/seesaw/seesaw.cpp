@@ -101,7 +101,7 @@ int32_t Seesaw::get_encoder_position(uint8_t number) {
   if (this->readbuf(SEESAW_ENCODER, SEESAW_ENCODER_POSITION + number, buf, 4) != i2c::ERROR_OK)
     return 0;
   int32_t value = (buf[0] << 24) + (buf[1] << 16) + (buf[2] << 8) + buf[3];
-  return -value;  // make clockwise positive
+  return value;  // on real hardware this already reads clockwise as positive, see issue #74
 }
 
 int16_t Seesaw::get_touch_value(uint8_t channel) {
