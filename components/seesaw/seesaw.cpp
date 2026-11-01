@@ -72,11 +72,22 @@ int32_t Seesaw::get_encoder_position(uint8_t number) {
   return -value;  // make clockwise positive
 }
 
-int16_t Seesaw::get_touch_value(uint8_t channel) {
+int16_t Seesaw::get_touch_value(uint8_t channel)
+{
+  uint8_t req[2] = {SEESAW_TOUCH, (uint8_t)(SEESAW_TOUCH_CHANNEL_OFFSET + channel)};
   uint8_t buf[2];
-  if (this->readbuf(SEESAW_TOUCH, SEESAW_TOUCH_CHANNEL_OFFSET + channel, buf, 2, 3) != i2c::ERROR_OK)
-    return -1;
-  return ((uint16_t)buf[0] << 8) | buf[1];
+  for (int retry = 0; retry < 5; retry++)
+  {
+    if (this->write(req, 2) != i2c::ERROR_OK)
+      continue;
+    delay(3 + retry); // let the seesaw finish measuring
+    if (this->read(buf, 2) != i2c::ERROR_OK)
+      continue;
+    uint16_t v = (buf[0] << 8) | buf[1];
+    if (v != 0xFFFF)
+      return v;
+  }
+  return -1;
 }
 
 float Seesaw::get_temperature() {
